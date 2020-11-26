@@ -1,0 +1,142 @@
+<template>
+  <div class="base-setting">
+    <div class="wrap-form">
+      <el-form ref="ruleForm" :model="ruleForm" :rules="rules" label-width="100px" class="demo-ruleForm">
+        <el-form-item label="用户名" prop="username">
+          <el-input v-model="ruleForm.username" disabled="disabled"></el-input>
+        </el-form-item>
+        <el-form-item label="昵称" prop="nickname">
+          <el-input v-model="ruleForm.nickname"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱" prop="email">
+          <el-input v-model="ruleForm.email" disabled="disabled"></el-input>
+        </el-form-item>
+        <el-form-item label="手机号" prop="phone">
+          <el-input v-model="ruleForm.phone"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="submitForm('ruleForm')">保存</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+    <div class="wrap-photo" @click="dialogVisible = true">
+      <img :src="ruleForm.avatar" alt="" />
+      <i class="el-icon-plus wrap-photo-plus"></i>
+    </div>
+    <el-dialog title="修改头像" :visible.sync="dialogVisible" width="680px">
+      <cropper @getCropBlob="getCropBlob"></cropper>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+  import Cropper from './Cropper';
+  import { mapState } from 'vuex';
+  import { upload } from '@/api/upload';
+  import { update } from '@/api/user';
+  import store from '@/store';
+
+  export default {
+    name: 'BaseSetting',
+    components: {
+      Cropper,
+    },
+    data() {
+      return {
+        ruleForm: {},
+        rules: {
+          name: [
+            { required: true, message: '请输入活动名称', trigger: 'blur' },
+            { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' },
+          ],
+        },
+        previews: '',
+        dialogVisible: false,
+      };
+    },
+    computed: {
+      ...mapState('user', ['userInfo']),
+    },
+    created() {
+      console.log(this.userInfo);
+      this.ruleForm = {
+        id: this.userInfo.id,
+        nickname: this.userInfo.nickname,
+        email: this.userInfo.email,
+        phone: this.userInfo.phone,
+        avatar: this.userInfo.avatar,
+        username: this.userInfo.username,
+      };
+    },
+    methods: {
+      submitForm(formName) {
+        this.$refs[formName].validate(async valid => {
+          if (valid) {
+            const { data } = await update(this.ruleForm);
+            this.$store.dispatch('user/getInfo');
+            console.log(data);
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      },
+      async getCropBlob(blob) {
+        this.dialogVisible = false;
+        console.log(blob);
+        const formData = new FormData();
+        formData.append('file', blob, 'data.jpg');
+        const {
+          data: { path },
+        } = await upload(formData);
+        console.log(path);
+        this.ruleForm.avatar = `/remote_public${path}`;
+      },
+    },
+  };
+</script>
+
+<style lang="scss" scoped>
+  .base-setting {
+    position: relative;
+    height: 360px;
+
+    .wrap-form {
+      width: 60%;
+    }
+
+    .wrap-photo {
+      position: absolute;
+      top: 30px;
+      right: 30px;
+      width: 180px;
+      height: 180px;
+      overflow: hidden;
+      cursor: pointer;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #ccc;
+
+      & img {
+        width: 100%;
+        height: 100%;
+      }
+
+      .wrap-photo-plus {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        font-size: 46px;
+        color: #fff;
+        opacity: 0;
+        transition: 500ms;
+        transform: translate(-50%, -50%);
+      }
+    }
+
+    .wrap-photo:hover {
+      .wrap-photo-plus {
+        opacity: 1;
+      }
+    }
+  }
+</style>

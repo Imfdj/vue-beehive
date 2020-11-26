@@ -1,0 +1,136 @@
+
+###/ad/getList###POST http://localhost:80/mockServer/ad/getList
+Content-Type: application/x-www-form-urlencoded
+###
+
+###/colorfulIcon/getList###POST http://localhost:80/mockServer/colorfulIcon/getList
+Content-Type: application/x-www-form-urlencoded
+###
+
+###/goodsList/getList###POST http://localhost:80/mockServer/goodsList/getList
+Content-Type: application/x-www-form-urlencoded
+###
+
+###/goodsDetail/getList###POST http://localhost:80/mockServer/goodsDetail/getList
+Content-Type: application/x-www-form-urlencoded
+###
+
+###/goodsDetail/doDelete###POST http://localhost:80/mockServer/goodsDetail/doDelete
+Content-Type: application/x-www-form-urlencoded
+###
+
+###/changeLog/getList###POST http://localhost:80/mockServer/changeLog/getList
+Content-Type: application/x-www-form-urlencoded
+###
+
+###/goodsDetail/doEdit###POST http://localhost:80/mockServer/goodsDetail/doEdit
+Content-Type: application/x-www-form-urlencoded
+###
+
+###/menuManagement/getTree###POST http://localhost:80/mockServer/menuManagement/getTree
+Content-Type: application/x-www-form-urlencoded
+###
+
+###/icon/getList###POST http://localhost:80/mockServer/icon/getList
+Content-Type: application/x-www-form-urlencoded
+###
+
+###/menuManagement/doDelete###POST http://localhost:80/mockServer/menuManagement/doDelete
+Content-Type: application/x-www-form-urlencoded
+###
+
+###/personalCenter/getList###POST http://localhost:80/mockServer/personalCenter/getList
+Content-Type: application/x-www-form-urlencoded
+###
+
+###/personalCenter/doEdit###POST http://localhost:80/mockServer/personalCenter/doEdit
+Content-Type: application/x-www-form-urlencoded
+###
+
+###/personalCenter/doDelete###POST http://localhost:80/mockServer/personalCenter/doDelete
+Content-Type: application/x-www-form-urlencoded
+###
+
+###/remixIcon/getList###POST http://localhost:80/mockServer/remixIcon/getList
+Content-Type: application/x-www-form-urlencoded
+###
+
+###/roleManagement/getList###POST http://localhost:80/mockServer/roleManagement/getList
+Content-Type: application/x-www-form-urlencoded
+###
+
+###/roleManagement/doEdit###POST http://localhost:80/mockServer/roleManagement/doEdit
+Content-Type: application/x-www-form-urlencoded
+###
+
+###/roleManagement/doDelete###POST http://localhost:80/mockServer/roleManagement/doDelete
+Content-Type: application/x-www-form-urlencoded
+###
+
+###/menu/navigate###POST http://localhost:80/mockServer/menu/navigate
+Content-Type: application/x-www-form-urlencoded
+###
+
+###/table/getList###POST http://localhost:80/mockServer/table/getList
+Content-Type: application/x-www-form-urlencoded
+###
+
+###/table/doEdit###POST http://localhost:80/mockServer/table/doEdit
+Content-Type: application/x-www-form-urlencoded
+###
+
+###/table/doDelete###POST http://localhost:80/mockServer/table/doDelete
+Content-Type: application/x-www-form-urlencoded
+###
+
+###/icon/getList###POST http://localhost:80/mockServer/icon/getList
+Content-Type: application/x-www-form-urlencoded
+###
+
+###/tree/list###POST http://localhost:80/mockServer/tree/list
+Content-Type: application/x-www-form-urlencoded
+###
+
+###/upload###POST http://localhost:80/mockServer/upload
+Content-Type: application/x-www-form-urlencoded
+###
+
+###/publicKey###POST http://localhost:80/mockServer/publicKey
+Content-Type: application/x-www-form-urlencoded
+###
+
+###/login###POST http://localhost:80/mockServer/login
+Content-Type: application/x-www-form-urlencoded
+###
+
+###/register###POST http://localhost:80/mockServer/register
+Content-Type: application/x-www-form-urlencoded
+###
+
+###/userInfo###POST http://localhost:80/mockServer/userInfo
+Content-Type: application/x-www-form-urlencoded
+###
+
+###/userManagement/getList###POST http://localhost:80/mockServer/userManagement/getList
+Content-Type: application/x-www-form-urlencoded
+###
+
+###/userManagement/doEdit###POST http://localhost:80/mockServer/userManagement/doEdit
+Content-Type: application/x-www-form-urlencoded
+###
+
+###/userManagement/doDelete###POST http://localhost:80/mockServer/userManagement/doDelete
+Content-Type: application/x-www-form-urlencoded
+###
+
+###/menuManagement/doEdit###POST http://localhost:80/mockServer/menuManagement/doEdit
+Content-Type: application/x-www-form-urlencoded
+###
+
+###/notice/getList###POST http://localhost:80/mockServer/notice/getList
+Content-Type: application/x-www-form-urlencoded
+###
+
+###/logout###POST http://localhost:80/mockServer/logout
+Content-Type: application/x-www-form-urlencoded
+###
