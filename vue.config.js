@@ -53,7 +53,15 @@ module.exports = {
       errors: true,
     },
     proxy: {
-      "/api": {
+      "/api/mockServer/": {
+        target: "/mockServer/",
+        changeOrigin: true,
+        ws: true,
+        pathRewrite: {
+          // '^/api': ''
+        },
+      },
+      "/api/(?!mockServer)": {
         target: "http://127.0.0.1:7002",
         changeOrigin: true,
         ws: true,

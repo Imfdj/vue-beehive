@@ -32,6 +32,7 @@ service.interceptors.request.use(
   config => {
     if (store.getters['user/accessToken']) {
       config.headers[tokenName] = store.getters['user/accessToken'];
+      config.headers['x-csrf-token'] = store.getters['user/accessCsrf'];
     }
     if (config.data) {
       //这里会过滤所有为空、0、fasle的key，如果不需要请自行注释

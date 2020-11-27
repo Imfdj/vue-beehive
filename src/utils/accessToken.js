@@ -7,18 +7,34 @@ import cookie from 'js-cookie';
  * @returns {string|ActiveX.IXMLDOMNode|Promise<any>|any|IDBRequest<any>|MediaKeyStatus|FormDataEntryValue|Function|Promise<Credential | null>}
  */
 export function getAccessToken() {
+  return  getField('jwt')
+}
+
+/**
+ * @copyright chuzhixin 1204505056@qq.com
+ * @description 获取accessToken
+ * @returns {string|ActiveX.IXMLDOMNode|Promise<any>|any|IDBRequest<any>|MediaKeyStatus|FormDataEntryValue|Function|Promise<Credential | null>}
+ */
+export function getAccessCsrf() {
+  return  getField('csrf')
+}
+
+function getField(field) {
   if (storage) {
     if ('localStorage' === storage) {
-      return localStorage.getItem(tokenTableName);
+      return getLocalJwt();
     } else if ('sessionStorage' === storage) {
-      return sessionStorage.getItem(tokenTableName);
+      return sessionStorage.getItem(tokenTableName) && JSON.parse(sessionStorage.getItem(tokenTableName))[field] || '';
     } else if ('cookie' === storage) {
       return cookie.get(tokenTableName);
     } else {
-      return localStorage.getItem(tokenTableName);
+      return getLocalJwt();
     }
   } else {
-    return localStorage.getItem(tokenTableName);
+    return getLocalJwt();
+  }
+  function getLocalJwt() {
+    return localStorage.getItem(tokenTableName) && JSON.parse(localStorage.getItem(tokenTableName))[field] || ''
   }
 }
 

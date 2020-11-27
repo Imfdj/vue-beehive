@@ -5,12 +5,13 @@
 
 import Vue from 'vue';
 import { getInfo, login, logout } from '@/api/user';
-import { getAccessToken, removeAccessToken, setAccessToken } from '@/utils/accessToken';
+import { getAccessToken, getAccessCsrf, removeAccessToken, setAccessToken } from '@/utils/accessToken';
 import { resetRouter } from '@/router';
 import { title, tokenName } from '@/config/settings';
 
 const state = {
   accessToken: getAccessToken(),
+  accessCsrf: getAccessCsrf(),
   username: '',
   avatar: '',
   permissions: [],
@@ -18,6 +19,7 @@ const state = {
 };
 const getters = {
   accessToken: state => state.accessToken,
+  accessCsrf: state => state.accessCsrf,
   username: state => state.username,
   avatar: state => state.avatar,
   permissions: state => state.permissions,
@@ -25,7 +27,8 @@ const getters = {
 };
 const mutations = {
   setAccessToken(state, accessToken) {
-    state.accessToken = accessToken;
+    state.accessToken = JSON.parse(accessToken).jwt;
+    state.accessCsrf = JSON.parse(accessToken).csrf;
     setAccessToken(accessToken);
   },
   setusername(state, username) {
@@ -52,14 +55,15 @@ const actions = {
       return;
     }
     const accessToken = data.token;
+    const csrf = data.csrf;
     if (accessToken) {
-      commit('setAccessToken', `Bearer ${accessToken}`);
+      commit('setAccessToken', JSON.stringify({ jwt: `Bearer ${ accessToken }`, csrf }));
       const hour = new Date().getHours();
       const thisTime =
         hour < 8 ? '早上好' : hour <= 11 ? '上午好' : hour <= 13 ? '中午好' : hour < 18 ? '下午好' : '晚上好';
-      Vue.prototype.$baseNotify(`欢迎登录${title}`, `${thisTime}！`);
+      Vue.prototype.$baseNotify(`欢迎登录${ title }`, `${ thisTime }！`);
     } else {
-      Vue.prototype.$baseMessage(`登录接口异常，未正确返回${tokenName}...`, 'error');
+      Vue.prototype.$baseMessage(`登录接口异常，未正确返回${ tokenName }...`, 'error');
     }
   },
   async getInfo({ commit, state }) {
@@ -88,7 +92,7 @@ const actions = {
   },
   resetAccessToken({ commit }) {
     commit('setPermissions', []);
-    commit('setAccessToken', '');
+    commit('setAccessToken', JSON.stringify({}));
     removeAccessToken();
   },
 };
