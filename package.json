@@ -49,6 +49,8 @@
     ]
   },
   "dependencies": {
+    "@sentry/browser": "^5.29.0",
+    "@sentry/integrations": "^5.29.0",
     "axios": "^0.19.2",
     "better-scroll": "^1.15.2",
     "clipboard": "^2.0.6",
