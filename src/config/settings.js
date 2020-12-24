@@ -2,9 +2,17 @@
  * @copyright chuzhixin 1204505056@qq.com
  * @description 全局变量配置
  */
+const isProdQiniu = process.env.BUILD_TARGET && process.env.BUILD_TARGET.trim() == 'qiniu';
+const dayjs = require('dayjs');
+const path = require('path');
+const fs = require('fs');
+const prefix = `vue-beehive/${dayjs().format('YYYYMMDD-HHmmss')}`;
+// 打包时，供七牛cdn上传使用
+if (isProdQiniu) fs.writeFileSync(path.resolve(__dirname, './prefix'), prefix, 'utf-8');
+
 module.exports = {
   // 开发以及部署时的URL
-  publicPath: '',
+  publicPath: isProdQiniu ? `http://qiniucdn.imfdj.top/${prefix}/` : '',
   // 生产环境构建文件的目录名
   outputDir: 'dist',
   // 放置生成的静态资源 (js、css、img、fonts) 的 (相对于 outputDir 的) 目录。
@@ -12,7 +20,7 @@ module.exports = {
   // 开发环境每次保存时是否输出为eslint编译警告
   lintOnSave: true,
   // 进行编译的依赖
-  transpileDependencies: ['vue-echarts', 'resize-detector', 'zx-layouts'],
+  transpileDependencies: ['resize-detector', 'zx-layouts'],
   // 默认的接口地址 如果是开发环境和生产环境走vab-mock-server，当然你也可以选择自己配置成需要的接口地址
   baseURL: process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'preview' ? 'api' : 'api',
   baseURLMock: 'mockServer',
@@ -95,7 +103,7 @@ module.exports = {
   //需要加loading层的请求，防止重复提交
   debounce: ['doEdit'],
   //需要自动注入并加载的模块
-  providePlugin: { maptalks: 'maptalks', 'window.maptalks': 'maptalks' },
+  providePlugin: {},
   //npm run build时是否自动生成7z压缩包
   build7z: false,
   //代码生成机生成在view下的文件夹名称
