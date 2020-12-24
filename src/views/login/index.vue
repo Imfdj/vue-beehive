@@ -1,12 +1,5 @@
 <template>
-  <div
-    class="login-container"
-    :style="`background: url(${
-      nodeEnv !== 'production'
-        ? 'http://qiniucdn.imfdj.top/vue-beehive/background.c7e07de7.jpg'
-        : 'static/img/background.d7285015.jpg'
-    }) center center fixed no-repeat`"
-  >
+  <div class="login-container">
     <el-row>
       <el-col :xs="24" :sm="24" :md="12" :lg="16" :xl="16">
         <div style="color: transparent;">占位符</div>
@@ -161,7 +154,9 @@
 <style lang="scss" scoped>
   .login-container {
     height: 100vh;
-    background-size: cover !important;
+    background: url('~@/assets/login_images/background.jpg') center center fixed no-repeat;
+    background-size: cover;
+
     .title {
       font-size: 54px;
       font-weight: 500;
