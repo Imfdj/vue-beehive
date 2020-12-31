@@ -12,7 +12,7 @@ if (isProdQiniu) fs.writeFileSync(path.resolve(__dirname, './prefix'), prefix, '
 
 module.exports = {
   // 开发以及部署时的URL
-  publicPath: isProdQiniu ? `http://qiniucdn.imfdj.top/${prefix}/` : '',
+  publicPath: isProdQiniu ? `https://qiniucdn.imfdj.top/${prefix}/` : '',
   // 生产环境构建文件的目录名
   outputDir: 'dist',
   // 放置生成的静态资源 (js、css、img、fonts) 的 (相对于 outputDir 的) 目录。
