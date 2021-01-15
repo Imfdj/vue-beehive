@@ -64,7 +64,7 @@ module.exports = {
         },
       },
       '/api/(?!mockServer)': {
-        target: 'http://127.0.0.1:7002',
+        target: 'http://127.0.0.1:7003',
         changeOrigin: true,
         ws: true,
         pathRewrite: {
@@ -72,7 +72,7 @@ module.exports = {
         },
       },
       '/remote_public': {
-        target: 'http://127.0.0.1:7002',
+        target: 'http://127.0.0.1:7003',
         changeOrigin: true,
         ws: true,
         pathRewrite: {

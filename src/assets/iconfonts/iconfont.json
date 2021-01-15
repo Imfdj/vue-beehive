@@ -1,0 +1,142 @@
+{
+  "id": "2253775",
+  "name": "beehive",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "12184880",
+      "name": "部门",
+      "font_class": "bumen",
+      "unicode": "e686",
+      "unicode_decimal": 59014
+    },
+    {
+      "icon_id": "8159872",
+      "name": "启用",
+      "font_class": "qiyong1",
+      "unicode": "e63f",
+      "unicode_decimal": 58943
+    },
+    {
+      "icon_id": "700826",
+      "name": "编辑",
+      "font_class": "bianji",
+      "unicode": "e63c",
+      "unicode_decimal": 58940
+    },
+    {
+      "icon_id": "933710",
+      "name": "团队",
+      "font_class": "tuandui",
+      "unicode": "e62f",
+      "unicode_decimal": 58927
+    },
+    {
+      "icon_id": "1111360",
+      "name": "编辑",
+      "font_class": "bianji1",
+      "unicode": "e639",
+      "unicode_decimal": 58937
+    },
+    {
+      "icon_id": "1301376",
+      "name": "提示",
+      "font_class": "tishi",
+      "unicode": "e661",
+      "unicode_decimal": 58977
+    },
+    {
+      "icon_id": "1306473",
+      "name": "更多",
+      "font_class": "gengduo-2",
+      "unicode": "e615",
+      "unicode_decimal": 58901
+    },
+    {
+      "icon_id": "1400848",
+      "name": "加人",
+      "font_class": "jiaren",
+      "unicode": "e614",
+      "unicode_decimal": 58900
+    },
+    {
+      "icon_id": "1629924",
+      "name": "禁止",
+      "font_class": "icon-test",
+      "unicode": "e632",
+      "unicode_decimal": 58930
+    },
+    {
+      "icon_id": "2116276",
+      "name": "删除",
+      "font_class": "dustbin_icon",
+      "unicode": "e659",
+      "unicode_decimal": 58969
+    },
+    {
+      "icon_id": "3262623",
+      "name": "齿轮 设置",
+      "font_class": "chilunshezhi",
+      "unicode": "e603",
+      "unicode_decimal": 58883
+    },
+    {
+      "icon_id": "4303877",
+      "name": "人",
+      "font_class": "ren",
+      "unicode": "e6c5",
+      "unicode_decimal": 59077
+    },
+    {
+      "icon_id": "9148975",
+      "name": "工作台",
+      "font_class": "weimingmingwenjianjia_gongzuotai",
+      "unicode": "e63e",
+      "unicode_decimal": 58942
+    },
+    {
+      "icon_id": "9974423",
+      "name": "人-减少",
+      "font_class": "ren-jianshao",
+      "unicode": "e705",
+      "unicode_decimal": 59141
+    },
+    {
+      "icon_id": "10056273",
+      "name": "人数",
+      "font_class": "renshu",
+      "unicode": "e70e",
+      "unicode_decimal": 59150
+    },
+    {
+      "icon_id": "14112859",
+      "name": "加",
+      "font_class": "jia",
+      "unicode": "e640",
+      "unicode_decimal": 58944
+    },
+    {
+      "icon_id": "17029957",
+      "name": "项目",
+      "font_class": "xiangmu",
+      "unicode": "e69d",
+      "unicode_decimal": 59037
+    },
+    {
+      "icon_id": "15695375",
+      "name": "多人",
+      "font_class": "duoren",
+      "unicode": "e6c9",
+      "unicode_decimal": 59081
+    },
+    {
+      "icon_id": "1395870",
+      "name": "黑名单",
+      "font_class": "heimingdan",
+      "unicode": "e637",
+      "unicode_decimal": 58935
+    }
+  ]
+}
