@@ -1,16 +1,16 @@
 <template>
   <div class="department-operation">
-    <el-dialog :title="title" :visible.sync="dialogVisible" width="400px">
+    <el-dialog :title="title" :visible.sync="dialogVisible" width="400px" @close="close">
       <div class="wrap-content">
-        <el-form ref="ruleForm" :model="ruleForm" :rules="rules" label-width="100px" class="demo-ruleForm">
+        <el-form ref="form" :model="form" :rules="rules" label-width="100px" class="demo-form">
           <el-form-item label="部门名称" prop="name">
-            <el-input v-model="ruleForm.name"></el-input>
+            <el-input v-model="form.name"></el-input>
           </el-form-item>
           <el-form-item label="排序" prop="sort">
-            <el-input v-model="ruleForm.sort"></el-input>
+            <el-input v-model="form.sort"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="submitForm('ruleForm')">{{ buttonName }}</el-button>
+            <el-button type="primary" @click="submitForm('form')">{{ buttonName }}</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -40,7 +40,7 @@
     data() {
       return {
         dialogVisible: false,
-        ruleForm: {
+        form: {
           name: '',
           sort: '',
           parent_id: 0,
@@ -64,26 +64,29 @@
     watch: {
       dialogVisible(newValue, oldValue) {
         if (newValue && !this.isCreateDepartment) {
-          this.ruleForm = { ...this.departmentData };
+          this.form = { ...this.departmentData };
         }
       },
     },
     methods: {
+      close() {
+        this.$refs['form'].resetFields();
+        this.form = this.$options.data().form;
+        this.dialogVisible = false;
+      },
       async doCreate() {
-        await doCreate(this.ruleForm);
+        await doCreate(this.form);
         this.$emit('doCreateDepartmentSuccess');
         this.$message.success('创建成功');
-        this.dialogVisible = false;
+        this.close();
       },
       async doEdit() {
-        await doEdit(this.ruleForm);
+        await doEdit(this.form);
         this.$emit('doCreateDepartmentSuccess');
         this.$message.success('编辑成功');
-        this.dialogVisible = false;
+        this.close();
       },
       submitForm(formName) {
-        console.log(this.ruleForm);
-        console.log(this.departmentData);
         this.$refs[formName].validate(valid => {
           if (valid) {
             if (this.isCreateDepartment) {
@@ -92,7 +95,6 @@
               this.doEdit();
             }
           } else {
-            console.log('error submit!!');
             return false;
           }
         });

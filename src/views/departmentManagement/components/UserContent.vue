@@ -16,7 +16,7 @@
         </btn-icon>
       </div>
     </div>
-    <div class="wrap-list">
+    <div v-loading="onLoading" class="wrap-list">
       <div v-for="(item, index) in userData.rows" :key="index" class="wrap-list-item">
         <img class="user-avatar" :src="item.avatar" alt="" />
         <div class="user-info">
@@ -35,7 +35,9 @@
           </el-popconfirm>
 
           <span class="line"></span>
-          <i class="iconfont icon-ren-jianshao" @click="removeUserFromDepartment(item)"></i>
+          <el-popconfirm title="确定移除此用户吗？" @onConfirm="removeUserFromDepartment(item)">
+            <i slot="reference" class="iconfont icon-ren-jianshao"></i>
+          </el-popconfirm>
         </div>
       </div>
     </div>
@@ -92,14 +94,11 @@
       return {
         userData: {},
         isCreateDepartment: false,
+        onLoading: false,
         departmentOperationBtns: [
           {
             icon: 'icon-jiaren',
             label: '添加成员',
-          },
-          {
-            icon: 'icon-jia',
-            label: '创建部门',
           },
           {
             icon: 'icon-bianji',
@@ -125,12 +124,17 @@
     },
     methods: {
       async getUserList() {
+        this.onLoading = true;
         const { data } = await getList({
           department_id: this.department_id,
           state: this.memberData.id === 3 ? 0 : null,
         });
+        this.onLoading = false;
         this.userData = data;
-        console.log(data);
+      },
+      showCreateDepartmentDialog() {
+        this.isCreateDepartment = true;
+        this.$refs.DepartmentOperation.dialogVisible = true;
       },
       departmentOperationBtnClick(index) {
         switch (index) {
@@ -138,14 +142,17 @@
             this.$refs.AddMemberToDepartmentDialog.dialogVisible = true;
             break;
           case 1:
-            this.isCreateDepartment = true;
-            this.$refs.DepartmentOperation.dialogVisible = true;
-            break;
-          case 2:
             this.isCreateDepartment = false;
             this.$refs.DepartmentOperation.dialogVisible = true;
             break;
-          case 3:
+          case 2:
+            this.$confirm('此操作将永久删除该部门，并释放所有成员, 是否继续?', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning',
+            }).then(() => {
+              this.doDelete();
+            });
             break;
           default:
             break;
@@ -160,9 +167,6 @@
         this.$message.success('移除成功');
       },
       async forbiddenUser(user) {
-        console.log(123412);
-        console.log(123412);
-        console.log(123412);
         const { data } = await doEdit({
           id: user.id,
           state: 0,

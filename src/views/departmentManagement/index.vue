@@ -21,7 +21,16 @@
           ><i class="iconfont item-member-icon" :class="item.icon"></i><span class="title">{{ item.title }}</span>
         </div>
       </div>
-      <span class="title-box">部门</span>
+      <span class="title-box"
+        >部门
+        <btn-icon
+          style="margin-left: 120px;"
+          iconClass="iconfont icon-jia"
+          @click.native="addDepartmentOperationBtnClick"
+        >
+          创建部门
+        </btn-icon></span
+      >
       <div class="warp-menu">
         <div class="warp-member">
           <div
@@ -42,7 +51,7 @@
         :departmentData="departmentList[memberSelectIndex - memberBtns.length]"
         :memberData="memberBtns[memberSelectIndex]"
         @doCreateDepartmentSuccess="fetchData"
-        @doDeleteDepartmentSuccess="fetchData"
+        @doDeleteDepartmentSuccess="doDeleteDepartmentSuccess"
       ></UserContent>
     </div>
   </div>
@@ -50,13 +59,14 @@
 
 <script>
   import { getList, doDelete } from '@/api/departmentManagement';
-
+  import BtnIcon from '@/components/Btn-icon';
   import UserContent from './components/UserContent';
 
   export default {
     name: 'DepartmentManagement',
     components: {
       UserContent,
+      BtnIcon,
     },
     data() {
       return {
@@ -85,7 +95,7 @@
           data: { rows },
           totalCount,
         } = await getList(this.queryForm);
-        this.departmentList = rows;
+        this.departmentList = rows.sort((a, b) => b.sort - a.sort);
       },
       addNewStyle(newStyle) {
         let styleElement = document.getElementById('styles_js');
@@ -102,6 +112,16 @@
         this.$nextTick(() => {
           this.$refs.UserContent.getUserList();
         });
+      },
+      doDeleteDepartmentSuccess() {
+        this.memberSelectIndex = this.memberBtns.length;
+        this.$nextTick(() => {
+          this.fetchData();
+          this.$refs.UserContent.getUserList();
+        });
+      },
+      addDepartmentOperationBtnClick() {
+        this.$refs.UserContent.showCreateDepartmentDialog();
       },
     },
   };
