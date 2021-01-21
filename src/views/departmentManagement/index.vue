@@ -5,9 +5,10 @@
         <el-input
           v-model="memberKeyword"
           prefix-icon="el-icon-search"
-          placeholder="搜索"
+          placeholder="输入'用户名/邮箱'回车搜索"
           size="medium"
           style="width: 228px;"
+          @keyup.enter.native="searchForKeyword"
         ></el-input>
       </div>
       <span class="title-box">成员</span>
@@ -50,6 +51,7 @@
         :isDepartment="memberSelectIndex > 3"
         :departmentData="departmentList[memberSelectIndex - memberBtns.length]"
         :memberData="memberBtns[memberSelectIndex]"
+        :memberKeyword="memberKeyword"
         @doCreateDepartmentSuccess="fetchData"
         @doDeleteDepartmentSuccess="doDeleteDepartmentSuccess"
       ></UserContent>
@@ -122,6 +124,9 @@
       },
       addDepartmentOperationBtnClick() {
         this.$refs.UserContent.showCreateDepartmentDialog();
+      },
+      searchForKeyword() {
+        this.$refs.UserContent.getUserList();
       },
     },
   };
