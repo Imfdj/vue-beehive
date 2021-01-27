@@ -19,18 +19,16 @@
         </el-form-item>
       </el-form>
     </div>
-    <div class="wrap-photo" @click="dialogVisible = true">
+    <div class="wrap-photo" @click="showCropper">
       <img :src="ruleForm.avatar" alt="" />
       <i class="el-icon-plus wrap-photo-plus"></i>
     </div>
-    <el-dialog title="修改头像" :visible.sync="dialogVisible" width="680px">
-      <cropper @getCropBlob="getCropBlob"></cropper>
-    </el-dialog>
+    <cropper ref="Cropper" dialogTitle="修改头像" @getCropBlob="getCropBlob"></cropper>
   </div>
 </template>
 
 <script>
-  import Cropper from './Cropper';
+  import Cropper from '@/components/Cropper';
   import { mapState } from 'vuex';
   import { upload } from '@/api/upload';
   import { update } from '@/api/user';
@@ -51,7 +49,6 @@
           ],
         },
         previews: '',
-        dialogVisible: false,
       };
     },
     computed: {
@@ -72,24 +69,24 @@
       submitForm(formName) {
         this.$refs[formName].validate(async valid => {
           if (valid) {
-            const { data } = await update(this.ruleForm);
+            await update(this.ruleForm);
             this.$store.dispatch('user/getInfo');
-            console.log(data);
           } else {
             console.log('error submit!!');
             return false;
           }
         });
       },
+      showCropper() {
+        this.$refs.Cropper.show();
+      },
       async getCropBlob(blob) {
-        this.dialogVisible = false;
-        console.log(blob);
+        this.$refs.Cropper.hide();
         const formData = new FormData();
         formData.append('file', blob, 'data.jpg');
         const {
           data: { path },
         } = await upload(formData);
-        console.log(path);
         this.ruleForm.avatar = `/remote_public${path}`;
       },
     },

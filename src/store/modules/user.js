@@ -4,14 +4,16 @@
  */
 
 import Vue from 'vue';
-import { getInfo, login, logout } from '@/api/user';
-import { getAccessToken, getAccessCsrf, removeAccessToken, setAccessToken } from '@/utils/accessToken';
+import { getInfo, login, logout, doRefreshToken } from '@/api/user';
+import { getAccessToken, getAccessCsrf, getRefreshToken, removeAccessToken, setAccessToken } from '@/utils/accessToken';
 import { resetRouter } from '@/router';
 import { title, tokenName } from '@/config/settings';
+import { encryptedData } from '@/utils/encrypt';
 
 const state = {
   accessToken: getAccessToken(),
   accessCsrf: getAccessCsrf(),
+  refreshToken: getRefreshToken(),
   username: '',
   avatar: '',
   permissions: [],
@@ -20,6 +22,7 @@ const state = {
 const getters = {
   accessToken: state => state.accessToken,
   accessCsrf: state => state.accessCsrf,
+  refreshToken: state => state.refreshToken,
   username: state => state.username,
   avatar: state => state.avatar,
   permissions: state => state.permissions,
@@ -29,6 +32,7 @@ const mutations = {
   setAccessToken(state, accessToken) {
     state.accessToken = JSON.parse(accessToken).jwt;
     state.accessCsrf = JSON.parse(accessToken).csrf;
+    state.refreshToken = JSON.parse(accessToken).refreshToken;
     setAccessToken(accessToken);
   },
   setusername(state, username) {
@@ -54,16 +58,15 @@ const actions = {
       Vue.prototype.$baseMessage(msg, 'error');
       return;
     }
-    const accessToken = data.token;
-    const csrf = data.csrf;
+    const { accessToken, csrf, refreshToken } = data;
     if (accessToken) {
-      commit('setAccessToken', JSON.stringify({ jwt: `Bearer ${ accessToken }`, csrf }));
+      commit('setAccessToken', JSON.stringify({ jwt: `Bearer ${accessToken}`, csrf, refreshToken }));
       const hour = new Date().getHours();
       const thisTime =
         hour < 8 ? '早上好' : hour <= 11 ? '上午好' : hour <= 13 ? '中午好' : hour < 18 ? '下午好' : '晚上好';
-      Vue.prototype.$baseNotify(`欢迎登录${ title }`, `${ thisTime }！`);
+      Vue.prototype.$baseNotify(`欢迎登录${title}`, `${thisTime}！`);
     } else {
-      Vue.prototype.$baseMessage(`登录接口异常，未正确返回${ tokenName }...`, 'error');
+      Vue.prototype.$baseMessage(`登录接口异常，未正确返回${tokenName}...`, 'error');
     }
   },
   async getInfo({ commit, state }) {
@@ -94,6 +97,25 @@ const actions = {
     commit('setPermissions', []);
     commit('setAccessToken', JSON.stringify({}));
     removeAccessToken();
+  },
+  async refreshToken({ commit, state }) {
+    try {
+      const {
+        code,
+        data: { accessToken, refreshToken },
+      } = await doRefreshToken({
+        refreshToken: state.refreshToken,
+        secret: await encryptedData(state.userInfo.id),
+      });
+      if (code === 0) {
+        commit(
+          'setAccessToken',
+          JSON.stringify({ jwt: `Bearer ${accessToken}`, csrf: state.accessCsrf, refreshToken })
+        );
+      }
+    } catch (e) {
+      return Promise.reject(e);
+    }
   },
 };
 export default { state, getters, mutations, actions };

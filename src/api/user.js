@@ -54,3 +54,11 @@ export function usersPassword(data) {
     data,
   });
 }
+
+export function doRefreshToken(data) {
+  return request({
+    url: '/v1/users/refreshToken',
+    method: 'post',
+    data,
+  });
+}

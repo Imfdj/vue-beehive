@@ -74,11 +74,22 @@ const errorMsg = message => {
 };
 
 service.interceptors.response.use(
-  response => {
+  async response => {
     if (loadingInstance) {
       loadingInstance.close();
     }
     const { status, data, config } = response;
+    // 如果是token过期，则刷新token并重试，如果刷新失败，则跳到登录
+    if (status === 202 && data.code === 401) {
+      try {
+        await store.dispatch('user/refreshToken');
+        return service.request(config);
+      } catch (e) {
+        await store.dispatch('user/resetAccessToken');
+        router.push(`/login?redirect=${router.app.$route.fullPath}`);
+        return Promise.reject();
+      }
+    }
     const { code, msg } = data;
     let codeVerification = false;
     if (isNumber(successCode)) {
@@ -110,7 +121,7 @@ service.interceptors.response.use(
       return data;
     }
   },
-  error => {
+  async error => {
     switch (error.response.status) {
       case invalidRequestCode:
         const data = error.response.data;
@@ -124,7 +135,8 @@ service.interceptors.response.use(
         }
         break;
       case noAuthenticationCode:
-        store.dispatch('user/resetAccessToken');
+        await store.dispatch('user/resetAccessToken');
+        router.push(`/login?redirect=${router.app.$route.fullPath}`);
         break;
       case noPermissionCode:
         router.push({
