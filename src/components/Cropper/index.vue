@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" :width="dialogWidth">
+  <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" :width="dialogWidth" append-to-body>
     <div class="cropper">
       <div class="content">
         <div class="wrap-cropper">

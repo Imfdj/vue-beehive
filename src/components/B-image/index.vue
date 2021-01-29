@@ -1,16 +1,18 @@
 <template>
-  <el-image
-    :src="src"
-    class="b-image"
-    :style="`width: ${width}px; height: ${height}px; border-radius: ${borderRadius}px;`"
-  >
-    <div slot="placeholder" class="image-slot-custom">
-      <i class="el-icon-loading"></i>
-    </div>
-    <div slot="error" class="image-slot">
-      <i class="el-icon-picture-outline"></i>
-    </div>
-  </el-image>
+  <div class="b-image">
+    <el-image
+      :src="src"
+      class="image"
+      :style="`width: ${width}px; height: ${height}px; border-radius: ${borderRadius}px;`"
+    >
+      <div slot="placeholder" class="image-slot-custom">
+        <i class="el-icon-loading"></i>
+      </div>
+      <div slot="error" class="image-slot">
+        <i class="el-icon-picture-outline"></i>
+      </div>
+    </el-image>
+  </div>
 </template>
 
 <script>
@@ -40,11 +42,14 @@
   };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
   .b-image {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid #f1f1f1;
+    display: inline-block;
+    .image {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #f1f1f1;
+    }
   }
 </style>
