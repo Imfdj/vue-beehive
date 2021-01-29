@@ -96,7 +96,7 @@
       return {
         activeName: '0',
         switchValue: false,
-        dialogVisible: true,
+        dialogVisible: false,
         form: {
           id: '',
           name: '',

@@ -75,6 +75,8 @@
     <el-button class="create-project" type="primary" icon="el-icon-plus" @click="handleCreate">创建新项目</el-button>
     <ProjectCreate ref="create" @fetchData="getList"></ProjectCreate>
     <ProjectEdit ref="edit" @fetchData="getList"></ProjectEdit>
+    <!--    TODO 空数据提示-->
+    <!--    TODO 分页-->
   </div>
 </template>
 
@@ -102,10 +104,6 @@
     },
     watch: {
       activeName(newValue, oldValue) {
-        console.log(newValue);
-        console.log(newValue);
-        console.log(newValue);
-        let state = 0;
         switch (newValue) {
           case '1':
             this.state = 1;
@@ -143,11 +141,15 @@
         this.loading = false;
         this.listData = rows;
       },
-      handleAddUser(item) {},
+      handleAddUser(item) {
+        // TODO 项目增加成员
+      },
       handleEdit(item) {
         this.$refs['edit'].showEdit(item);
       },
-      handleStart(item) {},
+      handleStart(item) {
+        // TODO 项目收藏
+      },
       handleBackNormal(item) {
         this.$baseConfirm('你确定要还原当前项吗', null, async () => {
           item.state = 1;
