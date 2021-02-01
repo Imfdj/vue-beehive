@@ -6,10 +6,10 @@
           <div v-for="project in listData" :key="project.id" class="item-list">
             <BImage :src="project.cover"></BImage>
             <div class="item-info">
-              <div class="name"
-                >{{ project.name }}
-                <el-tag v-if="project.is_private === 0" style="margin-left: 10px;" type="success">公开</el-tag></div
-              >
+              <div class="name">
+                <span class="name-text" @click="projectClick(project)">{{ project.name }}</span>
+                <el-tag v-if="project.is_private === 0" style="margin-left: 10px;" type="success">公开</el-tag>
+              </div>
               <div class="intro">{{ project.intro }}</div>
             </div>
             <div class="item-manager">
@@ -176,6 +176,9 @@
       handleCreate() {
         this.$refs['create'].showCreate();
       },
+      projectClick(project) {
+        this.$router.push(`/pojectManagement/Project/${project.id}`);
+      },
     },
   };
 </script>
@@ -210,7 +213,10 @@
           margin-left: 10px;
           line-height: 25px;
           .name {
-            color: #1890ff;
+            .name-text {
+              color: #1890ff;
+              cursor: pointer;
+            }
           }
           .intro {
             padding-right: 10px;
