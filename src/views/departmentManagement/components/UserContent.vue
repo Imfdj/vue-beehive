@@ -28,15 +28,15 @@
         </div>
         <div v-if="isDepartment" class="wrap-ctrl color-light">
           <el-popconfirm v-if="item.state === 1" title="确定禁用此用户吗？" @onConfirm="forbiddenUser(item)">
-            <i slot="reference" class="iconfont icon-icon-test"></i>
+            <BtnTooltip slot="reference" icon="iconfont icon-icon-test" tooltipContent="禁用"></BtnTooltip>
           </el-popconfirm>
           <el-popconfirm v-else title="确定启用此用户吗？" @onConfirm="enableUser(item)">
-            <i slot="reference" class="iconfont icon-qiyong1" style="color: #409eff;"></i>
+            <BtnTooltip slot="reference" icon="iconfont icon-qiyong" tooltipContent="启用"></BtnTooltip>
           </el-popconfirm>
 
           <span class="line"></span>
           <el-popconfirm title="确定移除此用户吗？" @onConfirm="removeUserFromDepartment(item)">
-            <i slot="reference" class="iconfont icon-ren-jianshao"></i>
+            <BtnTooltip slot="reference" icon="iconfont icon-ren-jianshao" tooltipContent="移除"></BtnTooltip>
           </el-popconfirm>
         </div>
       </div>
@@ -57,6 +57,7 @@
 
 <script>
   import BtnIcon from '@/components/Btn-icon';
+  import BtnTooltip from '@/components/Btn-tooltip';
   import AddMemberToDepartmentDialog from './AddMemberToDepartmentDialog';
   import DepartmentOperation from './DepartmentOperation';
   import { getList } from '@/api/userManagement';
@@ -68,6 +69,7 @@
     name: 'UserContent',
     components: {
       BtnIcon,
+      BtnTooltip,
       AddMemberToDepartmentDialog,
       DepartmentOperation,
     },
@@ -148,7 +150,7 @@
       departmentOperationBtnClick(index) {
         switch (index) {
           case 0:
-            this.$refs.AddMemberToDepartmentDialog.dialogVisible = true;
+            this.$refs.AddMemberToDepartmentDialog.show();
             break;
           case 1:
             this.isCreateDepartment = false;
@@ -248,7 +250,10 @@
           display: flex;
           align-items: center;
           justify-content: space-around;
-          width: 54px;
+          width: 74px;
+          ::v-deep .iconfont {
+            font-size: 12px;
+          }
           .line {
             width: 1px;
             height: 14px;

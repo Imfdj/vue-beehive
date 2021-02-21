@@ -6,18 +6,109 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "17282722",
+      "name": "启用",
+      "font_class": "qiyong",
+      "unicode": "e743",
+      "unicode_decimal": 59203
+    },
+    {
+      "icon_id": "9449156",
+      "name": "需求",
+      "font_class": "xuqiu",
+      "unicode": "e6e4",
+      "unicode_decimal": 59108
+    },
+    {
+      "icon_id": "7406153",
+      "name": "附件",
+      "font_class": "fujian",
+      "unicode": "e6f5",
+      "unicode_decimal": 59125
+    },
+    {
+      "icon_id": "11782956",
+      "name": "点赞",
+      "font_class": "zan",
+      "unicode": "e600",
+      "unicode_decimal": 58880
+    },
+    {
+      "icon_id": "14030906",
+      "name": "附 件",
+      "font_class": "fujian1",
+      "unicode": "e641",
+      "unicode_decimal": 58945
+    },
+    {
+      "icon_id": "15772328",
+      "name": "连接",
+      "font_class": "lianjie",
+      "unicode": "e623",
+      "unicode_decimal": 58915
+    },
+    {
+      "icon_id": "6271325",
+      "name": "圆圈",
+      "font_class": "i",
+      "unicode": "e60f",
+      "unicode_decimal": 58895
+    },
+    {
+      "icon_id": "3213149",
+      "name": "部分报销",
+      "font_class": "partial",
+      "unicode": "e6a3",
+      "unicode_decimal": 59043
+    },
+    {
+      "icon_id": "4392262",
+      "name": "取消",
+      "font_class": "quxiao",
+      "unicode": "e6cf",
+      "unicode_decimal": 59087
+    },
+    {
+      "icon_id": "6142920",
+      "name": "选中",
+      "font_class": "xuanzhong",
+      "unicode": "e634",
+      "unicode_decimal": 58932
+    },
+    {
+      "icon_id": "9148384",
+      "name": "部分成功",
+      "font_class": "bufenchenggong",
+      "unicode": "e6ae",
+      "unicode_decimal": 59054
+    },
+    {
+      "icon_id": "11761229",
+      "name": "部分统计",
+      "font_class": "bufentongji",
+      "unicode": "e646",
+      "unicode_decimal": 58950
+    },
+    {
+      "icon_id": "6626301",
+      "name": "闪电发货",
+      "font_class": "shandianfahuo",
+      "unicode": "e633",
+      "unicode_decimal": 58931
+    },
+    {
+      "icon_id": "18442753",
+      "name": "任务组管理",
+      "font_class": "renwuzuguanli",
+      "unicode": "e604",
+      "unicode_decimal": 58884
+    },
+    {
       "icon_id": "12184880",
       "name": "部门",
       "font_class": "bumen",
       "unicode": "e686",
       "unicode_decimal": 59014
-    },
-    {
-      "icon_id": "8159872",
-      "name": "启用",
-      "font_class": "qiyong1",
-      "unicode": "e63f",
-      "unicode_decimal": 58943
     },
     {
       "icon_id": "700826",

@@ -108,4 +108,6 @@ module.exports = {
   build7z: false,
   //代码生成机生成在view下的文件夹名称
   templateFolder: 'project',
+  // 任务状态-完成状态的ID
+  projectStateCompleteId: 6,
 };

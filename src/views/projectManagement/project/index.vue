@@ -4,12 +4,30 @@
       <el-breadcrumb separator="/">
         <el-breadcrumb-item :to="{ path: '/' }"><i class="el-icon-s-home"></i>首页</el-breadcrumb-item>
         <el-breadcrumb-item>
-          <el-dropdown>
-            <span class="el-dropdown-link"> 下拉菜单<i class="el-icon-arrow-down el-icon--right"></i> </span>
+          <el-dropdown trigger="click" placement="top" class="project-task-project-dropdown" @command="dropdownCommand">
+            <span class="el-dropdown-link">
+              <span class="project-name">{{ currentProject.name }}</span>
+              <i class="el-icon-arrow-down el-icon--right"></i>
+            </span>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item>黄金糕</el-dropdown-item>
-              <el-dropdown-item>狮子头</el-dropdown-item>
-              <el-dropdown-item>螺蛳粉</el-dropdown-item>
+              <div class="wrap-project-task-dropdown">
+                <el-input
+                  v-model="keywordProjectName"
+                  size="medium"
+                  class="project-task-wrap-dropdown-input"
+                  placeholder="搜索"
+                  prefix-icon="el-icon-search"
+                ></el-input>
+                <el-dropdown-item v-for="item in listProjectDataFilter" :key="item.id" :command="item.id">
+                  <div class="project-task-wrap-dropdown-item">
+                    <div class="info">
+                      <BImage :src="item.cover || ''" :width="32" :height="32" :borderRadius="32"></BImage>
+                      <div class="name">{{ item.name }}</div>
+                    </div>
+                    <i v-if="item.id === currentProject.id" class="el-icon-check"></i>
+                  </div>
+                </el-dropdown-item>
+              </div>
             </el-dropdown-menu>
           </el-dropdown>
         </el-breadcrumb-item>
@@ -26,44 +44,149 @@
           {{ item }}
         </div>
       </div>
-
       <div class="wrap-controller">
         <el-button type="text" icon="el-icon-notebook-2">看板视图</el-button>
         <el-button type="text" icon="el-icon-search">筛选</el-button>
-        <el-button type="text" icon="el-icon-user">1</el-button>
+        <el-button type="text" icon="el-icon-user" @click="handleAddUser">{{ projectUser.length }}</el-button>
         <el-button type="text" icon="el-icon-s-unfold">菜单</el-button>
       </div>
     </div>
     <div class="wrap-content">
       <TaskList></TaskList>
     </div>
+    <AddMemberToProjectDialog ref="AddMemberToProjectDialog" @getUserList="getUserList"></AddMemberToProjectDialog>
   </div>
 </template>
 
 <script>
-  import TaskList from './conponents/task/TaskList';
+  import TaskList from './components/task/TaskList';
+  import { getList } from '@/api/projectManagement';
+  import store from '@/store';
+  import BImage from '@/components/B-image';
+  import AddMemberToProjectDialog from '@/views/projectManagement/projectList/components/AddMemberToProjectDialog';
 
   export default {
     name: 'ProjectTask',
     components: {
       TaskList,
+      BImage,
+      AddMemberToProjectDialog,
     },
     data() {
       return {
         tabs: ['任务', '文件', '概览', '版本', '日程'],
         indexTab: 0,
+        currentProjectId: parseInt(this.$route.params.id),
+        loading: false,
+        listProjectData: [],
+        userList: [],
+        keywordProjectName: '',
       };
+    },
+    computed: {
+      currentProject() {
+        return this.listProjectData.find(item => item.id === this.currentProjectId) || {};
+      },
+      listProjectDataFilter() {
+        return this.listProjectData.filter(item => item.name.includes(this.keywordProjectName));
+      },
+      projectUser() {
+        return this.userList.filter(item => item.projectIds.includes(this.currentProjectId));
+      },
+    },
+    created() {
+      store.dispatch('project/setTaskTypes');
+      store.dispatch('project/setTaskStates');
+      store.dispatch('project/setTaskPrioritys');
+      this.getList();
     },
     methods: {
       tabClick(index) {
         this.indexTab = index;
+      },
+      async getList() {
+        this.loading = true;
+        const {
+          data: { rows, count },
+        } = await getList({ state: 1, limit: 1000, offset: 0 });
+        this.loading = false;
+        this.listProjectData = rows;
+      },
+      dropdownCommand(projectId) {
+        console.log(projectId);
+        console.log(this.$route);
+        console.log(this.$route.path);
+        this.$router.push(this.$route.path.replace(/\/\d+$/, `/${projectId}`));
+      },
+      handleAddUser() {
+        this.$refs.AddMemberToProjectDialog.show(this.currentProjectId);
+      },
+      getUserList(userList) {
+        this.userList = userList;
       },
     },
   };
 </script>
 
 <style lang="scss" scoped>
+  .wrap-project-task-dropdown {
+    max-height: 500px;
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    .project-task-wrap-dropdown-input {
+      width: 94%;
+      margin: 5px 3% 5px 3%;
+
+      ::v-deep .el-input__inner {
+        border-radius: 4px;
+      }
+    }
+
+    .project-task-wrap-dropdown-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 220px;
+      height: 60px;
+
+      .info {
+        display: flex;
+        align-items: center;
+
+        .name {
+          width: 140px;
+          line-height: 20px;
+          padding-left: 10px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+        }
+      }
+
+      & i {
+        font-size: 18px;
+      }
+    }
+  }
+
   .project-task {
+    background-color: #f7f7f7;
+
+    .project-task-project-dropdown {
+      cursor: pointer;
+
+      .project-name {
+        display: inline-block;
+        max-width: 160px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+
     .wrap-nav {
       position: relative;
       display: flex;
@@ -73,12 +196,15 @@
       padding: 0 20px;
       font-size: 15px;
       border-bottom: 1px solid #d9d9d9;
+      background-color: #fff;
+
       .tab {
         display: flex;
         align-items: center;
         justify-content: space-between;
         width: 300px;
         height: 100%;
+
         .item-tab {
           display: flex;
           align-items: center;
@@ -86,24 +212,32 @@
           border-bottom: 3px solid transparent;
           cursor: pointer;
         }
+
         .item-tab:hover {
           border-bottom: 3px solid #3da8f5;
         }
+
         .active {
           border-bottom: 3px solid #3da8f5;
         }
       }
+
       .wrap-controller {
         display: flex;
         align-items: center;
         justify-content: flex-end;
+
         ::v-deep .el-button--small {
           font-size: 14px;
         }
       }
     }
+
     .wrap-content {
       padding: 20px;
+      height: calc(100% - 46px);
+      overflow-x: auto;
+      white-space: nowrap;
     }
   }
 </style>

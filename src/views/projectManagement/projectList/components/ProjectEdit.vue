@@ -69,8 +69,8 @@
               <div class="title">项目操作</div>
               <div class="tip color-light">您可以执行以下操作</div>
               <div class="wrap-btn">
-                <el-button @click="doPigeonhole">归档项目</el-button>
-                <el-button @click="doQuit">退出</el-button>
+                <el-button type="danger" plain @click="doPigeonhole">归档项目</el-button>
+                <el-button type="danger" plain @click="doQuit">退出</el-button>
                 <el-button type="danger" @click="doRecycle">移至回收站</el-button>
               </div>
             </div>

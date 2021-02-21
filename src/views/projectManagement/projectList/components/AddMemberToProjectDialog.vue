@@ -1,7 +1,11 @@
 <template>
-  <div class="add-member-to-department-dialog">
-    <el-dialog title="添加成员至部门" :visible.sync="dialogVisible" width="400px">
+  <div class="add-member-to-project-dialog">
+    <el-dialog title="邀请新成员" :visible.sync="dialogVisible" width="530px">
       <div class="wrap-content">
+        <div class="wrap-intro">
+          账号邀请
+          <el-button type="text" size="medium">通过链接邀请</el-button>
+        </div>
         <el-input
           v-model="keyword"
           placeholder="请输入用户名或邮箱查找"
@@ -9,7 +13,7 @@
           @keyup.native="keywordChange"
         ></el-input>
         <div class="user-list">
-          <div v-for="(item, index) in userData.rows" :key="index" class="wrap-list-item">
+          <div v-for="(item, index) in userList" :key="index" class="wrap-list-item">
             <BImage class="user-avatar" :src="item.avatar || ''" :width="32" :height="32" :borderRadius="32"></BImage>
             <div class="user-info">
               <div class="user-name">{{ item.username }}</div>
@@ -18,10 +22,10 @@
               </div>
             </div>
             <div class="wrap-ctrl color-light">
-              <el-button v-if="departmentData.id !== item.department_id" size="mini" plain @click="addDepartment(item)">
-                <i class="iconfont icon-jiaren"></i> 添加
+              <el-button v-if="!item.projectIds.includes(projectId)" size="mini" plain @click="add(item)">
+                <i class="iconfont icon-jiaren"></i> 邀请
               </el-button>
-              <span v-else><i class="iconfont icon-ren" style="margin-right: 5px;"></i>已添加</span>
+              <span v-else><i class="iconfont icon-ren" style="margin-right: 5px;"></i>已加入</span>
             </div>
           </div>
         </div>
@@ -42,32 +46,38 @@
 
 <script>
   import { getList } from '@/api/userManagement';
-  import { updateUserDepartment } from '@/api/departmentManagement';
-  import { waitTimeout } from '@/utils';
+  import { doCreate } from '@/api/userProjectManagement';
   import BImage from '@/components/B-image';
+  import { waitTimeout } from '@/utils';
 
   export default {
-    name: 'AddMemberToDepartmentDialog',
+    name: 'AddMemberToProjectDialog',
     components: {
       BImage,
-    },
-    props: {
-      departmentData: {
-        type: Object,
-        required: false,
-        default: () => {
-          return {};
-        },
-      },
     },
     data() {
       return {
         dialogVisible: false,
         keyword: '',
+        timer: 0,
+        projectId: null,
         userData: [],
         pageNo: 1,
         pageSize: 6,
       };
+    },
+    computed: {
+      userList() {
+        return (
+          this.userData.rows &&
+          this.userData.rows.map(item => {
+            return {
+              ...item,
+              projectIds: item.projects && item.projects.map(project => project.id),
+            };
+          })
+        );
+      },
     },
     watch: {
       dialogVisible(newValue, oldValue) {
@@ -75,12 +85,16 @@
           this.getUserList();
         }
       },
+      userList(newValue, oldValue) {
+        this.$emit('getUserList', newValue);
+      },
     },
     created() {
       this.getUserList();
     },
     methods: {
-      show() {
+      show(projectId) {
+        this.projectId = projectId;
         this.dialogVisible = true;
       },
       keywordChange() {
@@ -95,22 +109,21 @@
         const { data } = await getList({
           keyword: this.keyword,
           limit: this.pageSize,
-          department_id: 0,
           offset: (this.pageNo - 1) * this.pageSize,
         });
         this.userData = data;
+        console.log(data);
       },
-      async addUserToDepartment(body) {
-        const { data } = await updateUserDepartment(body);
+      async doCreateExec(body) {
+        const { data } = await doCreate(body);
         this.$message.success('添加成功');
-        this.pageNo = 1;
         this.getUserList();
-        this.$emit('addUserToDepartmentSuccess');
+        this.$emit('doCreateSuccess');
       },
-      addDepartment(user) {
-        this.addUserToDepartment({
-          id: user.id,
-          department_id: this.departmentData.id,
+      add(user) {
+        this.doCreateExec({
+          user_id: user.id,
+          project_id: this.projectId,
         });
       },
     },
@@ -118,11 +131,23 @@
 </script>
 
 <style lang="scss" scoped>
-  .add-member-to-department-dialog {
+  .add-member-to-project-dialog {
     ::v-deep .el-dialog__body {
       padding: 10px 20px;
     }
+
+    .iconfont {
+      font-size: 14px;
+    }
+
     .wrap-content {
+      .wrap-intro {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 40px;
+      }
+
       .user-list {
         min-height: 300px;
         padding-top: 10px;

@@ -244,3 +244,17 @@ export const off = (function () {
     }
   };
 })();
+
+/**
+ * @copyright Imfdj imfdjjj@gmail.com
+ */
+let timerWaitTimeout = null;
+export const waitTimeout = function (time, callback) {
+  if (timerWaitTimeout) {
+    clearTimeout(timerWaitTimeout);
+  }
+  timerWaitTimeout = setTimeout(() => {
+    timerWaitTimeout = null;
+    callback();
+  }, time);
+};

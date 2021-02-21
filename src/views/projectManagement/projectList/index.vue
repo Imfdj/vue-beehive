@@ -25,48 +25,42 @@
               <el-progress :percentage="project.progress"></el-progress>
             </div>
             <div class="item-control">
-              <el-button
+              <BtnTooltip
                 v-if="project.state === 1"
                 icon="iconfont icon-jiaren"
-                circle
-                size="mini"
+                tooltipContent="添加成员"
                 @click="handleAddUser(project)"
-              ></el-button>
-              <el-button
+              ></BtnTooltip>
+              <BtnTooltip
                 v-if="project.state === 1"
                 icon="el-icon-setting"
-                circle
-                size="mini"
+                tooltipContent="项目设置"
                 @click="handleEdit(project)"
-              ></el-button>
-              <el-button
+              ></BtnTooltip>
+              <BtnTooltip
                 v-if="project.state === 1"
                 icon="el-icon-star-off"
-                circle
-                size="mini"
+                tooltipContent="收藏"
                 @click="handleStart(project)"
-              ></el-button>
-              <el-button
+              ></BtnTooltip>
+              <BtnTooltip
                 v-if="project.state !== 1"
                 icon="el-icon-refresh-left"
-                circle
-                size="mini"
+                tooltipContent="恢复项目"
                 @click="handleBackNormal(project)"
-              ></el-button>
-              <el-button
-                v-if="project.state === 2"
+              ></BtnTooltip>
+              <BtnTooltip
+                v-if="project.state !== 3"
                 icon="el-icon-delete"
-                circle
-                size="mini"
+                tooltipContent="移至回收站"
                 @click="handleRecycle(project)"
-              ></el-button>
-              <el-button
-                v-if="project.state === 1"
+              ></BtnTooltip>
+              <BtnTooltip
+                v-if="project.state === 3"
                 icon="el-icon-delete"
-                circle
-                size="mini"
+                tooltipContent="完全删除"
                 @click="handleDelete(project)"
-              ></el-button>
+              ></BtnTooltip>
             </div>
           </div>
         </div>
@@ -75,24 +69,32 @@
     <el-button class="create-project" type="primary" icon="el-icon-plus" @click="handleCreate">创建新项目</el-button>
     <ProjectCreate ref="create" @fetchData="getList"></ProjectCreate>
     <ProjectEdit ref="edit" @fetchData="getList"></ProjectEdit>
+    <AddMemberToProjectDialog ref="AddMemberToProjectDialog"></AddMemberToProjectDialog>
     <!--    TODO 空数据提示-->
     <!--    TODO 分页-->
+    <!--    TODO 全部项目需要包含归档-->
+    <!--    TODO 裁剪图片样式bug-->
+    <!--    TODO 任务增加完成状态-->
   </div>
 </template>
 
 <script>
   import store from '@/store';
   import BImage from '@/components/B-image';
+  import BtnTooltip from '@/components/Btn-tooltip';
   import { getList, doDelete, doEdit } from '@/api/projectManagement';
   import ProjectCreate from './components/ProjectCreate';
   import ProjectEdit from './components/ProjectEdit';
+  import AddMemberToProjectDialog from './components/AddMemberToProjectDialog';
 
   export default {
     name: 'ProjectList',
     components: {
       BImage,
+      BtnTooltip,
       ProjectCreate,
       ProjectEdit,
+      AddMemberToProjectDialog,
     },
     data() {
       return {
@@ -142,7 +144,7 @@
         this.listData = rows;
       },
       handleAddUser(item) {
-        // TODO 项目增加成员
+        this.$refs.AddMemberToProjectDialog.show(item.id);
       },
       handleEdit(item) {
         this.$refs['edit'].showEdit(item);
@@ -186,11 +188,13 @@
 <style lang="scss" scoped>
   .project-list {
     padding: 20px;
+
     .create-project {
       position: absolute;
       top: 13px;
       right: 20px;
     }
+
     .list {
       .item-list {
         display: flex;
@@ -198,6 +202,7 @@
         padding: 12px 0;
         line-height: 25px;
         border-bottom: 1px solid #e8e8e8;
+
         .item-img {
           display: flex;
           align-items: center;
@@ -207,17 +212,20 @@
           background-color: #f1f1f1;
           border-radius: 3px;
         }
+
         .item-info {
           flex: 1;
           width: 0;
           margin-left: 10px;
           line-height: 25px;
+
           .name {
             .name-text {
               color: #1890ff;
               cursor: pointer;
             }
           }
+
           .intro {
             padding-right: 10px;
             overflow: hidden;
@@ -225,6 +233,7 @@
             white-space: nowrap;
           }
         }
+
         .item-tasks {
           display: flex;
           flex: 1;
@@ -232,24 +241,30 @@
           padding-right: 40px;
           line-height: 50px;
           text-align: right;
+
           .task {
             margin-left: 6px;
           }
         }
+
         .item-manager {
           width: 150px;
         }
+
         .item-create-date {
           width: 120px;
         }
+
         .item-progress {
           width: 200px;
         }
+
         .item-control {
           display: flex;
           align-items: center;
           justify-content: flex-end;
           width: 160px;
+
           ::v-deep .iconfont {
             font-size: 12px;
           }
