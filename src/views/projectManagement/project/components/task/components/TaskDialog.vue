@@ -16,7 +16,7 @@
         <el-dropdown-menu slot="dropdown" style="width: 200px;">
           <el-dropdown-item v-for="item in taskTypes" :key="item.id" :command="item">
             <div style="display: flex; align-items: center; justify-content: space-between; padding: 5px 0px;">
-              <div> <i :class="item.icon" :style="`color: ${item.color};font-size: 16px;`"></i>{{ item.name }} </div>
+              <div><i :class="item.icon" :style="`color: ${item.color};font-size: 16px;`"></i>{{ item.name }}</div>
               <i v-if="taskTypeSelect.id === item.id" class="el-icon-check" style="font-size: 16px;"></i>
             </div>
           </el-dropdown-item>
@@ -151,7 +151,9 @@
         </div>
       </el-col>
       <el-col :span="10">
-        <div class="wrap-dynamic"> </div>
+        <div class="wrap-dynamic">
+          <Participator :users="taskInfo.users"></Participator>
+        </div>
       </el-col>
     </el-row>
   </el-dialog>
@@ -160,6 +162,7 @@
 <script>
   import { getInfo, doEdit } from '@/api/taskManagement';
   import { doChange } from '@/api/taskTaskTagManagement';
+  import Participator from './Participator';
   import { mapState } from 'vuex';
   import Executor from './Executor';
   import RichText from './RichText';
@@ -171,6 +174,7 @@
       Executor,
       RichText,
       TaskTag,
+      Participator,
     },
     data() {
       return {
