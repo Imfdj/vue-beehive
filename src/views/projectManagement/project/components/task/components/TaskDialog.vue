@@ -69,7 +69,7 @@
                 style="width: 183px;"
                 size="mini"
                 value-format="yyyy-MM-dd HH:mm:ss"
-                @change="doEditExec"
+                @change="startDatePickerChange"
               >
               </el-date-picker>
               <i class="el-icon-minus"></i>
@@ -80,7 +80,7 @@
                 style="width: 183px;"
                 size="mini"
                 value-format="yyyy-MM-dd HH:mm:ss"
-                @change="doEditExec"
+                @change="endDatePickerChange"
               >
               </el-date-picker>
             </div>
@@ -152,7 +152,8 @@
       </el-col>
       <el-col :span="10">
         <div class="wrap-dynamic">
-          <Participator :users="taskInfo.users"></Participator>
+          <Participator :users="taskInfo.participators"></Participator>
+          <TaskLog ref="TaskLog"></TaskLog>
         </div>
       </el-col>
     </el-row>
@@ -163,6 +164,7 @@
   import { getInfo, doEdit } from '@/api/taskManagement';
   import { doChange } from '@/api/taskTaskTagManagement';
   import Participator from './Participator';
+  import TaskLog from './TaskLog';
   import { mapState } from 'vuex';
   import Executor from './Executor';
   import RichText from './RichText';
@@ -175,6 +177,7 @@
       RichText,
       TaskTag,
       Participator,
+      TaskLog,
     },
     data() {
       return {
@@ -187,6 +190,7 @@
           end_date: '',
           remark: '',
         },
+        taskInfoOrigin: {}, // 用于记录改动后的task数据
         taskTypeSelect: {},
         taskStateSelect: {},
         taskPrioritySelect: {},
@@ -203,12 +207,14 @@
         this.showRichText = false;
         this.taskId = taskId;
         this.getInfoExec();
+        this.$refs.TaskLog.getList();
       },
       async getInfoExec() {
         this.loading = true;
         const { data } = await getInfo({ id: this.taskId });
         this.taskInfo = data;
         if (this.taskInfo.remark === null) this.taskInfo.remark = '';
+        this.setTaskInfoOrigin();
         this.loading = false;
         this.taskTypeSelect = this.taskTypes.find(item => {
           return item.id === this.taskInfo.task_type_id;
@@ -219,6 +225,9 @@
         this.taskPrioritySelect = this.taskPrioritys.find(item => {
           return item.id === this.taskInfo.task_priority_id;
         });
+      },
+      setTaskInfoOrigin() {
+        this.taskInfoOrigin = this.$baseLodash.cloneDeep(this.taskInfo);
       },
       close() {
         this.dialogTableVisible = false;
@@ -236,17 +245,37 @@
         this.taskPrioritySelect = priority;
         this.doEditExec();
       },
+      startDatePickerChange(date) {
+        if (date === null) {
+          this.taskInfo.start_date = '';
+        }
+        this.doEditExec();
+      },
+      endDatePickerChange(date) {
+        if (date === null) {
+          this.taskInfo.end_date = '';
+        }
+        this.doEditExec();
+      },
       async doEditExec() {
         this.taskInfo.task_type_id = this.taskTypeSelect.id;
         this.taskInfo.task_state_id = this.taskStateSelect.id;
         this.taskInfo.task_priority_id = this.taskPrioritySelect.id;
-        this.$nextTick(() => {
-          doEdit({
-            ...this.taskInfo,
-            start_date: this.taskInfo.start_date === null ? '' : this.taskInfo.start_date,
-            end_date: this.taskInfo.end_date === null ? '' : this.taskInfo.end_date,
+        const diff = {};
+        // 获取改动数据到diff
+        for (let taskInfoKey in this.taskInfo) {
+          if (!this.$baseLodash.isEqual(this.taskInfo[taskInfoKey], this.taskInfoOrigin[taskInfoKey])) {
+            diff[taskInfoKey] = this.taskInfo[taskInfoKey];
+          }
+        }
+        if (Object.keys(diff).length) {
+          await doEdit({
+            id: this.taskInfo.id,
+            ...diff,
           });
-        });
+          this.setTaskInfoOrigin();
+          this.$refs.TaskLog.getList();
+        }
       },
       showRichTextClick() {
         this.showRichText = true;

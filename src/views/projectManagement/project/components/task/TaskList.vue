@@ -34,8 +34,9 @@
             </div>
             <div class="executor">
               <BImage
+                v-if="element.executor"
                 class="user-avatar"
-                :src="(element.user && element.user.avatar) || ''"
+                :src="(element.executor && element.executor.avatar) || ''"
                 :width="32"
                 :height="32"
                 :borderRadius="32"
