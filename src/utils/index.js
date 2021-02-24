@@ -1,3 +1,7 @@
+import dayjs from 'dayjs';
+import weekOfYear from 'dayjs/plugin/weekOfYear';
+dayjs.extend(weekOfYear);
+
 /**
  * @copyright chuzhixin 1204505056@qq.com
  * @description 格式化时间
@@ -257,4 +261,55 @@ export const waitTimeout = function (time, callback) {
     timerWaitTimeout = null;
     callback();
   }, time);
+};
+
+/**
+ * @copyright Imfdj imfdjjj@gmail.com
+ */
+export const dateHumanizeFormat = function (date) {
+  const nowDate = new Date();
+  const targetDate = new Date(date);
+  const isSameYearMonth =
+    nowDate.getFullYear() === targetDate.getFullYear() && nowDate.getMonth() === targetDate.getMonth();
+  const currentDay = dayjs(date).day();
+  const limit = Date.now() - targetDate.getTime();
+  const limitDays = nowDate.getDate() - targetDate.getDate();
+  const limitWeeks = nowDate.getFullYear() === targetDate.getFullYear() ? dayjs().week() - dayjs(date).week() : null;
+  const weekLocalNames = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+  const data = {};
+
+  switch (true) {
+    case (limitWeeks === -1 && currentDay !== 0) || (limitWeeks === -2 && currentDay === 0):
+      data.value = `下${weekLocalNames[currentDay]} ${dayjs(date).format('HH:mm')}`;
+      break;
+    case isSameYearMonth && limitDays === -1:
+      data.value = `明天 ${dayjs(date).format('HH:mm')}`;
+      break;
+    case limit > 0 && limit < 60 * 1000:
+      data.value = '几秒前';
+      break;
+    case limit > 0 && limit < 60 * 60 * 1000:
+      data.value = `${Math.floor(limit / 1000 / 60)} 分钟前`;
+      break;
+    case limit > 0 && limit < 4 * 60 * 60 * 1000:
+      data.value = `${Math.floor(limit / 1000 / 60 / 60)} 小时前`;
+      break;
+    case isSameYearMonth && limitDays === 0:
+      data.value = `今天 ${dayjs(date).format('HH:mm')}`;
+      break;
+    case isSameYearMonth && limitDays === 1:
+      data.value = `昨天 ${dayjs(date).format('HH:mm')}`;
+      break;
+    case (limitWeeks === 0 && currentDay !== 0) || (limitWeeks === -1 && currentDay === 0):
+      data.value = `${weekLocalNames[currentDay]} ${dayjs(date).format('HH:mm')}`;
+      break;
+    case (limitWeeks === 1 && currentDay !== 0) || (limitWeeks === 0 && currentDay === 0):
+      data.value = `上${weekLocalNames[currentDay]} ${dayjs(date).format('HH:mm')}`;
+      break;
+    default:
+      data.value = dayjs(date).format('M月D日 HH:mm');
+      break;
+  }
+
+  return data;
 };

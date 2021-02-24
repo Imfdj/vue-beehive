@@ -169,8 +169,10 @@
         this.$refs.TaskDialog.show(task.id);
         this.$router.push(`${this.$route.path}?taskId=${task.id}`);
       },
-      taskDialogClose() {
-        this.getList();
+      taskDialogClose(isEdited) {
+        if (isEdited) {
+          this.getList();
+        }
         this.$router.replace(this.$route.path);
       },
     },

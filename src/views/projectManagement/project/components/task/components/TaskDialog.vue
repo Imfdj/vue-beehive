@@ -109,7 +109,7 @@
             </div>
           </div>
           <div class="wrap-item wrap-remark">
-            <div class="label"><i class="el-icon-tickets"></i> 备注</div>
+            <div class="label"><i class="el-icon-document"></i> 备注</div>
             <div class="content">
               <div v-show="!showRichText" class="btn-remark" @click="showRichTextClick">
                 <div v-if="taskInfo.remark" class="wrap-remark-html" v-html="taskInfo.remark"></div>
@@ -152,8 +152,8 @@
       </el-col>
       <el-col :span="10">
         <div class="wrap-dynamic">
-          <Participator :users="taskInfo.participators"></Participator>
-          <TaskLog ref="TaskLog"></TaskLog>
+          <Participator v-if="taskInfo.participators" :users="taskInfo.participators"></Participator>
+          <TaskLog ref="TaskLog" :taskId="taskId"></TaskLog>
         </div>
       </el-col>
     </el-row>
@@ -182,6 +182,7 @@
     data() {
       return {
         dialogTableVisible: false,
+        isEdited: false,
         loading: false,
         taskId: null,
         taskInfo: {
@@ -204,10 +205,11 @@
     methods: {
       show(taskId) {
         this.dialogTableVisible = true;
+        this.isEdited = false;
         this.showRichText = false;
         this.taskId = taskId;
         this.getInfoExec();
-        this.$refs.TaskLog.getList();
+        this.$refs.TaskLog && this.$refs.TaskLog.getList();
       },
       async getInfoExec() {
         this.loading = true;
@@ -231,7 +233,7 @@
       },
       close() {
         this.dialogTableVisible = false;
-        this.$emit('close');
+        this.$emit('close', this.isEdited);
       },
       commandTaskType(type) {
         this.taskTypeSelect = type;
@@ -273,6 +275,7 @@
             id: this.taskInfo.id,
             ...diff,
           });
+          this.isEdited = true;
           this.setTaskInfoOrigin();
           this.$refs.TaskLog.getList();
         }
