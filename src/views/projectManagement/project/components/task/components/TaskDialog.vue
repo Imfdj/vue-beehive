@@ -153,7 +153,7 @@
       <el-col :span="10">
         <div class="wrap-dynamic">
           <Participator v-if="taskInfo.participators" :users="taskInfo.participators"></Participator>
-          <TaskLog ref="TaskLog" :taskId="taskId"></TaskLog>
+          <TaskLog ref="TaskLog" :projectId="projectId" :taskId="taskId"></TaskLog>
         </div>
       </el-col>
     </el-row>
@@ -178,6 +178,12 @@
       TaskTag,
       Participator,
       TaskLog,
+    },
+    props: {
+      projectId: {
+        type: Number,
+        required: true,
+      },
     },
     data() {
       return {
@@ -209,7 +215,9 @@
         this.showRichText = false;
         this.taskId = taskId;
         this.getInfoExec();
-        this.$refs.TaskLog && this.$refs.TaskLog.getList();
+        this.$nextTick(() => {
+          this.$refs.TaskLog && this.$refs.TaskLog.getList();
+        });
       },
       async getInfoExec() {
         this.loading = true;
@@ -329,10 +337,10 @@
 
     .wrap-task {
       height: $min-height;
-      color: $colorLight;
-      padding: 10px 10px 10px 0px;
+      padding: 10px 10px 0 0;
       overflow-x: hidden;
       overflow-y: auto;
+      color: $colorLight;
 
       .wrap-name {
         ::v-deep .el-textarea__inner {
@@ -449,7 +457,7 @@
 
     .wrap-dynamic {
       min-height: $min-height;
-      padding: 10px 0px 10px 0px;
+      padding: 10px 0 0 0;
       border-left: 1px solid #ccc;
     }
   }

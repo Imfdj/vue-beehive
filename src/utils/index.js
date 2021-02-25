@@ -250,6 +250,7 @@ export const off = (function () {
 })();
 
 /**
+ * time时间后执行callback，如存在未执行Timeout则清除
  * @copyright Imfdj imfdjjj@gmail.com
  */
 let timerWaitTimeout = null;
@@ -264,6 +265,7 @@ export const waitTimeout = function (time, callback) {
 };
 
 /**
+ * 时间人性化转换，几秒前，X分钟起，X小时前提供下次更新时间
  * @copyright Imfdj imfdjjj@gmail.com
  */
 export const dateHumanizeFormat = function (date) {
@@ -276,7 +278,9 @@ export const dateHumanizeFormat = function (date) {
   const limitDays = nowDate.getDate() - targetDate.getDate();
   const limitWeeks = nowDate.getFullYear() === targetDate.getFullYear() ? dayjs().week() - dayjs(date).week() : null;
   const weekLocalNames = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
-  const data = {};
+  const data = {
+    refreshTime: 0, // 距离下次刷新时间（ms）
+  };
 
   switch (true) {
     case (limitWeeks === -1 && currentDay !== 0) || (limitWeeks === -2 && currentDay === 0):
@@ -287,12 +291,15 @@ export const dateHumanizeFormat = function (date) {
       break;
     case limit > 0 && limit < 60 * 1000:
       data.value = '几秒前';
+      data.refreshTime = 60 * 1000 - limit;
       break;
     case limit > 0 && limit < 60 * 60 * 1000:
       data.value = `${Math.floor(limit / 1000 / 60)} 分钟前`;
+      data.refreshTime = 60 * 1000 - (limit % (60 * 1000));
       break;
     case limit > 0 && limit < 4 * 60 * 60 * 1000:
       data.value = `${Math.floor(limit / 1000 / 60 / 60)} 小时前`;
+      data.refreshTime = 60 * 60 * 1000 - (limit % (60 * 60 * 1000));
       break;
     case isSameYearMonth && limitDays === 0:
       data.value = `今天 ${dayjs(date).format('HH:mm')}`;

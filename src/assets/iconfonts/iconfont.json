@@ -6,6 +6,34 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "9168758",
+      "name": "方形",
+      "font_class": "fangxing1",
+      "unicode": "e6b0",
+      "unicode_decimal": 59056
+    },
+    {
+      "icon_id": "12327135",
+      "name": "表情",
+      "font_class": "emoji",
+      "unicode": "e602",
+      "unicode_decimal": 58882
+    },
+    {
+      "icon_id": "2768287",
+      "name": "领导",
+      "font_class": "lingdao",
+      "unicode": "e616",
+      "unicode_decimal": 58902
+    },
+    {
+      "icon_id": "15628166",
+      "name": "暂无",
+      "font_class": "zanwu",
+      "unicode": "e605",
+      "unicode_decimal": 58885
+    },
+    {
       "icon_id": "17282722",
       "name": "启用",
       "font_class": "qiyong",

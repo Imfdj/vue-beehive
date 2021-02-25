@@ -18,8 +18,21 @@
         <div v-for="log in dataListFilter" :key="log.id" class="item">
           <div class="info">
             <div>
-              <i :class="['icon', log.icon]"></i>
-              <span class="username-and-remark">{{ log.operator && log.operator.username }} {{ log.remark }}</span>
+              <i v-if="log.is_comment === 0" :class="['icon', log.icon]"></i>
+              <BImage
+                v-else
+                class="user-avatar"
+                :src="(log.operator && log.operator.avatar) || ''"
+                :width="24"
+                :height="24"
+                :borderRadius="24"
+              ></BImage>
+              <span class="username-and-remark">
+                <span :class="[{ 'username-comment': log.is_comment === 1 }]">{{
+                  log.operator && log.operator.username
+                }}</span>
+                {{ log.remark }}
+              </span>
             </div>
             <span class="create-date">
               <el-tooltip class="item" effect="dark" :content="log.created_at" :enterable="false" placement="top">
@@ -27,26 +40,53 @@
               </el-tooltip>
             </span>
           </div>
-          <div v-if="log.content" class="content" v-html="log.content"></div>
+          <div
+            v-if="log.content"
+            :class="['content', { 'content-comment': log.is_comment === 1 }]"
+            v-html="log.content"
+          ></div>
         </div>
         <div v-if="dataListFilter.length === 0" class="no-data">
-          <i class="el-icon-plus"></i>
-          暂无该类型动态
+          <i class="iconfont icon-zanwu"></i>
+          <div class="text">暂无该类型动态</div>
         </div>
       </div>
     </div>
-    <div class="wrap-comment"></div>
+    <div class="wrap-comment">
+      <div class="input">
+        <el-input
+          v-model="content"
+          type="textarea"
+          :autosize="{ minRows: 1, maxRows: 1 }"
+          placeholder="@ 提及他人，按Enter快速发布"
+          @keyup.enter.native="doCreate"
+        ></el-input>
+      </div>
+      <div class="ctrl">
+        <i class="iconfont icon-emoji btn-emoji"></i>
+        <el-button type="text" :disabled="isOnCreate" size="medium">发布</el-button>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-  import { getList } from '@/api/taskLogManagement';
+  import BImage from '@/components/B-image';
+  import { getList, doCreate } from '@/api/taskLogManagement';
   import { dateHumanizeFormat } from '@/utils';
+  import { mapState } from 'vuex';
 
   export default {
     name: 'TaskLog',
+    components: {
+      BImage,
+    },
     props: {
       taskId: {
+        type: Number,
+        required: true,
+      },
+      projectId: {
         type: Number,
         required: true,
       },
@@ -55,7 +95,9 @@
       return {
         dataList: [],
         showAll: false,
+        isOnCreate: false,
         is_comment: '',
+        content: '',
         types: [
           {
             command: '',
@@ -73,6 +115,7 @@
       };
     },
     computed: {
+      ...mapState('user', ['userInfo']),
       dataListFilter() {
         return this.showAll
           ? this.dataList
@@ -95,18 +138,39 @@
     created() {},
     methods: {
       async getList() {
+        const query = {
+          task_id: this.taskId,
+        };
+        if (this.is_comment !== '') {
+          query.is_comment = this.is_comment;
+        }
         const {
           data: { rows },
-        } = await getList({
-          task_id: this.taskId,
-          is_comment: this.is_comment,
-        });
+        } = await getList(query);
         this.dataList = rows.map(log => {
           return {
             ...log,
             created_at_humanize: dateHumanizeFormat(log.created_at).value,
           };
         });
+      },
+      async doCreate() {
+        if (this.content.trim() === '' || this.isOnCreate) {
+          return;
+        }
+        this.isOnCreate = true;
+        const { msg } = await doCreate({
+          content: this.content,
+          task_id: this.taskId,
+          project_id: this.projectId,
+          operator_id: this.userInfo.id,
+          type: 'comment',
+          is_comment: 1,
+        });
+        this.getList();
+        this.isOnCreate = false;
+        this.content = '';
+        this.$baseMessage(msg, 'success');
       },
       showSwitchClick() {
         this.showAll = !this.showAll;
@@ -123,9 +187,8 @@
   .task-log {
     height: 100%;
     .wrap-log {
-      height: calc(100vh - 300px);
+      height: calc(100vh - 390px);
       padding: 20px 0 20px 20px;
-      /*background-color: #ccc;*/
       .wrap-filter {
         padding-bottom: 10px;
         .el-dropdown-link {
@@ -157,6 +220,13 @@
           align-items: center;
           justify-content: center;
           height: 200px;
+          .iconfont {
+            font-size: 60px;
+            color: #4eb0f3;
+          }
+          .text {
+            line-height: 30px;
+          }
         }
         .item {
           margin-bottom: 15px;
@@ -166,12 +236,19 @@
             align-items: center;
             justify-content: space-between;
             .icon {
-              width: 16px;
+              width: 24px;
               margin-right: 10px;
               font-size: 16px;
+              text-align: center;
+            }
+            .user-avatar {
+              margin-right: 10px;
             }
             .username-and-remark {
               flex: 1;
+              .username-comment {
+                color: #262626;
+              }
             }
             .create-date {
               width: 130px;
@@ -184,12 +261,31 @@
             margin: 3px 0 3px 26px;
             border-left: 5px solid #bfbfbf;
           }
+          .content-comment {
+            border-left: none;
+          }
         }
       }
     }
     .wrap-comment {
-      height: 50px;
-      border-top: 1px solid #ccc;
+      /*height: 96px;*/
+      padding: 15px 0;
+      border-top: 1px solid #e5e5e5;
+      .input {
+        margin-bottom: 5px;
+        ::v-deep .el-textarea__inner {
+          border: none;
+        }
+      }
+      .ctrl {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-left: 15px;
+        .btn-emoji {
+          font-size: 20px;
+        }
+      }
     }
   }
 </style>

@@ -61,7 +61,7 @@
         </div>
       </div>
     </div>
-    <TaskDialog ref="TaskDialog" @close="taskDialogClose"></TaskDialog>
+    <TaskDialog ref="TaskDialog" :projectId="projectId" @close="taskDialogClose"></TaskDialog>
   </div>
 </template>
 
