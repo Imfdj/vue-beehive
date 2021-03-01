@@ -103,7 +103,7 @@
     mounted() {
       // 如果当前路径中存在taskId，则打开任务弹窗
       if (this.$route.query && this.$route.query.taskId) {
-        this.$refs.TaskDialog.show(this.$route.query.taskId);
+        this.$refs.TaskDialog.show(parseInt(this.$route.query.taskId));
       }
     },
     methods: {
