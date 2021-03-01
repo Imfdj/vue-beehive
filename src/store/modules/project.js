@@ -8,6 +8,7 @@ const state = {
   taskStates: [],
   taskPrioritys: [],
   taskTags: [],
+  currentProjectId: null,
 };
 const mutations = {
   setTaskTypes(state, taskTypes) {
@@ -21,6 +22,9 @@ const mutations = {
   },
   setTaskTags(state, taskTags) {
     state.taskTags = taskTags;
+  },
+  setCurrentProjectId(state, currentProjectId) {
+    state.currentProjectId = currentProjectId;
   },
 };
 const actions = {
@@ -52,10 +56,6 @@ const actions = {
     commit('setTaskPrioritys', rows);
   },
   async setTaskTags({ commit }, payload) {
-    console.log(333);
-    console.log(333);
-    console.log(333);
-    console.log(payload);
     const {
       data: { rows },
     } = await getTaskTagsList(payload);

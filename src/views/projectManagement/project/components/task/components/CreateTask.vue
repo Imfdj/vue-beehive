@@ -53,7 +53,7 @@
       };
     },
     computed: {
-      ...mapState('project', ['taskTypes', 'taskStates', 'taskPrioritys']),
+      ...mapState('project', ['taskTypes', 'taskStates', 'taskPrioritys', 'currentProjectId']),
     },
     created() {
       this.taskTypeSelect = this.taskTypes[0];
@@ -70,6 +70,7 @@
           task_state_id: this.taskStates[0].id,
           task_priority_id: this.taskPrioritys[0].id,
           executor_id: this.executor.id,
+          project_id: this.currentProjectId,
         });
         this.$baseMessage(msg, 'success');
         this.$emit('createSuccess');

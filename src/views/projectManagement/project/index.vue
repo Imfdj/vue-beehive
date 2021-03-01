@@ -62,6 +62,7 @@
   import TaskList from './components/task/TaskList';
   import { getList } from '@/api/projectManagement';
   import store from '@/store';
+  import { mapState } from 'vuex';
   import BImage from '@/components/B-image';
   import AddMemberToProjectDialog from '@/views/projectManagement/projectList/components/AddMemberToProjectDialog';
 
@@ -76,7 +77,6 @@
       return {
         tabs: ['任务', '文件', '概览', '版本', '日程'],
         indexTab: 0,
-        currentProjectId: parseInt(this.$route.params.id),
         loading: false,
         listProjectData: [],
         userList: [],
@@ -84,6 +84,7 @@
       };
     },
     computed: {
+      ...mapState('project', ['currentProjectId']),
       currentProject() {
         return this.listProjectData.find(item => item.id === this.currentProjectId) || {};
       },
@@ -98,6 +99,7 @@
       store.dispatch('project/setTaskTypes');
       store.dispatch('project/setTaskStates');
       store.dispatch('project/setTaskPrioritys');
+      store.commit('project/setCurrentProjectId', parseInt(this.$route.params.id));
       this.getList();
     },
     methods: {
@@ -113,9 +115,6 @@
         this.listProjectData = rows;
       },
       dropdownCommand(projectId) {
-        console.log(projectId);
-        console.log(this.$route);
-        console.log(this.$route.path);
         this.$router.push(this.$route.path.replace(/\/\d+$/, `/${projectId}`));
       },
       handleAddUser() {

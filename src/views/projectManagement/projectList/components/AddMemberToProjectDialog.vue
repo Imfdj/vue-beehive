@@ -1,47 +1,51 @@
 <template>
-  <div class="add-member-to-project-dialog">
-    <el-dialog title="邀请新成员" :visible.sync="dialogVisible" width="530px">
-      <div class="wrap-content">
-        <div class="wrap-intro">
-          账号邀请
-          <el-button type="text" size="medium">通过链接邀请</el-button>
-        </div>
-        <el-input
-          v-model="keyword"
-          placeholder="请输入用户名或邮箱查找"
-          prefix-icon="el-icon-search"
-          @keyup.native="keywordChange"
-        ></el-input>
-        <div class="user-list">
-          <div v-for="(item, index) in userList" :key="index" class="wrap-list-item">
-            <BImage class="user-avatar" :src="item.avatar || ''" :width="32" :height="32" :borderRadius="32"></BImage>
-            <div class="user-info">
-              <div class="user-name">{{ item.username }}</div>
-              <div class="foot color-light">
-                <div class="user-emial">{{ item.email }}</div>
-              </div>
-            </div>
-            <div class="wrap-ctrl color-light">
-              <el-button v-if="!item.projectIds.includes(projectId)" size="mini" plain @click="add(item)">
-                <i class="iconfont icon-jiaren"></i> 邀请
-              </el-button>
-              <span v-else><i class="iconfont icon-ren" style="margin-right: 5px;"></i>已加入</span>
+  <el-dialog
+    title="邀请新成员"
+    :visible.sync="dialogVisible"
+    custom-class="add-member-to-project-dialog"
+    width="530px"
+    append-to-body
+  >
+    <div class="wrap-content">
+      <div class="wrap-intro">
+        账号邀请
+        <el-button type="text" size="medium">通过链接邀请</el-button>
+      </div>
+      <el-input
+        v-model="keyword"
+        placeholder="请输入用户名或邮箱查找"
+        prefix-icon="el-icon-search"
+        @keyup.native="keywordChange"
+      ></el-input>
+      <div class="user-list">
+        <div v-for="(item, index) in userList" :key="index" class="wrap-list-item">
+          <BImage class="user-avatar" :src="item.avatar || ''" :width="32" :height="32" :borderRadius="32"></BImage>
+          <div class="user-info">
+            <div class="user-name">{{ item.username }}</div>
+            <div class="foot color-light">
+              <div class="user-emial">{{ item.email }}</div>
             </div>
           </div>
-        </div>
-        <div v-if="userData.count > pageSize" class="wrap-pagination">
-          <el-pagination
-            layout="prev, pager, next"
-            :total="userData.count"
-            :current-page="pageNo"
-            :page-size="pageSize"
-            @current-change="handleCurrentChange"
-          >
-          </el-pagination>
+          <div class="wrap-ctrl color-light">
+            <el-button v-if="!item.projectIds.includes(projectId)" size="mini" plain @click="add(item)">
+              <i class="iconfont icon-jiaren"></i> 邀请
+            </el-button>
+            <span v-else><i class="iconfont icon-ren" style="margin-right: 5px;"></i>已加入</span>
+          </div>
         </div>
       </div>
-    </el-dialog>
-  </div>
+      <div v-if="userData.count > pageSize" class="wrap-pagination">
+        <el-pagination
+          layout="prev, pager, next"
+          :total="userData.count"
+          :current-page="pageNo"
+          :page-size="pageSize"
+          @current-change="handleCurrentChange"
+        >
+        </el-pagination>
+      </div>
+    </div>
+  </el-dialog>
 </template>
 
 <script>
@@ -130,12 +134,13 @@
   };
 </script>
 
+<style>
+  .add-member-to-project-dialog .el-dialog__body {
+    padding: 10px 20px;
+  }
+</style>
 <style lang="scss" scoped>
   .add-member-to-project-dialog {
-    ::v-deep .el-dialog__body {
-      padding: 10px 20px;
-    }
-
     .iconfont {
       font-size: 14px;
     }

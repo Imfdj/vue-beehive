@@ -2,7 +2,13 @@
   <div class="executor">
     <el-popover v-model="visible" placement="bottom" width="240" trigger="click" @show="show">
       <div class="popover-content-executor-selector">
-        <el-input v-model="name" placeholder="搜索" size="medium" prefix-icon="el-icon-search"></el-input>
+        <el-input
+          v-model="name"
+          placeholder="搜索"
+          size="medium"
+          prefix-icon="el-icon-search"
+          @keyup.native="keywordChange"
+        ></el-input>
         <div class="wrap-current-executor">
           <div class="title color-light">执行者</div>
           <div class="current-executor">
@@ -28,7 +34,7 @@
           </div>
         </div>
         <div class="wrap-footer">
-          <el-button type="primary" style="width: 100%;">邀请新成员</el-button>
+          <el-button type="primary" style="width: 100%;" @click="handleAddUser">邀请新成员</el-button>
         </div>
       </div>
       <div slot="reference" class="btn">
@@ -36,17 +42,22 @@
         {{ executor.username }} <i class="el-icon-question"></i>
       </div>
     </el-popover>
+    <AddMemberToProjectDialog ref="AddMemberToProjectDialog" @doCreateSuccess="getList"></AddMemberToProjectDialog>
   </div>
 </template>
 
 <script>
   import BImage from '@/components/B-image';
   import { getList } from '@/api/userManagement';
+  import { waitTimeout } from '@/utils';
+  import AddMemberToProjectDialog from '@/views/projectManagement/projectList/components/AddMemberToProjectDialog';
+  import { mapState } from 'vuex';
 
   export default {
     name: 'Executor',
     components: {
       BImage,
+      AddMemberToProjectDialog,
     },
     props: {
       executorId: {
@@ -66,6 +77,7 @@
       };
     },
     computed: {
+      ...mapState('project', ['currentProjectId']),
       dataListFilter() {
         const data = this.$baseLodash.cloneDeep(this.dataList.rows) || [];
         data.unshift({
@@ -92,14 +104,18 @@
       },
       show() {
         this.getList();
+        this.visible = true;
+      },
+      keywordChange() {
+        waitTimeout(300, this.getList);
       },
       async getList() {
         const { data } = await getList({
-          keyword: '',
-          project_id: 35,
+          keyword: this.name,
+          project_id: this.currentProjectId,
         });
         this.dataList = data;
-        if (this.executorId !== 0) {
+        if (this.executorId !== this.executor.id) {
           this.executor = this.dataList.rows.find(user => user.id === this.executorId) || {
             id: 0,
             username: '待认领',
@@ -109,6 +125,9 @@
       selectHandler(user) {
         this.executor = user;
         this.$emit('select', user);
+      },
+      handleAddUser() {
+        this.$refs.AddMemberToProjectDialog.show(this.currentProjectId);
       },
     },
   };
