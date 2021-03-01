@@ -152,7 +152,13 @@
       </el-col>
       <el-col :span="10">
         <div class="wrap-dynamic">
-          <Participator v-if="taskInfo.participators" :users="taskInfo.participators"></Participator>
+          <Participator
+            v-if="taskInfo.participators"
+            :users="taskInfo.participators"
+            :taskId="taskId"
+            :creatorId="taskInfo.creator_id"
+            @change="participatorChange"
+          ></Participator>
           <TaskLog ref="TaskLog" :projectId="projectId" :taskId="taskId"></TaskLog>
         </div>
       </el-col>
@@ -311,6 +317,9 @@
       executorSelect(user) {
         this.taskInfo.executor_id = user.id;
         this.doEditExec();
+      },
+      participatorChange(users) {
+        this.taskInfo.participators = users;
       },
     },
   };
