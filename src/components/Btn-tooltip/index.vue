@@ -1,6 +1,6 @@
 <template>
   <el-tooltip class="btn-tooltip" effect="dark" :content="tooltipContent" placement="top" :open-delay="300">
-    <el-button :icon="icon" :size="size" circle @click="$emit('click')"></el-button>
+    <el-button :icon="icon" :size="size" :class="btnClass" circle @click="$emit('click')"></el-button>
   </el-tooltip>
 </template>
 
@@ -19,6 +19,10 @@
       size: {
         type: String,
         default: 'mini',
+      },
+      btnClass: {
+        type: String,
+        default: '',
       },
     },
   };

@@ -39,8 +39,9 @@
               ></BtnTooltip>
               <BtnTooltip
                 v-if="project.state === 1"
-                icon="el-icon-star-off"
-                tooltipContent="收藏"
+                :icon="project.collector.length ? 'el-icon-star-on' : 'el-icon-star-off'"
+                :tooltipContent="project.collector.length ? '取消收藏' : '加入收藏'"
+                :btnClass="project.collector.length ? 'el-icon-star-on-color' : ''"
                 @click="handleStart(project)"
               ></BtnTooltip>
               <BtnTooltip
@@ -83,9 +84,11 @@
   import BImage from '@/components/B-image';
   import BtnTooltip from '@/components/Btn-tooltip';
   import { getList, doDelete, doEdit } from '@/api/projectManagement';
+  import { doChange as doChangeCollect } from '@/api/userProjectCollectManagement';
   import ProjectCreate from './components/ProjectCreate';
   import ProjectEdit from './components/ProjectEdit';
   import AddMemberToProjectDialog from './components/AddMemberToProjectDialog';
+  import { mapState } from 'vuex';
 
   export default {
     name: 'ProjectList',
@@ -103,6 +106,9 @@
         listData: [],
         state: 1,
       };
+    },
+    computed: {
+      ...mapState('user', ['userInfo']),
     },
     watch: {
       activeName(newValue, oldValue) {
@@ -149,8 +155,13 @@
       handleEdit(item) {
         this.$refs['edit'].showEdit(item);
       },
-      handleStart(item) {
-        // TODO 项目收藏
+      async handleStart(item) {
+        const { msg } = await doChangeCollect({
+          user_id: this.userInfo.id,
+          project_id: item.id,
+        });
+        this.getList();
+        this.$baseMessage(msg, 'success');
       },
       handleBackNormal(item) {
         this.$baseConfirm('你确定要还原当前项吗', null, async () => {
@@ -267,6 +278,9 @@
 
           ::v-deep .iconfont {
             font-size: 12px;
+          }
+          .el-icon-star-on-color {
+            color: #ffaf38;
           }
         }
       }
