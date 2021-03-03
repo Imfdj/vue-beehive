@@ -6,6 +6,13 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "5801019",
+      "name": "选中",
+      "font_class": "xuanzhong2",
+      "unicode": "e611",
+      "unicode_decimal": 58897
+    },
+    {
       "icon_id": "9168758",
       "name": "方形",
       "font_class": "fangxing1",

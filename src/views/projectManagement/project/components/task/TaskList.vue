@@ -9,7 +9,13 @@
       </div>
       <div class="wrap-draggable">
         <draggable class="list-group" :list="itemList.tasks" group="people" @change="change">
-          <div v-for="element in itemList.tasks" :key="element.id" class="list-group-item" @click="taskOpen(element)">
+          <div
+            v-for="element in itemList.tasks"
+            :key="element.id"
+            class="list-group-item"
+            :class="[{ 'list-group-item-done': element.is_done === 1 }]"
+            @click="taskOpen(element)"
+          >
             <div class="state">
               <el-tooltip :content="element.state && element.state.name" :open-delay="600" placement="top">
                 <i
@@ -17,6 +23,12 @@
                   :style="`color: ${element.state && element.state.color};font-size: 18px;`"
                 ></i>
               </el-tooltip>
+            </div>
+            <div class="wrap-done">
+              <i
+                :class="`iconfont ${element.is_done === 1 ? 'icon-xuanzhong2' : 'icon-fangxing1'}`"
+                @click.stop="changeDoneState(element)"
+              ></i>
             </div>
             <div
               class="content"
@@ -71,7 +83,7 @@
   import TaskDialog from './components/TaskDialog';
   import CreateTask from './components/CreateTask';
   import { getList } from '@/api/taskListManagement';
-  import { doEditSort } from '@/api/taskManagement';
+  import { doEditSort, doEdit } from '@/api/taskManagement';
   import { mapState } from 'vuex';
   import { projectStateCompleteId } from '@/config/settings';
   import store from '@/store';
@@ -175,6 +187,10 @@
         }
         this.$router.replace(this.$route.path);
       },
+      async changeDoneState(task) {
+        task.is_done = task.is_done === 1 ? 0 : 1;
+        await doEdit(task);
+      },
     },
   };
 </script>
@@ -245,12 +261,24 @@
               right: 5px;
             }
 
+            .wrap-done {
+              width: 18px;
+              padding: 0 4px;
+              .iconfont {
+                font-size: 18px;
+                color: #969696;
+              }
+              .iconfont:hover {
+                color: #414141;
+              }
+            }
+
             .content {
-              width: calc(259px - 52px);
+              width: calc(259px - 88px);
               white-space: normal;
               word-break: break-all;
               padding-left: 5px;
-              padding-right: 5px;
+              padding-right: 15px;
 
               .name {
               }
@@ -278,6 +306,27 @@
           .list-group-item:hover {
             .task-priority {
               width: 8px;
+            }
+          }
+          .list-group-item-done {
+            .content,
+            .executor,
+            .task-priority,
+            .state {
+              filter: opacity(0.6);
+            }
+            .wrap-done {
+              .iconfont {
+                color: #ccc;
+              }
+              .iconfont:hover {
+                color: #000000 !important;
+              }
+            }
+          }
+          .list-group-item-done:hover {
+            .task-priority {
+              width: 4px;
             }
           }
         }

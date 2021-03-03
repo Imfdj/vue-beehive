@@ -26,11 +26,35 @@
     <el-row v-loading="loading">
       <el-col :span="14">
         <div class="wrap-task">
-          <div class="wrap-name">
+          <div class="wrap-name" :class="[{ 'wrap-name-done': taskInfo.is_done === 1 }]">
             <el-input v-model="taskInfo.name" type="textarea" autosize @blur="doEditExec"></el-input>
           </div>
           <div class="wrap-item wrap-state">
-            <div class="label"><i class="el-icon-document-checked"></i> 完成状态</div>
+            <div class="label"><i class="iconfont icon-xuanzhong2"></i> 完成状态</div>
+            <div class="content">
+              <el-dropdown trigger="click" placement="bottom-start" @command="commandTaskDoneState">
+                <span class="el-dropdown-link-state">
+                  <i
+                    :class="taskDoneStateSelect.icon"
+                    :style="`color: ${taskDoneStateSelect.color};margin-right: 5px;font-size: 16px;`"
+                  ></i
+                  >{{ taskDoneStateSelect.name }}
+                </span>
+                <el-dropdown-menu slot="dropdown" style="width: 200px;">
+                  <el-dropdown-item v-for="item in taskDoneStates" :key="item.id" :command="item">
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 5px 0px;">
+                      <div style="display: flex; align-items: center;">
+                        <i :class="item.icon" :style="`color: ${item.color};font-size: 16px;`"></i>{{ item.name }}
+                      </div>
+                      <i v-if="taskDoneStateSelect.id === item.id" class="el-icon-check" style="font-size: 16px;"></i>
+                    </div>
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
+            </div>
+          </div>
+          <div class="wrap-item wrap-state">
+            <div class="label"><i class="el-icon-pie-chart"></i> 执行状态</div>
             <div class="content">
               <el-dropdown trigger="click" placement="bottom-start" @command="commandTaskState">
                 <span class="el-dropdown-link-state">
@@ -43,7 +67,7 @@
                 <el-dropdown-menu slot="dropdown" style="width: 200px;">
                   <el-dropdown-item v-for="item in taskStates" :key="item.id" :command="item">
                     <div style="display: flex; align-items: center; justify-content: space-between; padding: 5px 0px;">
-                      <div>
+                      <div style="display: flex; align-items: center;">
                         <i :class="item.icon" :style="`color: ${item.color};font-size: 16px;`"></i>{{ item.name }}
                       </div>
                       <i v-if="taskStateSelect.id === item.id" class="el-icon-check" style="font-size: 16px;"></i>
@@ -206,9 +230,24 @@
         taskInfoOrigin: {}, // 用于记录改动后的task数据
         taskTypeSelect: {},
         taskStateSelect: {},
+        taskDoneStateSelect: {},
         taskPrioritySelect: {},
         showRichText: false,
         task_tags_selected: [],
+        taskDoneStates: [
+          {
+            id: 0,
+            color: '#7c7c7c',
+            icon: 'iconfont icon-fangxing1',
+            name: '未完成',
+          },
+          {
+            id: 1,
+            color: '#1ae54d',
+            icon: 'iconfont icon-xuanzhong2',
+            name: '已完成',
+          },
+        ],
       };
     },
     computed: {
@@ -238,6 +277,9 @@
         this.taskStateSelect = this.taskStates.find(item => {
           return item.id === this.taskInfo.task_state_id;
         });
+        this.taskDoneStateSelect = this.taskDoneStates.find(item => {
+          return item.id === this.taskInfo.is_done;
+        });
         this.taskPrioritySelect = this.taskPrioritys.find(item => {
           return item.id === this.taskInfo.task_priority_id;
         });
@@ -255,6 +297,10 @@
       },
       commandTaskState(state) {
         this.taskStateSelect = state;
+        this.doEditExec();
+      },
+      commandTaskDoneState(state) {
+        this.taskDoneStateSelect = state;
         this.doEditExec();
       },
       commandTaskPriority(priority) {
@@ -276,6 +322,7 @@
       async doEditExec() {
         this.taskInfo.task_type_id = this.taskTypeSelect.id;
         this.taskInfo.task_state_id = this.taskStateSelect.id;
+        this.taskInfo.is_done = this.taskDoneStateSelect.id;
         this.taskInfo.task_priority_id = this.taskPrioritySelect.id;
         const diff = {};
         // 获取改动数据到diff
@@ -359,6 +406,12 @@
 
         ::v-deep .el-textarea__inner:hover {
           background-color: #f7f7f7;
+        }
+      }
+
+      .wrap-name-done {
+        ::v-deep .el-textarea__inner {
+          color: #bfbfbf;
         }
       }
 
