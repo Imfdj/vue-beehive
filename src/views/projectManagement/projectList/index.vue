@@ -26,41 +26,41 @@
             </div>
             <div class="item-control">
               <BtnTooltip
-                v-if="project.state === 1"
+                v-if="is_recycle === 0 && is_archived === null"
                 icon="iconfont icon-jiaren"
                 tooltipContent="添加成员"
                 @click="handleAddUser(project)"
               ></BtnTooltip>
               <BtnTooltip
-                v-if="project.state === 1"
+                v-if="is_recycle === 0 && is_archived === null"
                 icon="el-icon-setting"
                 tooltipContent="项目设置"
                 @click="handleEdit(project)"
               ></BtnTooltip>
               <BtnTooltip
-                v-if="project.state === 1"
+                v-if="is_recycle === 0 && is_archived === null"
                 :icon="project.collector.length ? 'el-icon-star-on' : 'el-icon-star-off'"
                 :tooltipContent="project.collector.length ? '取消收藏' : '加入收藏'"
                 :btnClass="project.collector.length ? 'el-icon-star-on-color' : ''"
                 @click="handleStart(project)"
               ></BtnTooltip>
               <BtnTooltip
-                v-if="project.state !== 1"
+                v-if="is_archived === 1"
                 icon="el-icon-refresh-left"
                 tooltipContent="恢复项目"
-                @click="handleBackNormal(project)"
+                @click="handleUnarchive(project)"
               ></BtnTooltip>
               <BtnTooltip
-                v-if="project.state !== 3"
+                v-if="is_recycle === 1"
+                icon="el-icon-refresh-left"
+                tooltipContent="恢复项目"
+                @click="handleRestore(project)"
+              ></BtnTooltip>
+              <BtnTooltip
+                v-if="is_recycle !== 1"
                 icon="el-icon-delete"
                 tooltipContent="移至回收站"
                 @click="handleRecycle(project)"
-              ></BtnTooltip>
-              <BtnTooltip
-                v-if="project.state === 3"
-                icon="el-icon-delete"
-                tooltipContent="完全删除"
-                @click="handleDelete(project)"
               ></BtnTooltip>
             </div>
           </div>
@@ -83,7 +83,7 @@
   import store from '@/store';
   import BImage from '@/components/B-image';
   import BtnTooltip from '@/components/Btn-tooltip';
-  import { getList, doDelete, doEdit } from '@/api/projectManagement';
+  import { getList, doEdit } from '@/api/projectManagement';
   import { doChange as doChangeCollect } from '@/api/userProjectCollectManagement';
   import ProjectCreate from './components/ProjectCreate';
   import ProjectEdit from './components/ProjectEdit';
@@ -104,7 +104,9 @@
         activeName: '1',
         titles: [],
         listData: [],
-        state: 1,
+        is_recycle: 0,
+        is_archived: 0,
+        collection: 0,
       };
     },
     computed: {
@@ -112,15 +114,24 @@
     },
     watch: {
       activeName(newValue, oldValue) {
+        this.collection = 0;
         switch (newValue) {
           case '1':
-            this.state = 1;
+            this.is_recycle = 0;
+            this.is_archived = null;
+            break;
+          case '2':
+            this.is_recycle = 0;
+            this.is_archived = null;
+            this.collection = 1;
             break;
           case '3':
-            this.state = 2;
+            this.is_recycle = null;
+            this.is_archived = 1;
             break;
           case '4':
-            this.state = 3;
+            this.is_recycle = 1;
+            this.is_archived = null;
             break;
           default:
             break;
@@ -143,9 +154,16 @@
     methods: {
       async getList() {
         this.loading = true;
+        const params = {
+          limit: 1000,
+          offset: 0,
+          collection: this.collection,
+        };
+        this.is_recycle !== null ? (params.is_recycle = this.is_recycle) : null;
+        this.is_archived !== null ? (params.is_archived = this.is_archived) : null;
         const {
           data: { rows, count },
-        } = await getList({ state: this.state, limit: 1000, offset: 0 });
+        } = await getList(params);
         this.loading = false;
         this.listData = rows;
       },
@@ -163,24 +181,25 @@
         this.getList();
         this.$baseMessage(msg, 'success');
       },
-      handleBackNormal(item) {
+      handleUnarchive(item) {
         this.$baseConfirm('你确定要还原当前项吗', null, async () => {
-          item.state = 1;
+          item.is_archived = 0;
           const { msg } = await doEdit(item);
           this.$baseMessage(msg, 'success');
           this.getList();
         });
       },
-      handleDelete(item) {
-        this.$baseConfirm('你确定要删除当前项吗', null, async () => {
-          await doDelete({ ids: [item.id] });
-          this.$baseMessage('删除成功', 'success');
+      handleRestore(item) {
+        this.$baseConfirm('你确定要还原当前项吗', null, async () => {
+          item.is_recycle = 0;
+          const { msg } = await doEdit(item);
+          this.$baseMessage(msg, 'success');
           this.getList();
         });
       },
       handleRecycle(item) {
         this.$baseConfirm('你确定要将当前项移至回收站吗', null, async () => {
-          item.state = 3;
+          item.is_recycle = 1;
           const { msg } = await doEdit(item);
           this.$baseMessage(msg, 'success');
           this.getList();

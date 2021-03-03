@@ -147,7 +147,7 @@
       },
       async doPigeonhole() {
         this.$baseConfirm('你确定要归档此项目吗', null, async () => {
-          this.form.state = 2;
+          this.form.is_archived = 1;
           await this.save();
           this.close();
         });
@@ -158,7 +158,7 @@
       },
       async doRecycle() {
         this.$baseConfirm('你确定要将此项目移至回收站吗', null, async () => {
-          this.form.state = 3;
+          this.form.is_recycle = 1;
           await this.save();
           this.close();
         });
