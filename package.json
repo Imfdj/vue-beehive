@@ -45,8 +45,7 @@
   "lint-staged": {
     "src/**/*.{js,vue}": [
       "pretty-quick --staged",
-      "eslint --fix",
-      "git add"
+      "eslint --fix"
     ]
   },
   "dependencies": {

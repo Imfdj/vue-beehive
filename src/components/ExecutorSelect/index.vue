@@ -1,5 +1,5 @@
 <template>
-  <div class="executor">
+  <div class="executor-select">
     <el-popover v-model="visible" placement="bottom" width="240" trigger="click" @show="show">
       <div class="popover-content-executor-selector">
         <el-input
@@ -33,7 +33,7 @@
             <i v-if="executor.id === user.id" class="el-icon-check"></i>
           </div>
         </div>
-        <div class="wrap-footer">
+        <div v-if="showAddUser" class="wrap-footer">
           <el-button type="primary" style="width: 100%;" @click="handleAddUser">邀请新成员</el-button>
         </div>
       </div>
@@ -54,7 +54,7 @@
   import { mapState } from 'vuex';
 
   export default {
-    name: 'Executor',
+    name: 'ExecutorSelect',
     components: {
       BImage,
       AddMemberToProjectDialog,
@@ -63,6 +63,10 @@
       executorId: {
         type: Number,
         default: 0,
+      },
+      showAddUser: {
+        type: Boolean,
+        default: true,
       },
     },
     data() {
@@ -125,6 +129,7 @@
       selectHandler(user) {
         this.executor = user;
         this.$emit('select', user);
+        this.setHide();
       },
       handleAddUser() {
         this.$refs.AddMemberToProjectDialog.show(this.currentProjectId);
@@ -180,7 +185,7 @@
     }
   }
 
-  .executor {
+  .executor-select {
     .btn {
       display: inline-flex;
       align-items: center;

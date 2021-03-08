@@ -19,7 +19,7 @@
       <el-input v-model="name" type="textarea" :rows="3" placeholder="输入标题"></el-input>
     </div>
     <div class="wrap-item executor">
-      <Executor ref="Executor" @select="executorSelect"></Executor>
+      <ExecutorSelect ref="ExecutorSelect" @select="executorSelect"></ExecutorSelect>
     </div>
     <div v-if="false" class="wrap-item btn-more"> <i class="el-icon-more"></i> 更多 </div>
     <div class="wrap-item btn-ctrl">
@@ -32,12 +32,12 @@
 <script>
   import { doCreate } from '@/api/taskManagement';
   import { mapState } from 'vuex';
-  import Executor from './Executor';
+  import ExecutorSelect from '@/components/ExecutorSelect';
 
   export default {
     name: 'CreateTask',
     components: {
-      Executor,
+      ExecutorSelect,
     },
     props: {
       itemListCreate: {
@@ -80,7 +80,7 @@
       },
       executorSelect(user) {
         this.executor = user;
-        this.$refs.Executor.setHide();
+        this.$refs.ExecutorSelect.setHide();
       },
     },
   };

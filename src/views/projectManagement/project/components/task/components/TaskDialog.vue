@@ -80,7 +80,11 @@
           <div class="wrap-item">
             <div class="label"><i class="el-icon-user"></i> 执行者</div>
             <div class="content">
-              <Executor ref="Executor" :executorId="taskInfo.executor_id" @select="executorSelect"></Executor>
+              <ExecutorSelect
+                ref="ExecutorSelect"
+                :executorId="taskInfo.executor_id"
+                @select="executorSelect"
+              ></ExecutorSelect>
             </div>
           </div>
           <div class="wrap-item wrap-date">
@@ -172,6 +176,7 @@
               </el-popover>
             </div>
           </div>
+          <WorkingHour :task="taskInfo"></WorkingHour>
         </div>
       </el-col>
       <el-col :span="10">
@@ -192,22 +197,23 @@
 
 <script>
   import { getInfo, doEdit } from '@/api/taskManagement';
-  import { doChange } from '@/api/taskTaskTagManagement';
   import Participator from './Participator';
   import TaskLog from './TaskLog';
+  import WorkingHour from './WorkingHour';
   import { mapState } from 'vuex';
-  import Executor from './Executor';
+  import ExecutorSelect from '@/components/ExecutorSelect';
   import RichText from './RichText';
   import TaskTag from './TaskTag';
 
   export default {
     name: 'TaskDialog',
     components: {
-      Executor,
+      ExecutorSelect,
       RichText,
       TaskTag,
       Participator,
       TaskLog,
+      WorkingHour,
     },
     props: {
       projectId: {
@@ -416,10 +422,10 @@
       }
 
       .wrap-item {
-        padding: 5px 0px;
         display: flex;
         align-items: center;
         min-height: 36px;
+        padding: 5px 0;
 
         .iconfont {
           font-size: 14px;
