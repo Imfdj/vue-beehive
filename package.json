@@ -71,6 +71,7 @@
     "vue-cropper": "^0.5.5",
     "vue-qart": "^2.2.0",
     "vue-router": "^3.3.4",
+    "vue-socket.io": "^3.0.10",
     "vuedraggable": "^2.24.3",
     "vuex": "^3.5.1",
     "wangeditor": "^4.6.6",

@@ -31,9 +31,14 @@ function getField(field) {
     if ('localStorage' === storage) {
       return getLocalJwt();
     } else if ('sessionStorage' === storage) {
-      return (
-        (sessionStorage.getItem(tokenTableName) && JSON.parse(sessionStorage.getItem(tokenTableName))[field]) || ''
-      );
+      try {
+        return (
+          (sessionStorage.getItem(tokenTableName) && JSON.parse(sessionStorage.getItem(tokenTableName))[field]) || ''
+        );
+      } catch (e) {
+        sessionStorage.removeItem(tokenTableName);
+        throw e;
+      }
     } else if ('cookie' === storage) {
       return cookie.get(tokenTableName);
     } else {
@@ -42,8 +47,14 @@ function getField(field) {
   } else {
     return getLocalJwt();
   }
+
   function getLocalJwt() {
-    return (localStorage.getItem(tokenTableName) && JSON.parse(localStorage.getItem(tokenTableName))[field]) || '';
+    try {
+      return (localStorage.getItem(tokenTableName) && JSON.parse(localStorage.getItem(tokenTableName))[field]) || '';
+    } catch (e) {
+      localStorage.removeItem(tokenTableName);
+      throw e;
+    }
   }
 }
 

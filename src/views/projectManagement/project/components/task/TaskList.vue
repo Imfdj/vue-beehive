@@ -30,10 +30,7 @@
                 @click.stop="changeDoneState(element)"
               ></i>
             </div>
-            <div
-              class="content"
-              :class="[{ 'task-state-success': (element.state && element.state.id) === projectStateCompleteId }]"
-            >
+            <div class="content" :class="[{ 'task-state-success': (element.state && element.state.is_done) === 1 }]">
               <div class="name">{{ element.name }}</div>
               <div class="info">
                 <el-tooltip :content="element.type && element.type.name" :open-delay="600" placement="top">
@@ -55,7 +52,7 @@
               ></BImage>
             </div>
             <div
-              v-if="(element.state && element.state.id) !== projectStateCompleteId"
+              v-if="(element.state && element.state.is_done) !== 1"
               class="task-priority"
               :style="`background-color: ${element.priority && element.priority.color};`"
             ></div>
@@ -85,8 +82,6 @@
   import { getList } from '@/api/taskListManagement';
   import { doEditSort, doEdit } from '@/api/taskManagement';
   import { mapState } from 'vuex';
-  import { projectStateCompleteId } from '@/config/settings';
-  import store from '@/store';
 
   export default {
     name: 'TaskList',
@@ -99,18 +94,65 @@
     data() {
       return {
         projectId: parseInt(this.$route.params.id),
-        projectStateCompleteId,
         listData: [],
         indexListCreate: -1,
         itemListCreate: {},
       };
     },
     computed: {
-      ...mapState('project', ['taskStates', 'taskPrioritys', 'taskTypes']),
+      ...mapState('project', ['taskStates', 'taskPrioritys', 'taskTypes', 'participators']),
+    },
+    sockets: {
+      message: function (data) {
+        const { params, action } = data;
+        if (/.*:task$/.test(action)) {
+          switch (action) {
+            case 'create:task':
+              this.listData.forEach(itemList => {
+                if (itemList.id === params.task_list_id) {
+                  const taskExisting = itemList.tasks.find(task => task.id === params.id);
+                  // 如果不存在，则添加
+                  if (!taskExisting) {
+                    this.getItem(params);
+                    itemList.tasks.push(params);
+                    itemList.tasks = this.$baseLodash.sortBy(itemList.tasks, task => task.sort);
+                  }
+                }
+              });
+              break;
+            case 'update:task':
+              this.listData.forEach(itemList => {
+                itemList.tasks.forEach(task => {
+                  if (task.id === params.id) {
+                    Object.assign(task, params);
+                    itemList.tasks = this.$baseLodash.sortBy(itemList.tasks, function (o) {
+                      return o.sort;
+                    });
+                    this.getItem(task);
+                    return false;
+                  }
+                });
+              });
+              break;
+            case 'delete:task':
+              this.listData.forEach(itemList => {
+                if (itemList.id === params.task_list_id) {
+                  itemList.tasks = itemList.tasks.filter(task => task.id !== params.id);
+                }
+              });
+              break;
+            default:
+              break;
+          }
+          this.$socket.emit('ack', {
+            id: data.id,
+            result: 'OK',
+          });
+        }
+      },
     },
     created() {
       this.getList();
-      store.dispatch('project/setTaskTags', { project_id: this.projectId });
     },
     mounted() {
       // 如果当前路径中存在taskId，则打开任务弹窗
@@ -122,6 +164,21 @@
       handleMore(item) {
         console.log(item);
       },
+      // 根据id获取相关项
+      getItem(task) {
+        task.type = this.taskTypes.find(item => {
+          return item.id === task.task_type_id;
+        });
+        task.state = this.taskStates.find(item => {
+          return item.id === task.task_state_id;
+        });
+        task.priority = this.taskPrioritys.find(item => {
+          return item.id === task.task_priority_id;
+        });
+        task.executor = this.participators.find(item => {
+          return item.id === task.executor_id;
+        });
+      },
       async getList() {
         const {
           data: { rows, count },
@@ -129,15 +186,7 @@
         this.listData = rows;
         this.listData.forEach(tasklistItem => {
           tasklistItem.tasks.forEach(task => {
-            task.type = this.taskTypes.find(item => {
-              return item.id === task.task_type_id;
-            });
-            task.state = this.taskStates.find(item => {
-              return item.id === task.task_state_id;
-            });
-            task.priority = this.taskPrioritys.find(item => {
-              return item.id === task.task_priority_id;
-            });
+            this.getItem(task);
           });
         });
       },
@@ -174,7 +223,7 @@
         this.indexListCreate = -1;
       },
       createSuccess() {
-        this.getList();
+        // this.getList();
         this.indexListCreate = -1;
       },
       taskOpen(task) {
@@ -183,7 +232,7 @@
       },
       taskDialogClose(isEdited) {
         if (isEdited) {
-          this.getList();
+          // this.getList();
         }
         this.$router.replace(this.$route.path);
       },

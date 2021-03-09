@@ -95,11 +95,13 @@
         return this.userList.filter(item => item.projectIds.includes(this.currentProjectId));
       },
     },
-    created() {
+    async created() {
       store.dispatch('project/setTaskTypes');
       store.dispatch('project/setTaskStates');
       store.dispatch('project/setTaskPrioritys');
-      store.commit('project/setCurrentProjectId', parseInt(this.$route.params.id));
+      await store.commit('project/setCurrentProjectId', parseInt(this.$route.params.id));
+      store.dispatch('project/setTaskTags');
+      store.dispatch('project/setParticipators');
       this.getList();
     },
     methods: {

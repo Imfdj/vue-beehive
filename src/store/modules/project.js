@@ -2,12 +2,14 @@ import { getList as getTaskTypeList } from '@/api/taskTypeManagement';
 import { getList as getTaskStateList } from '@/api/taskStateManagement';
 import { getList as getTaskPriorityList } from '@/api/taskPriorityManagement';
 import { getList as getTaskTagsList } from '@/api/taskTagManagement';
+import { getList as getParticipators } from '@/api/userManagement';
 
 const state = {
   taskTypes: [],
   taskStates: [],
   taskPrioritys: [],
   taskTags: [],
+  participators: [],
   currentProjectId: null,
 };
 const mutations = {
@@ -25,6 +27,9 @@ const mutations = {
   },
   setCurrentProjectId(state, currentProjectId) {
     state.currentProjectId = currentProjectId;
+  },
+  setParticipators(state, participators) {
+    state.participators = participators;
   },
 };
 const actions = {
@@ -55,11 +60,17 @@ const actions = {
     });
     commit('setTaskPrioritys', rows);
   },
-  async setTaskTags({ commit }, payload) {
+  async setTaskTags({ commit, state }) {
     const {
       data: { rows },
-    } = await getTaskTagsList(payload);
+    } = await getTaskTagsList({ project_id: state.currentProjectId });
     commit('setTaskTags', rows);
+  },
+  async setParticipators({ commit, state }) {
+    const {
+      data: { rows },
+    } = await getParticipators({ project_id: state.currentProjectId });
+    commit('setParticipators', rows);
   },
 };
 

@@ -259,6 +259,46 @@
     computed: {
       ...mapState('project', ['taskStates', 'taskPrioritys', 'taskTypes']),
     },
+    watch: {
+      'taskInfo.is_done'(newValue, oldValue) {
+        this.taskDoneStateSelect = this.taskDoneStates.find(item => {
+          return item.id === newValue;
+        });
+      },
+      'taskInfo.task_type_id'(newValue, oldValue) {
+        this.taskTypeSelect = this.taskTypes.find(item => {
+          return item.id === newValue;
+        });
+      },
+      'taskInfo.task_state_id'(newValue, oldValue) {
+        this.taskStateSelect = this.taskStates.find(item => {
+          return item.id === newValue;
+        });
+      },
+      'taskInfo.task_priority_id'(newValue, oldValue) {
+        this.taskPrioritySelect = this.taskPrioritys.find(item => {
+          return item.id === newValue;
+        });
+      },
+    },
+    sockets: {
+      message: function (data) {
+        console.log(data);
+        if (/.*:task$/.test(data.action)) {
+          switch (data.action) {
+            case 'update:task':
+              Object.assign(this.taskInfo, data.params);
+              break;
+            default:
+              break;
+          }
+          this.$socket.emit('ack', {
+            id: data.id,
+            result: 'OK',
+          });
+        }
+      },
+    },
     methods: {
       show(taskId) {
         this.dialogTableVisible = true;
@@ -277,18 +317,6 @@
         if (this.taskInfo.remark === null) this.taskInfo.remark = '';
         this.setTaskInfoOrigin();
         this.loading = false;
-        this.taskTypeSelect = this.taskTypes.find(item => {
-          return item.id === this.taskInfo.task_type_id;
-        });
-        this.taskStateSelect = this.taskStates.find(item => {
-          return item.id === this.taskInfo.task_state_id;
-        });
-        this.taskDoneStateSelect = this.taskDoneStates.find(item => {
-          return item.id === this.taskInfo.is_done;
-        });
-        this.taskPrioritySelect = this.taskPrioritys.find(item => {
-          return item.id === this.taskInfo.task_priority_id;
-        });
       },
       setTaskInfoOrigin() {
         this.taskInfoOrigin = this.$baseLodash.cloneDeep(this.taskInfo);

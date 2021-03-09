@@ -4,11 +4,13 @@
  */
 
 import Vue from 'vue';
+import VueSocketIO from 'vue-socket.io';
 import { getInfo, login, logout, doRefreshToken } from '@/api/user';
 import { getAccessToken, getAccessCsrf, getRefreshToken, removeAccessToken, setAccessToken } from '@/utils/accessToken';
 import { resetRouter } from '@/router';
 import { title, tokenName } from '@/config/settings';
 import { encryptedData } from '@/utils/encrypt';
+import store from '@/store';
 
 const state = {
   accessToken: getAccessToken(),
@@ -76,6 +78,29 @@ const actions = {
       return false;
     }
     let { permissions, username, avatar } = data;
+
+    // 创建socket
+    const options = {
+      query: {
+        userId: data.id,
+        accessToken: state.accessToken,
+      },
+    };
+    const connection =
+      process.env.NODE_ENV === 'production' ? 'https://beehive.imfdj.top/socketIo' : 'http://127.0.0.1:7002/socketIo';
+    Vue.use(
+      new VueSocketIO({
+        debug: true,
+        connection, //options object is Optional
+        options,
+        vuex: {
+          store,
+          actionPrefix: 'SOCKET_',
+          mutationPrefix: 'SOCKET_',
+        },
+      })
+    );
+
     if (permissions && username) {
       commit('setPermissions', permissions);
       commit('setusername', username);
@@ -92,6 +117,7 @@ const actions = {
     await dispatch('tagsBar/delAllRoutes', null, { root: true });
     await dispatch('resetAccessToken');
     await resetRouter();
+    Vue.prototype.$socket.disconnect();
   },
   resetAccessToken({ commit }) {
     commit('setPermissions', []);
