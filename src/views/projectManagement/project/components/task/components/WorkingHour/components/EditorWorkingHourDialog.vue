@@ -1,5 +1,12 @@
 <template>
-  <el-dialog :title="title" :visible.sync="dialogVisible" width="530px" append-to-body @close="close">
+  <el-dialog
+    :title="title"
+    :visible.sync="dialogVisible"
+    width="530px"
+    custom-class="editor-working-hour-dialog"
+    append-to-body
+    @close="close"
+  >
     <el-form v-if="task" ref="form" :model="form" :rules="rules" label-width="80px" label-position="top">
       <el-form-item label="工时执行者">
         <ExecutorSelect
@@ -49,7 +56,7 @@
 
 <script>
   import ExecutorSelect from '@/components/ExecutorSelect';
-  import { doCreate } from '@/api/taskWorkingHourManagement';
+  import { doCreate, doEdit } from '@/api/taskWorkingHourManagement';
   import { mapState } from 'vuex';
 
   export default {
@@ -69,8 +76,8 @@
         title: '',
         form: {
           id: null,
-          work_time: 0,
-          task_id: this.task.id,
+          work_time: 1,
+          task_id: 0,
           executor_id: '',
           start_date: new Date(),
           description: '',
@@ -83,15 +90,12 @@
     computed: {
       ...mapState('user', ['userInfo']),
     },
-    created() {
-      console.log(12341234123);
-      console.log(this.userInfo);
-    },
     methods: {
       show(row) {
         if (!row) {
           this.title = '实际工时录入';
           this.form.executor_id = this.userInfo.id;
+          this.form.task_id = this.task.id;
         } else {
           this.title = '实际工时';
           this.form = Object.assign({}, row);
@@ -103,11 +107,18 @@
         this.form = this.$options.data().form;
         this.dialogVisible = false;
       },
-      executorSelect() {},
+      executorSelect(user) {
+        this.form.executor_id = user.id;
+      },
       submitForm(formName) {
         this.$refs[formName].validate(valid => {
           if (valid) {
-            this.doCreate();
+            if (this.form.id) {
+              this.doEdit();
+            } else {
+              this.doCreate();
+            }
+            this.close();
           } else {
             return false;
           }
@@ -117,8 +128,16 @@
         const { msg } = await doCreate(this.form);
         this.$baseMessage(msg, 'success');
       },
+      async doEdit() {
+        const { msg } = await doEdit(this.form);
+        this.$baseMessage(msg, 'success');
+      },
     },
   };
 </script>
 
-<style scoped></style>
+<style>
+  .editor-working-hour-dialog .el-input-number .el-input__inner {
+    text-align: left;
+  }
+</style>

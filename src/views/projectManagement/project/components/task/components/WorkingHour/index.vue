@@ -10,7 +10,7 @@
       <div class="btn-add-working-hour" @click="createWorkingHour"><i class="el-icon-plus"></i>添加实际工时</div>
       <div class="wrap-working-hour-list">
         <div v-for="item in workingHourList" :key="item.id" class="item">
-          <div class="wrap-working-hour-content">
+          <div class="wrap-working-hour-content" @click="editClick(item)">
             <BImage
               class="user-avatar"
               :src="item.executor.avatar || ''"
@@ -32,8 +32,8 @@
             </div>
           </div>
           <div class="ctrl">
-            <i class="el-icon-edit"></i>
-            <i class="el-icon-delete"></i>
+            <i class="el-icon-edit" @click="editClick(item)"></i>
+            <i class="el-icon-delete" @click="deleteClick(item)"></i>
           </div>
         </div>
       </div>
@@ -63,7 +63,7 @@
 
 <script>
   import { doEdit } from '@/api/taskManagement';
-  import { getList } from '@/api/taskWorkingHourManagement';
+  import { getList, doDelete } from '@/api/taskWorkingHourManagement';
   import EditorWorkingHourDialog from './components/EditorWorkingHourDialog';
   import BImage from '@/components/B-image';
   import dayjs from 'dayjs';
@@ -130,6 +130,15 @@
           return dayjs(work_time).format('M月D天');
         }
         return dayjs(work_time).format('YYYY年M月D天');
+      },
+      editClick(row) {
+        this.$refs.EditorWorkingHourDialog.show(row);
+      },
+      deleteClick(row) {
+        this.$baseConfirm('你确定要删除当前项吗', null, async () => {
+          await doDelete({ ids: [row.id] });
+          this.$baseMessage('删除成功', 'success');
+        });
       },
     },
   };
