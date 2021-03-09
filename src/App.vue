@@ -10,3 +10,7 @@
     mounted() {},
   };
 </script>
+
+<style>
+  @import 'assets/iconfonts/iconfont.css';
+</style>

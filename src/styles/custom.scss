@@ -1,0 +1,10 @@
+$colorLight: rgba(0, 0, 0, 0.45);
+.color-light {
+  color: $colorLight;
+}
+
+.ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

@@ -7,16 +7,23 @@ import cookie from 'js-cookie';
  * @returns {string|ActiveX.IXMLDOMNode|Promise<any>|any|IDBRequest<any>|MediaKeyStatus|FormDataEntryValue|Function|Promise<Credential | null>}
  */
 export function getAccessToken() {
-  return  getField('jwt')
+  return getField('jwt');
 }
 
 /**
- * @copyright chuzhixin 1204505056@qq.com
- * @description 获取accessToken
+ * @description 获取AccessCsrf
  * @returns {string|ActiveX.IXMLDOMNode|Promise<any>|any|IDBRequest<any>|MediaKeyStatus|FormDataEntryValue|Function|Promise<Credential | null>}
  */
 export function getAccessCsrf() {
-  return  getField('csrf')
+  return getField('csrf');
+}
+
+/**
+ * @description 获取RefreshToken
+ * @returns {string|ActiveX.IXMLDOMNode|Promise<any>|any|IDBRequest<any>|MediaKeyStatus|FormDataEntryValue|Function|Promise<Credential | null>}
+ */
+export function getRefreshToken() {
+  return getField('refreshToken');
 }
 
 function getField(field) {
@@ -24,7 +31,14 @@ function getField(field) {
     if ('localStorage' === storage) {
       return getLocalJwt();
     } else if ('sessionStorage' === storage) {
-      return sessionStorage.getItem(tokenTableName) && JSON.parse(sessionStorage.getItem(tokenTableName))[field] || '';
+      try {
+        return (
+          (sessionStorage.getItem(tokenTableName) && JSON.parse(sessionStorage.getItem(tokenTableName))[field]) || ''
+        );
+      } catch (e) {
+        sessionStorage.removeItem(tokenTableName);
+        throw e;
+      }
     } else if ('cookie' === storage) {
       return cookie.get(tokenTableName);
     } else {
@@ -33,8 +47,14 @@ function getField(field) {
   } else {
     return getLocalJwt();
   }
+
   function getLocalJwt() {
-    return localStorage.getItem(tokenTableName) && JSON.parse(localStorage.getItem(tokenTableName))[field] || ''
+    try {
+      return (localStorage.getItem(tokenTableName) && JSON.parse(localStorage.getItem(tokenTableName))[field]) || '';
+    } catch (e) {
+      localStorage.removeItem(tokenTableName);
+      throw e;
+    }
   }
 }
 
