@@ -81,15 +81,13 @@ const actions = {
 
     // 创建socket
     const options = {
-      path: process.env.NODE_ENV === 'production' ? '/socketIo' : '',
       transports: ['websocket'],
       query: {
         userId: data.id,
         accessToken: state.accessToken,
       },
     };
-    const connection =
-      process.env.NODE_ENV === 'production' ? 'https://beehive.imfdj.top' : 'http://127.0.0.1:7002/socketIo';
+    const connection = process.env.NODE_ENV === 'production' ? 'https://beehive.imfdj.top' : 'http://127.0.0.1:7002';
     Vue.use(
       new VueSocketIO({
         debug: true,
