@@ -81,6 +81,7 @@ const actions = {
 
     // 创建socket
     const options = {
+      transports: ['websocket'],
       query: {
         userId: data.id,
         accessToken: state.accessToken,
