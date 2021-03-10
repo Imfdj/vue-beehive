@@ -81,6 +81,7 @@ const actions = {
 
     // 创建socket
     const options = {
+      path: process.env.NODE_ENV === 'production' ? '/socketIo' : '',
       transports: ['websocket'],
       query: {
         userId: data.id,
