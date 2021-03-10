@@ -88,7 +88,7 @@ const actions = {
       },
     };
     const connection =
-      process.env.NODE_ENV === 'production' ? 'https://beehive.imfdj.top/socketIo' : 'http://127.0.0.1:7002/socketIo';
+      process.env.NODE_ENV === 'production' ? 'https://beehive.imfdj.top' : 'http://127.0.0.1:7002/socketIo';
     Vue.use(
       new VueSocketIO({
         debug: true,
