@@ -127,6 +127,10 @@
         }
       },
       selectHandler(user) {
+        console.log(333);
+        console.log(333);
+        console.log(333);
+        console.log(user);
         this.executor = user;
         this.$emit('select', user);
         this.setHide();

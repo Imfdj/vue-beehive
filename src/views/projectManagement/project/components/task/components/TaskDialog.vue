@@ -283,15 +283,38 @@
     },
     sockets: {
       message: function (data) {
-        console.log(data);
-        if (/.*:task$/.test(data.action)) {
-          switch (data.action) {
-            case 'update:task':
-              Object.assign(this.taskInfo, data.params);
-              break;
-            default:
-              break;
-          }
+        const { params, action } = data;
+        switch (action) {
+          case 'update:task':
+            Object.assign(this.taskInfo, params);
+            this.setTaskInfoOrigin();
+            break;
+          case 'create:task_task_tag':
+            const taskExisting = this.taskInfo.task_tags.find(item => item.id === params.id);
+            // 如果不存在，则添加
+            if (!taskExisting) {
+              this.taskInfo.task_tags.push(params);
+              this.setTaskInfoOrigin();
+            }
+            break;
+          case 'delete:task_task_tag':
+            this.taskInfo.task_tags = this.taskInfo.task_tags.filter(item => item.id !== params.task_tag_id);
+            this.setTaskInfoOrigin();
+            break;
+          case 'create:user_task':
+            const userExisting = this.taskInfo.participators.find(item => item.id === params.id);
+            // 如果不存在，则添加
+            if (!userExisting) {
+              this.taskInfo.participators.push(params);
+              this.setTaskInfoOrigin();
+            }
+            break;
+          case 'delete:user_task':
+            this.taskInfo.participators = this.taskInfo.participators.filter(item => item.id !== params.user_id);
+            this.setTaskInfoOrigin();
+            break;
+          default:
+            break;
         }
       },
     },

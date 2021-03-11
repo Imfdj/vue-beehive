@@ -95,8 +95,8 @@
       },
     },
     watch: {
-      taskInfo(newValue, oldValue) {
-        this.task_tag_ids_selected = (newValue.task_tags && newValue.task_tags.map(item => item.id)) || [];
+      'taskInfo.task_tags'(newValue, oldValue) {
+        this.task_tag_ids_selected = newValue.map(item => item.id) || [];
       },
       task_tags_selected(newValue, oldValue) {
         this.$emit('change', newValue);

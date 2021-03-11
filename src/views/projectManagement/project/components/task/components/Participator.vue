@@ -145,7 +145,11 @@
           task_id: this.taskId,
         });
         if (isAdd) {
-          this.$emit('change', [...this.users, user]);
+          const userExisting = this.users.find(item => item.id === user.id);
+          // 如果不存在，则添加
+          if (!userExisting) {
+            this.$emit('change', [...this.users, user]);
+          }
         } else {
           this.$emit(
             'change',
