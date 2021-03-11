@@ -144,10 +144,6 @@
             default:
               break;
           }
-          this.$socket.emit('ack', {
-            id: data.id,
-            result: 'OK',
-          });
         }
       },
     },

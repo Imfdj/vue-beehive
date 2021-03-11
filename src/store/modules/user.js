@@ -51,6 +51,13 @@ const mutations = {
   },
 };
 const actions = {
+  // socket 全局 Ack确认
+  SOCKET_message({ commit }, data) {
+    Vue.prototype.$socket.emit('ack', {
+      id: data.id,
+      result: 'OK',
+    });
+  },
   setPermissions({ commit }, permissions) {
     commit('setPermissions', permissions);
   },
@@ -87,10 +94,10 @@ const actions = {
         accessToken: state.accessToken,
       },
     };
-    const connection = process.env.NODE_ENV === 'production' ? 'https://beehive.imfdj.top' : 'http://127.0.0.1:7002';
+    const connection = process.env.NODE_ENV === 'production' ? 'https://beehive.imfdj.top' : '/';
     Vue.use(
       new VueSocketIO({
-        debug: true,
+        debug: process.env.NODE_ENV !== 'production',
         connection, //options object is Optional
         options,
         vuex: {

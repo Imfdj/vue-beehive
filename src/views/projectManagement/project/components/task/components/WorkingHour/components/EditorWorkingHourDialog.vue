@@ -78,6 +78,7 @@
           id: null,
           work_time: 1,
           task_id: 0,
+          project_id: 0,
           executor_id: '',
           start_date: new Date(),
           description: '',
@@ -89,6 +90,7 @@
     },
     computed: {
       ...mapState('user', ['userInfo']),
+      ...mapState('project', ['currentProjectId']),
     },
     methods: {
       show(row) {
@@ -96,6 +98,7 @@
           this.title = '实际工时录入';
           this.form.executor_id = this.userInfo.id;
           this.form.task_id = this.task.id;
+          this.form.project_id = this.currentProjectId;
         } else {
           this.title = '实际工时';
           this.form = Object.assign({}, row);

@@ -79,6 +79,14 @@ module.exports = {
           '^/remote_public': '',
         },
       },
+      '/socket.io': {
+        target: 'http://127.0.0.1:7001',
+        changeOrigin: true,
+        ws: true,
+        pathRewrite: {
+          // '^/remote_public': '',
+        },
+      },
     },
     after: mockServer(),
   },
