@@ -110,11 +110,11 @@
             case 'create:task':
               this.listData.forEach(itemList => {
                 if (itemList.id === params.task_list_id) {
-                  const taskExisting = itemList.tasks.find(task => task.id === params.id);
+                  const taskExisting = itemList.tasks?.find(task => task.id === params.id);
                   // 如果不存在，则添加
                   if (!taskExisting) {
                     this.getItem(params);
-                    itemList.tasks.push(params);
+                    itemList.tasks?.push(params);
                     itemList.tasks = this.$baseLodash.sortBy(itemList.tasks, task => task.sort);
                   }
                 }
@@ -122,7 +122,7 @@
               break;
             case 'update:task':
               this.listData.forEach(itemList => {
-                itemList.tasks.forEach(task => {
+                itemList.tasks?.forEach(task => {
                   if (task.id === params.id) {
                     Object.assign(task, params);
                     itemList.tasks = this.$baseLodash.sortBy(itemList.tasks, function (o) {
@@ -137,7 +137,7 @@
             case 'delete:task':
               this.listData.forEach(itemList => {
                 if (itemList.id === params.task_list_id) {
-                  itemList.tasks = itemList.tasks.filter(task => task.id !== params.id);
+                  itemList.tasks = itemList.tasks?.filter(task => task.id !== params.id);
                 }
               });
               break;

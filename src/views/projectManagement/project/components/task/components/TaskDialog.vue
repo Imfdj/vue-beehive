@@ -290,27 +290,27 @@
             this.setTaskInfoOrigin();
             break;
           case 'create:task_task_tag':
-            const taskExisting = this.taskInfo.task_tags.find(item => item.id === params.id);
+            const taskExisting = this.taskInfo.task_tags?.find(item => item.id === params.id);
             // 如果不存在，则添加
             if (!taskExisting) {
-              this.taskInfo.task_tags.push(params);
+              this.taskInfo.task_tags?.push(params);
               this.setTaskInfoOrigin();
             }
             break;
           case 'delete:task_task_tag':
-            this.taskInfo.task_tags = this.taskInfo.task_tags.filter(item => item.id !== params.task_tag_id);
+            this.taskInfo.task_tags = this.taskInfo.task_tags?.filter(item => item.id !== params.task_tag_id);
             this.setTaskInfoOrigin();
             break;
           case 'create:user_task':
-            const userExisting = this.taskInfo.participators.find(item => item.id === params.id);
+            const userExisting = this.taskInfo.participators?.find(item => item.id === params.id);
             // 如果不存在，则添加
             if (!userExisting) {
-              this.taskInfo.participators.push(params);
+              this.taskInfo.participators?.push(params);
               this.setTaskInfoOrigin();
             }
             break;
           case 'delete:user_task':
-            this.taskInfo.participators = this.taskInfo.participators.filter(item => item.id !== params.user_id);
+            this.taskInfo.participators = this.taskInfo.participators?.filter(item => item.id !== params.user_id);
             this.setTaskInfoOrigin();
             break;
           default:
