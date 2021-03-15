@@ -103,7 +103,7 @@
       ...mapState('project', ['taskStates', 'taskPrioritys', 'taskTypes', 'participators']),
     },
     sockets: {
-      message: function (data) {
+      sync: function (data) {
         const { params, action } = data;
         if (/.*:task$/.test(action)) {
           switch (action) {

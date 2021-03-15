@@ -177,6 +177,7 @@
             </div>
           </div>
           <WorkingHour :task="taskInfo"></WorkingHour>
+          <TaskFile :task="taskInfo"></TaskFile>
         </div>
       </el-col>
       <el-col :span="10">
@@ -204,6 +205,7 @@
   import ExecutorSelect from '@/components/ExecutorSelect';
   import RichText from './RichText';
   import TaskTag from './TaskTag';
+  import TaskFile from './TaskFile';
 
   export default {
     name: 'TaskDialog',
@@ -214,6 +216,7 @@
       Participator,
       TaskLog,
       WorkingHour,
+      TaskFile,
     },
     props: {
       projectId: {
@@ -282,7 +285,7 @@
       },
     },
     sockets: {
-      message: function (data) {
+      sync: function (data) {
         const { params, action } = data;
         switch (action) {
           case 'update:task':

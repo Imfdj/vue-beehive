@@ -108,4 +108,6 @@ module.exports = {
   build7z: false,
   //代码生成机生成在view下的文件夹名称
   templateFolder: 'project',
+  //服务器静态资源路径前缀
+  remote_public_prefix: 'remote_public',
 };

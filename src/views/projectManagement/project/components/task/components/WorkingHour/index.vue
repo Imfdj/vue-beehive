@@ -147,6 +147,7 @@
 <style lang="scss" scoped>
   .working-hour {
     display: block;
+    margin-bottom: 20px;
     .label {
       display: flex;
       align-items: center;

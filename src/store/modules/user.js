@@ -52,12 +52,19 @@ const mutations = {
 };
 const actions = {
   // socket 全局 Ack确认
-  SOCKET_message({ commit }, data) {
+  SOCKET_sync({ commit }, data) {
     Vue.prototype.$socket.emit('ack', {
       id: data.id,
       result: 'OK',
     });
   },
+  // // socket 全局 Ack确认
+  // SOCKET_message({ commit }, data) {
+  //   Vue.prototype.$socket.emit('ack', {
+  //     id: data.id,
+  //     result: 'OK',
+  //   });
+  // },
   setPermissions({ commit }, permissions) {
     commit('setPermissions', permissions);
   },
