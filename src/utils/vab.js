@@ -131,7 +131,7 @@ const install = (Vue, opts = {}) => {
     Notification({
       title: title,
       message: message,
-      position: position || 'top-right',
+      position: position || 'bottom-left',
       type: type || 'success',
       duration: messageDuration,
     });

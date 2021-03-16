@@ -3,7 +3,7 @@
     <el-tabs v-model="activeName">
       <el-tab-pane v-for="(item, index) in titles" :key="index" :label="item" :name="(index + 1).toString()">
         <div v-loading="loading" class="list color-light">
-          <div v-for="project in listData" :key="project.id" class="item-list">
+          <div v-for="project in listDataFilter" :key="project.id" class="item-list">
             <BImage :src="project.cover"></BImage>
             <div class="item-info">
               <div class="name">
@@ -14,11 +14,11 @@
             </div>
             <div class="item-manager">
               <div>创建日期</div>
-              <div>2020-08-19</div>
+              <div>{{ dateFormat(project.created_at, 'YYYY-MM-DD') }}</div>
             </div>
             <div class="item-create-date">
               <div>创建人</div>
-              <div>2020-08-19</div>
+              <div>{{ project.creator.username }}</div>
             </div>
             <div class="item-progress">
               <div>进度</div>
@@ -89,6 +89,7 @@
   import ProjectEdit from './components/ProjectEdit';
   import AddMemberToProjectDialog from './components/AddMemberToProjectDialog';
   import { mapState } from 'vuex';
+  import mixin from '@/mixins';
 
   export default {
     name: 'ProjectList',
@@ -99,18 +100,25 @@
       ProjectEdit,
       AddMemberToProjectDialog,
     },
+    mixins: [mixin],
     data() {
       return {
         activeName: '1',
         titles: [],
         listData: [],
         is_recycle: 0,
-        is_archived: 0,
+        is_archived: null,
         collection: 0,
       };
     },
     computed: {
       ...mapState('user', ['userInfo']),
+      listDataFilter() {
+        const data = this.$baseLodash.sortBy(this.listData, 'collector');
+        return this.$baseLodash.sortBy(data.reverse(), o => {
+          return o.is_private;
+        });
+      },
     },
     watch: {
       activeName(newValue, oldValue) {

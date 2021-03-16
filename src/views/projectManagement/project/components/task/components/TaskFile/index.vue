@@ -9,7 +9,7 @@
       <div class="title-list">关联文件列表</div>
       <div class="file-list">
         <div v-for="item in fileList" :key="item.id" class="item">
-          <BImage class="user-avatar" :src="item.avatar || ''" :width="24" :height="24" :borderRadius="24"></BImage>
+          <BImage class="user-avatar" :src="item.path || ''" :width="24" :height="24" :borderRadius="24"></BImage>
           <div class="title-file">
             <span class="name">
               <a :href="`/${remote_public_prefix}${item.path}`" target="_blank">{{ item.title }}</a>
@@ -116,6 +116,7 @@
           creator_id: this.userInfo.id,
           ...fileData,
         });
+        this.$baseNotify('', '上传成功');
       },
       async doDelete(ids) {
         await doDelete({ ids });
@@ -139,6 +140,7 @@
             console.log(window.location);
             console.log(`${window.location.origin}/${remote_public_prefix}${item.path}`);
             this.initCopy(`${window.location.origin}/${remote_public_prefix}${item.path}`);
+            this.$baseNotify('粘贴到其他对象评论框里即可进行快速关联', '复制链接成功');
             break;
           case 2:
             break;
@@ -146,6 +148,7 @@
           case 3:
             this.$baseConfirm('你确定要删除吗', null, async () => {
               this.doDelete([item.id]);
+              this.$baseNotify('', '删除成功');
             });
             break;
           default:
@@ -249,6 +252,9 @@
           .el-icon-arrow-down {
             padding: 4px;
             cursor: pointer;
+          }
+          .el-icon-arrow-down:hover {
+            color: #1b9aee;
           }
         }
         .item:hover {
