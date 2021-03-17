@@ -43,7 +43,7 @@ module.exports = {
   //缓存路由的最大数量
   keepAliveMaxNum: 99,
   // 路由模式，可选值为 history 或 hash
-  routerMode: 'hash',
+  routerMode: 'history',
   //不经过token校验的路由
   routesWhiteList: ['/login', '/register', '/retrieve_password', '/404', '/401'],
   //加载时显示文字
@@ -110,4 +110,11 @@ module.exports = {
   templateFolder: 'project',
   //服务器静态资源路径前缀
   remote_public_prefix: 'remote_public',
+  //github授权登录authorize请求地址
+  github_auth_authorize_url: 'https://github.com/login/oauth/authorize',
+  //github授权登录client_id
+  github_auth_client_id: process.env.NODE_ENV === 'production' ? 'd347423472204bea6caf' : '7191c2792ca23d773c32',
+  //github授权登录重定向地址
+  github_auth_redirect_uri:
+    process.env.NODE_ENV === 'production' ? 'https://beehive.imfdj.top/login' : 'http://localhost/login',
 };

@@ -5,7 +5,7 @@
 
 import Vue from 'vue';
 import VueSocketIO from 'vue-socket.io';
-import { getInfo, login, logout, doRefreshToken } from '@/api/user';
+import { getInfo, login, logout, doRefreshToken, githubLogin } from '@/api/user';
 import { getAccessToken, getAccessCsrf, getRefreshToken, removeAccessToken, setAccessToken } from '@/utils/accessToken';
 import { resetRouter } from '@/router';
 import { title, tokenName } from '@/config/settings';
@@ -69,7 +69,9 @@ const actions = {
     commit('setPermissions', permissions);
   },
   async login({ commit }, userInfo) {
-    const { code, data, msg } = await login(userInfo);
+    // 如果存在username，password则为账号密码登录，否则为github授权登录
+    const { code, data, msg } =
+      userInfo.username && userInfo.password ? await login(userInfo) : await githubLogin(userInfo);
     if (code !== 0) {
       Vue.prototype.$baseMessage(msg, 'error');
       return;

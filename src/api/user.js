@@ -62,3 +62,11 @@ export function doRefreshToken(data) {
     data,
   });
 }
+
+export function githubLogin(data) {
+  return request({
+    url: '/v1/users/github/login',
+    method: 'post',
+    data,
+  });
+}

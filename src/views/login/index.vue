@@ -43,7 +43,12 @@
               <vab-icon :icon="['fas', 'eye']"></vab-icon>
             </span>
           </el-form-item>
-          <el-button :loading="loading" class="login-btn" type="primary" @click="handleLogin">登录</el-button>
+          <div class="wrap-login-btn">
+            <el-button :loading="loading" class="login-btn" type="primary" @click="handleLogin">登录</el-button>
+            <el-button :loading="loading" class="login-btn" type="primary" @click="handleLoginGithub">
+              <span class="github-btn-text"><i class="iconfont icon-github-fill"></i> github授权登录</span>
+            </el-button>
+          </div>
           <router-link to="/register">
             <div style="margin-top: 20px;">注册</div>
           </router-link>
@@ -58,6 +63,8 @@
 
 <script>
   import { isPassword } from '@/utils/validate';
+  import qs from 'qs';
+  import { github_auth_authorize_url, github_auth_client_id, github_auth_redirect_uri } from '@/config/settings';
 
   export default {
     name: 'Login',
@@ -119,6 +126,13 @@
         immediate: true,
       },
     },
+    created() {
+      // 如果存在code，则视为github登录状态
+      let { code } = qs.parse(window.location.search?.replace(/^\?/, ''));
+      if (code) {
+        this.login({ code });
+      }
+    },
     mounted() {
       if ('production' !== process.env.NODE_ENV) {
         this.form.username = 'Imfdj';
@@ -132,20 +146,26 @@
           this.$refs.password.focus();
         });
       },
+      async login(params) {
+        this.loading = true;
+        await this.$store.dispatch('user/login', params).catch(() => {
+          this.loading = false;
+        });
+        const routerPath = this.redirect === '/404' || this.redirect === '/401' ? '/' : this.redirect;
+        await this.$router.push(routerPath).catch(() => {});
+        this.loading = false;
+      },
       handleLogin() {
         this.$refs.form.validate(async valid => {
           if (valid) {
-            this.loading = true;
-            await this.$store.dispatch('user/login', this.form).catch(() => {
-              this.loading = false;
-            });
-            const routerPath = this.redirect === '/404' || this.redirect === '/401' ? '/' : this.redirect;
-            await this.$router.push(routerPath).catch(() => {});
-            this.loading = false;
+            this.login(this.form);
           } else {
             return false;
           }
         });
+      },
+      handleLoginGithub() {
+        window.location.href = `${github_auth_authorize_url}?client_id=${github_auth_client_id}&redirect_uri=${github_auth_redirect_uri}`;
       },
     },
   };
@@ -171,16 +191,28 @@
       text-overflow: ellipsis;
       white-space: nowrap;
     }
+    .wrap-login-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      .login-btn {
+        display: inline-block;
+        width: 220px;
+        height: 60px;
+        margin-top: 5px;
+        border: 0;
+        .github-btn-text {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          .iconfont {
+            margin-right: 4px;
+          }
+        }
 
-    .login-btn {
-      display: inherit;
-      width: 220px;
-      height: 60px;
-      margin-top: 5px;
-      border: 0;
-
-      &:hover {
-        opacity: 0.9;
+        &:hover {
+          opacity: 0.9;
+        }
       }
     }
 
