@@ -68,7 +68,7 @@
       </el-tab-pane>
     </el-tabs>
     <el-button class="create-project" type="primary" icon="el-icon-plus" @click="handleCreate">创建新项目</el-button>
-    <ProjectCreate ref="create" @fetchData="getList"></ProjectCreate>
+    <ProjectCreate ref="create"></ProjectCreate>
     <ProjectEdit ref="edit" @fetchData="getList"></ProjectEdit>
     <AddMemberToProjectDialog ref="AddMemberToProjectDialog"></AddMemberToProjectDialog>
     <!--    TODO 空数据提示-->
@@ -103,6 +103,7 @@
     mixins: [mixin],
     data() {
       return {
+        loading: false,
         activeName: '1',
         titles: [],
         listData: [],
@@ -145,6 +146,22 @@
             break;
         }
         this.getList();
+      },
+    },
+    sockets: {
+      sync: function (data) {
+        const { params, action } = data;
+        switch (action) {
+          case 'create:project':
+            const taskExisting = this.listData.find(item => item.id === params.id);
+            // 如果不存在，则添加
+            if (!taskExisting) {
+              this.listData?.push(params);
+            }
+            break;
+          default:
+            break;
+        }
       },
     },
     created() {
