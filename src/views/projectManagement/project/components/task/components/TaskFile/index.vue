@@ -9,7 +9,13 @@
       <div class="title-list">关联文件列表</div>
       <div class="file-list">
         <div v-for="item in fileList" :key="item.id" class="item">
-          <BImage class="user-avatar" :src="item.path || ''" :width="24" :height="24" :borderRadius="24"></BImage>
+          <BImage
+            class="user-avatar"
+            :src="`/${remote_public_prefix}${item.path}` || ''"
+            :width="24"
+            :height="24"
+            :borderRadius="24"
+          ></BImage>
           <div class="title-file">
             <span class="name">
               <a :href="`/${remote_public_prefix}${item.path}`" target="_blank">{{ item.title }}</a>
@@ -42,6 +48,7 @@
   import { upload } from '@/api/upload';
   import { mapState } from 'vuex';
   import { remote_public_prefix } from '@/config/settings';
+  import multiDownload from 'multi-download';
 
   export default {
     name: 'TaskFile',
@@ -133,18 +140,16 @@
         input.value = '';
       },
       fileOperationClick(item, itemOperation) {
-        console.log(item);
-        console.log(itemOperation);
         switch (itemOperation.id) {
           case 1:
-            console.log(window.location);
-            console.log(`${window.location.origin}/${remote_public_prefix}${item.path}`);
             this.initCopy(`${window.location.origin}/${remote_public_prefix}${item.path}`);
             this.$baseNotify('粘贴到其他对象评论框里即可进行快速关联', '复制链接成功');
             break;
           case 2:
+            multiDownload([`/${remote_public_prefix}${item.path}`], {
+              rename: () => `${item.title}${item.extension}`,
+            });
             break;
-
           case 3:
             this.$baseConfirm('你确定要删除吗', null, async () => {
               this.doDelete([item.id]);

@@ -43,7 +43,7 @@ module.exports = {
   //缓存路由的最大数量
   keepAliveMaxNum: 99,
   // 路由模式，可选值为 history 或 hash
-  routerMode: 'history',
+  routerMode: 'hash',
   //不经过token校验的路由
   routesWhiteList: ['/login', '/register', '/retrieve_password', '/404', '/401'],
   //加载时显示文字

@@ -135,7 +135,7 @@
     },
     mounted() {
       if ('production' !== process.env.NODE_ENV) {
-        this.form.username = 'Imfdj';
+        this.form.username = 'admin';
         this.form.password = '123123';
       }
     },
