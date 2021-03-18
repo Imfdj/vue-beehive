@@ -1,3 +1,4 @@
+import { getList as getProjectList } from '@/api/projectManagement';
 import { getList as getTaskTypeList } from '@/api/taskTypeManagement';
 import { getList as getTaskStateList } from '@/api/taskStateManagement';
 import { getList as getTaskPriorityList } from '@/api/taskPriorityManagement';
@@ -5,6 +6,7 @@ import { getList as getTaskTagsList } from '@/api/taskTagManagement';
 import { getList as getParticipators } from '@/api/userManagement';
 
 const state = {
+  projectList: [],
   taskTypes: [],
   taskStates: [],
   taskPrioritys: [],
@@ -13,6 +15,9 @@ const state = {
   currentProjectId: null,
 };
 const mutations = {
+  setProjectList(state, projectList) {
+    state.projectList = projectList;
+  },
   setTaskTypes(state, taskTypes) {
     state.taskTypes = taskTypes;
   },
@@ -33,6 +38,15 @@ const mutations = {
   },
 };
 const actions = {
+  async setProjectList({ commit }) {
+    const {
+      data: { rows },
+    } = await getProjectList({
+      limit: 1000,
+      is_recycle: 0,
+    });
+    commit('setProjectList', rows);
+  },
   async setTaskTypes({ commit }) {
     const {
       data: { rows },

@@ -116,5 +116,5 @@ module.exports = {
   github_auth_client_id: process.env.NODE_ENV === 'production' ? 'd347423472204bea6caf' : '7191c2792ca23d773c32',
   //github授权登录重定向地址
   github_auth_redirect_uri:
-    process.env.NODE_ENV === 'production' ? 'https://beehive.imfdj.top/login' : 'http://localhost/login',
+    process.env.NODE_ENV === 'production' ? 'https://beehive.imfdj.top/#/login' : 'http://localhost/#/login',
 };

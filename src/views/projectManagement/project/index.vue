@@ -60,7 +60,6 @@
 
 <script>
   import TaskList from './components/task/TaskList';
-  import { getList } from '@/api/projectManagement';
   import store from '@/store';
   import { mapState } from 'vuex';
   import BImage from '@/components/B-image';
@@ -77,44 +76,34 @@
       return {
         tabs: ['任务', '文件', '概览', '版本', '日程'],
         indexTab: 0,
-        loading: false,
-        listProjectData: [],
         userList: [],
         keywordProjectName: '',
       };
     },
     computed: {
-      ...mapState('project', ['currentProjectId']),
+      ...mapState('project', ['currentProjectId', 'projectList']),
       currentProject() {
-        return this.listProjectData.find(item => item.id === this.currentProjectId) || {};
+        return this.projectList.find(item => item.id === this.currentProjectId) || {};
       },
       listProjectDataFilter() {
-        return this.listProjectData.filter(item => item.name.includes(this.keywordProjectName));
+        return this.projectList.filter(item => item.name.includes(this.keywordProjectName));
       },
       projectUser() {
         return this.userList.filter(item => item.projectIds.includes(this.currentProjectId));
       },
     },
     async created() {
+      store.dispatch('project/setProjectList');
       store.dispatch('project/setTaskTypes');
       store.dispatch('project/setTaskStates');
       store.dispatch('project/setTaskPrioritys');
       await store.commit('project/setCurrentProjectId', parseInt(this.$route.params.id));
       store.dispatch('project/setTaskTags');
       store.dispatch('project/setParticipators');
-      this.getList();
     },
     methods: {
       tabClick(index) {
         this.indexTab = index;
-      },
-      async getList() {
-        this.loading = true;
-        const {
-          data: { rows, count },
-        } = await getList({ state: 1, limit: 1000, offset: 0 });
-        this.loading = false;
-        this.listProjectData = rows;
       },
       dropdownCommand(projectId) {
         this.$router.push(this.$route.path.replace(/\/\d+$/, `/${projectId}`));

@@ -5,10 +5,10 @@
       <i class="el-icon-plus"></i>上传文件
       <input v-show="false" ref="inputFile" type="file" @change="inputChange" />
     </div>
-    <div v-if="fileList.length" class="wrap-file-list">
+    <div v-if="fileListFilter.length" class="wrap-file-list">
       <div class="title-list">关联文件列表</div>
       <div class="file-list">
-        <div v-for="item in fileList" :key="item.id" class="item">
+        <div v-for="item in fileListFilter" :key="item.id" class="item">
           <BImage
             class="user-avatar"
             :src="`/${remote_public_prefix}${item.path}` || ''"
@@ -16,7 +16,7 @@
             :height="24"
             :borderRadius="24"
           ></BImage>
-          <div class="title-file">
+          <div class="title-file ellipsis">
             <span class="name">
               <a :href="`/${remote_public_prefix}${item.path}`" target="_blank">{{ item.title }}</a>
             </span>
@@ -74,6 +74,15 @@
     },
     computed: {
       ...mapState('user', ['userInfo']),
+      ...mapState('project', ['projectList']),
+      fileListFilter() {
+        return this.fileList.map(file => {
+          this.projectList.forEach(project => {
+            if (file.project_id === project.id) file.project = project;
+          });
+          return file;
+        });
+      },
     },
     watch: {
       'task.id'(newValue, oldValue) {
@@ -239,6 +248,9 @@
           padding: 5px;
           border-radius: 6px;
           margin-bottom: 5px;
+          .user-avatar {
+            margin-right: 10px;
+          }
           .title-file {
             flex: 1;
             .name {
@@ -253,6 +265,10 @@
           }
           .project-name {
             width: 160px;
+            text-align: right;
+            padding-right: 10px;
+            border-right: 1px solid $colorE5;
+            margin-right: 5px;
           }
           .el-icon-arrow-down {
             padding: 4px;
