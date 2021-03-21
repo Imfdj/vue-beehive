@@ -99,7 +99,7 @@
       store.dispatch('project/setTaskPrioritys');
       await store.commit('project/setCurrentProjectId', parseInt(this.$route.params.id));
       store.dispatch('project/setTaskTags');
-      store.dispatch('project/setParticipators');
+      store.dispatch('project/setProjectMembers');
     },
     methods: {
       tabClick(index) {

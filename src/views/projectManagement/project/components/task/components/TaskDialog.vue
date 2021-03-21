@@ -83,6 +83,7 @@
               <ExecutorSelect
                 ref="ExecutorSelect"
                 :executorId="taskInfo.executor_id"
+                :showNoOne="true"
                 @select="executorSelect"
               ></ExecutorSelect>
             </div>

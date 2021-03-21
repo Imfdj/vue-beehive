@@ -3,7 +3,7 @@ import { getList as getTaskTypeList } from '@/api/taskTypeManagement';
 import { getList as getTaskStateList } from '@/api/taskStateManagement';
 import { getList as getTaskPriorityList } from '@/api/taskPriorityManagement';
 import { getList as getTaskTagsList } from '@/api/taskTagManagement';
-import { getList as getParticipators } from '@/api/userManagement';
+import { getList as getProjectMembers } from '@/api/userManagement';
 
 const state = {
   projectList: [],
@@ -11,8 +11,8 @@ const state = {
   taskStates: [],
   taskPrioritys: [],
   taskTags: [],
-  participators: [],
-  currentProjectId: null,
+  projectMembers: [], // 项目成员
+  currentProjectId: null, // 当前项目ID
 };
 const mutations = {
   setProjectList(state, projectList) {
@@ -33,8 +33,8 @@ const mutations = {
   setCurrentProjectId(state, currentProjectId) {
     state.currentProjectId = currentProjectId;
   },
-  setParticipators(state, participators) {
-    state.participators = participators;
+  setProjectMembers(state, projectMembers) {
+    state.projectMembers = projectMembers;
   },
 };
 const actions = {
@@ -80,11 +80,11 @@ const actions = {
     } = await getTaskTagsList({ project_id: state.currentProjectId });
     commit('setTaskTags', rows);
   },
-  async setParticipators({ commit, state }) {
+  async setProjectMembers({ commit, state }) {
     const {
       data: { rows },
-    } = await getParticipators({ project_id: state.currentProjectId });
-    commit('setParticipators', rows);
+    } = await getProjectMembers({ project_id: state.currentProjectId });
+    commit('setProjectMembers', rows);
   },
 };
 

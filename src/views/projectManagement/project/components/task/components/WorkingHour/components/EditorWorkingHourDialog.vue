@@ -79,7 +79,7 @@
           work_time: 1,
           task_id: 0,
           project_id: 0,
-          executor_id: '',
+          executor_id: 0,
           start_date: new Date(),
           description: '',
         },
@@ -114,12 +114,12 @@
         this.form.executor_id = user.id;
       },
       submitForm(formName) {
-        this.$refs[formName].validate(valid => {
+        this.$refs[formName].validate(async valid => {
           if (valid) {
             if (this.form.id) {
-              this.doEdit();
+              await this.doEdit();
             } else {
-              this.doCreate();
+              await this.doCreate();
             }
             this.close();
           } else {

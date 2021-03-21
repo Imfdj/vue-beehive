@@ -19,9 +19,14 @@
       <el-input v-model="name" type="textarea" :rows="3" placeholder="输入标题"></el-input>
     </div>
     <div class="wrap-item executor">
-      <ExecutorSelect ref="ExecutorSelect" @select="executorSelect"></ExecutorSelect>
+      <ExecutorSelect
+        ref="ExecutorSelect"
+        :executorId="executor.id"
+        :showNoOne="true"
+        @select="executorSelect"
+      ></ExecutorSelect>
     </div>
-    <div v-if="false" class="wrap-item btn-more"> <i class="el-icon-more"></i> 更多 </div>
+    <div v-if="false" class="wrap-item btn-more"><i class="el-icon-more"></i> 更多</div>
     <div class="wrap-item btn-ctrl">
       <el-button style="width: 49%;" @click="cancelClick">取消</el-button>
       <el-button type="primary" style="width: 49%;" @click="commitClick">创建</el-button>
@@ -49,7 +54,9 @@
       return {
         name: '',
         taskTypeSelect: {},
-        executor: {},
+        executor: {
+          id: 0,
+        },
       };
     },
     computed: {
@@ -81,6 +88,7 @@
       executorSelect(user) {
         this.executor = user;
         this.$refs.ExecutorSelect.setHide();
+        console.log(123412);
       },
     },
   };

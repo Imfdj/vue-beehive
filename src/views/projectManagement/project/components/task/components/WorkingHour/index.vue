@@ -13,14 +13,14 @@
           <div class="wrap-working-hour-content" @click="editClick(item)">
             <BImage
               class="user-avatar"
-              :src="item.executor.avatar || ''"
+              :src="(item.executor && item.executor.avatar) || ''"
               :width="24"
               :height="24"
               :borderRadius="24"
             ></BImage>
             <div>
               <div class="wrap-info">
-                <span class="name">{{ item.executor.username }}</span>
+                <span class="name">{{ item.executor && item.executor.username }}</span>
                 <span class="start-date">
                   {{ startDateFormat(item.start_date) }}
                 </span>
@@ -67,6 +67,7 @@
   import EditorWorkingHourDialog from './components/EditorWorkingHourDialog';
   import BImage from '@/components/B-image';
   import dayjs from 'dayjs';
+  import { mapState } from 'vuex';
 
   export default {
     name: 'WorkingHour',
@@ -90,9 +91,44 @@
         },
       };
     },
+    computed: {
+      ...mapState('project', ['projectMembers']),
+    },
     watch: {
       'task.id'(newValue, oldValue) {
         this.getList();
+      },
+    },
+    sockets: {
+      sync: function (data) {
+        const { params, action } = data;
+        switch (action) {
+          case 'create:task_working_hour':
+            const userExisting = this.workingHourList?.find(item => item.id === params.id);
+            // 如果不存在，则添加
+            if (!userExisting) {
+              this.projectMembers.forEach(item => {
+                if (params.executor_id === item.id) params.executor = item;
+              });
+              this.workingHourList?.push(params);
+            }
+            break;
+          case 'update:task_working_hour':
+            this.workingHourList.forEach(item => {
+              if (item.id === params.id) {
+                this.projectMembers.forEach(item => {
+                  if (params.executor_id === item.id) params.executor = item;
+                });
+                Object.assign(item, params);
+              }
+            });
+            break;
+          case 'delete:task_working_hour':
+            this.workingHourList = this.workingHourList?.filter(item => item.id !== params.id);
+            break;
+          default:
+            break;
+        }
       },
     },
     methods: {
@@ -104,9 +140,10 @@
         this.$refs.EditorWorkingHourDialog.show();
       },
       submitForm(formName) {
-        this.$refs[formName].validate(valid => {
+        this.$refs[formName].validate(async valid => {
           if (valid) {
-            this.commitPlanWorkHours();
+            await this.commitPlanWorkHours();
+            this.dialogVisible = false;
           } else {
             return false;
           }
@@ -114,7 +151,6 @@
       },
       async commitPlanWorkHours() {
         const { msg } = await doEdit(this.form);
-        this.$baseMessage(msg, 'success');
       },
       async getList() {
         const {
@@ -127,9 +163,9 @@
       },
       startDateFormat(work_time) {
         if (new Date(work_time).getFullYear() === new Date().getFullYear()) {
-          return dayjs(work_time).format('M月D天');
+          return dayjs(work_time).format('M月D日');
         }
-        return dayjs(work_time).format('YYYY年M月D天');
+        return dayjs(work_time).format('YYYY年M月D日');
       },
       editClick(row) {
         this.$refs.EditorWorkingHourDialog.show(row);
@@ -137,7 +173,6 @@
       deleteClick(row) {
         this.$baseConfirm('你确定要删除当前项吗', null, async () => {
           await doDelete({ ids: [row.id] });
-          this.$baseMessage('删除成功', 'success');
         });
       },
     },
@@ -148,67 +183,82 @@
   .working-hour {
     display: block;
     margin-bottom: 20px;
+
     .label {
       display: flex;
       align-items: center;
       width: 100%;
       min-height: 36px;
       padding: 5px 0;
+
       .el-icon-edit-outline {
         margin-left: 10px;
         color: #3da8f5;
         cursor: pointer;
       }
     }
+
     .content {
       padding: 5px 10px;
       border: 1px solid #e5e5e5;
       border-radius: 6px;
       margin-top: 15px;
+
       .btn-add-working-hour {
         padding: 10px 0 10px 10px;
         cursor: pointer;
         color: #409eff;
+
         .el-icon-plus {
           margin-right: 5px;
         }
       }
+
       .wrap-working-hour-list {
         color: #262626;
+
         .item {
           display: flex;
           align-items: center;
           justify-content: space-between;
           margin-bottom: 5px;
+
           .wrap-working-hour-content {
             display: flex;
             flex: 1;
             padding: 8px;
             border-radius: 4px;
             cursor: pointer;
+
             .wrap-info {
               display: flex;
               align-items: center;
+
               .name {
                 margin-left: 8px;
               }
+
               .start-date {
                 margin-left: 8px;
               }
             }
+
             .description {
               padding: 8px 0 8px 8px;
             }
           }
+
           .wrap-working-hour-content:hover {
             background-color: #f7f7f7;
           }
+
           .ctrl {
             display: flex;
             align-items: center;
             justify-content: space-around;
             width: 60px;
             padding: 0px 5px;
+
             & i {
               cursor: pointer;
             }

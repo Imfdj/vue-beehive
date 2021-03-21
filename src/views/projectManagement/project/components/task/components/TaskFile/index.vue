@@ -94,15 +94,15 @@
         const { params, action } = data;
         switch (action) {
           case 'create:project_file':
-            const taskExisting = this.fileList.find(task => task.id === params.id);
+            const taskExisting = this.fileList.find(item => item.id === params.id);
             // 如果不存在，则添加
             if (!taskExisting) {
               this.fileList?.push(params);
-              this.fileList = this.$baseLodash.sortBy(this.fileList, task => task.id);
+              this.fileList = this.$baseLodash.sortBy(this.fileList, item => item.id);
             }
             break;
           case 'delete:project_file':
-            this.fileList = this.fileList.filter(task => task.id !== params.id);
+            this.fileList = this.fileList.filter(item => item.id !== params.id);
             break;
           default:
             break;
@@ -224,7 +224,7 @@
       border: 1px solid $colorE5;
       border-radius: 6px;
       cursor: pointer;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
       .el-icon-plus {
         margin-right: 10px;
       }

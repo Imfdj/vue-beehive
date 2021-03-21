@@ -68,12 +68,21 @@
         type: Boolean,
         default: true,
       },
+      // 是否显示待认领选项
+      showNoOne: {
+        type: Boolean,
+        default: false,
+      },
     },
     data() {
       return {
         visible: false,
         name: '',
         dataList: {},
+        noOne: {
+          id: 0,
+          username: '待认领',
+        },
         executor: {
           id: 0,
           username: '待认领',
@@ -84,19 +93,16 @@
       ...mapState('project', ['currentProjectId']),
       dataListFilter() {
         const data = this.$baseLodash.cloneDeep(this.dataList.rows) || [];
-        data.unshift({
-          id: 0,
-          username: '待认领',
-        });
+        // 如果需要增加待认领项
+        if (this.showNoOne) data.unshift(Object.assign({}, this.noOne));
         return data.filter(user => user.id !== this.executor.id);
       },
     },
     watch: {
       executorId(newValue) {
-        this.executor = (this.dataList.rows && this.dataList.rows.find(user => user.id === newValue)) || {
-          id: 0,
-          username: '待认领',
-        };
+        this.executor =
+          (this.dataList.rows && this.dataList.rows.find(user => user.id === newValue)) ||
+          Object.assign({}, this.noOne);
       },
     },
     created() {
@@ -119,18 +125,12 @@
           project_id: this.currentProjectId,
         });
         this.dataList = data;
+        // 如果当前传入的用户和选中的用户不一样，则对选中用户重新赋值
         if (this.executorId !== this.executor.id) {
-          this.executor = this.dataList.rows.find(user => user.id === this.executorId) || {
-            id: 0,
-            username: '待认领',
-          };
+          this.executor = this.dataList.rows.find(user => user.id === this.executorId) || Object.assign({}, this.noOne);
         }
       },
       selectHandler(user) {
-        console.log(333);
-        console.log(333);
-        console.log(333);
-        console.log(user);
         this.executor = user;
         this.$emit('select', user);
         this.setHide();
