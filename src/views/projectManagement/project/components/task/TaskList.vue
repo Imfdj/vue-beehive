@@ -162,16 +162,16 @@
       },
       // 根据id获取相关项
       getItem(task) {
-        task.type = this.taskTypes.find(item => {
+        task.type = this.taskTypes?.find(item => {
           return item.id === task.task_type_id;
         });
-        task.state = this.taskStates.find(item => {
+        task.state = this.taskStates?.find(item => {
           return item.id === task.task_state_id;
         });
-        task.priority = this.taskPrioritys.find(item => {
+        task.priority = this.taskPrioritys?.find(item => {
           return item.id === task.task_priority_id;
         });
-        task.executor = this.participators.find(item => {
+        task.executor = this.participators?.find(item => {
           return item.id === task.executor_id;
         });
       },

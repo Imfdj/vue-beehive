@@ -17,7 +17,7 @@
         </div>
         <div v-for="log in dataListFilter" :key="log.id" class="item">
           <div class="info">
-            <div>
+            <div class="info-header">
               <i v-if="log.is_comment === 0" :class="['icon', log.icon]"></i>
               <BImage
                 v-else
@@ -40,11 +40,7 @@
               </el-tooltip>
             </span>
           </div>
-          <div
-            v-if="log.content"
-            :class="['content', { 'content-comment': log.is_comment === 1 }]"
-            v-html="log.content"
-          ></div>
+          <LogComment :log="log"></LogComment>
         </div>
         <div v-if="dataListFilter.length === 0" class="no-data">
           <i class="iconfont icon-zanwu"></i>
@@ -64,7 +60,7 @@
       </div>
       <div class="ctrl">
         <i class="iconfont icon-emoji btn-emoji"></i>
-        <el-button type="text" :disabled="isOnCreate" size="medium">发布</el-button>
+        <el-button type="text" :disabled="isOnCreate" size="medium" @click="doCreate">发布</el-button>
       </div>
     </div>
   </div>
@@ -72,6 +68,7 @@
 
 <script>
   import BImage from '@/components/B-image';
+  import LogComment from './components/LogComment';
   import { getList, doCreate } from '@/api/taskLogManagement';
   import { dateHumanizeFormat } from '@/utils';
   import { mapState } from 'vuex';
@@ -80,6 +77,7 @@
     name: 'TaskLog',
     components: {
       BImage,
+      LogComment,
     },
     props: {
       taskId: {
@@ -94,6 +92,7 @@
     data() {
       return {
         dataList: [],
+        showCount: 5,
         showAll: false,
         isOnCreate: false,
         is_comment: '',
@@ -120,19 +119,46 @@
         return this.showAll
           ? this.dataList
           : this.dataList.filter((item, index) => {
-              return index > this.dataList.length - 5 - 1;
+              return index > this.dataList.length - this.showCount - 1;
             });
       },
       btnShowAllText() {
-        if (this.dataList.length <= 5) {
+        if (this.dataList.length <= this.showCount) {
           return false;
         }
-        return this.showAll ? '隐藏较早的动态' : `显示较早的 ${this.dataList.length - 5} 条动态`;
+        return this.showAll ? '隐藏较早的动态' : `显示较早的 ${this.dataList.length - this.showCount} 条动态`;
       },
       typeName() {
         return this.types.find(type => {
           return type.command === this.is_comment;
         }).label;
+      },
+    },
+    sockets: {
+      sync: function (data) {
+        const { params, action } = data;
+        switch (action) {
+          case 'create:task_log':
+            const taskExisting = this.dataList?.find(item => item.id === params.id);
+            // 如果不存在，则添加
+            if (!taskExisting) {
+              this.dataList?.push(params);
+              this.dataList = this.$baseLodash.sortBy(this.dataList, 'id');
+            }
+            break;
+          case 'update:task_log':
+            this.dataList.forEach(item => {
+              if (item.id === params.id) {
+                Object.assign(item, params);
+              }
+            });
+            break;
+          case 'delete:task_log':
+            this.dataList = this.dataList?.filter(item => item.id !== params.id);
+            break;
+          default:
+            break;
+        }
       },
     },
     created() {},
@@ -186,102 +212,122 @@
 <style lang="scss" scoped>
   .task-log {
     height: 100%;
+
     .wrap-log {
       height: calc(100vh - 390px);
       padding: 20px 0 20px 20px;
+
       .wrap-filter {
         padding-bottom: 10px;
+
         .el-dropdown-link {
           cursor: pointer;
         }
+
         .el-dropdown-link:hover {
           color: #1b9aee;
         }
       }
+
       .log-list {
         height: calc(100% - 30px);
         overflow-x: hidden;
         overflow-y: auto;
+
         .btn-more {
           display: flex;
           align-items: center;
           margin: 10px 0 15px 0;
           cursor: pointer;
+
           .el-icon-more {
             margin-right: 10px;
           }
         }
+
         .btn-more:hover {
           color: #1b9aee;
         }
+
         .no-data {
           display: flex;
           flex-direction: column;
           align-items: center;
           justify-content: center;
           height: 200px;
+
           .iconfont {
             font-size: 60px;
             color: #4eb0f3;
           }
+
           .text {
             line-height: 30px;
           }
         }
+
         .item {
           margin-bottom: 15px;
           font-size: 12px;
+
           .info {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            .icon {
-              width: 24px;
-              margin-right: 10px;
-              font-size: 16px;
-              text-align: center;
-            }
-            .user-avatar {
-              margin-right: 10px;
-            }
-            .username-and-remark {
-              flex: 1;
-              .username-comment {
-                color: #262626;
+            .info-header {
+              display: flex;
+              align-items: center;
+              .icon {
+                width: 24px;
+                margin-right: 10px;
+                font-size: 16px;
+                text-align: center;
+              }
+
+              .user-avatar {
+                margin-right: 10px;
+              }
+
+              .username-and-remark {
+                flex: 1;
+                display: inline-block;
+                line-height: 24px;
+
+                .username-comment {
+                  color: #262626;
+                }
               }
             }
+
             .create-date {
               width: 130px;
               padding-right: 20px;
               text-align: right;
             }
           }
-          .content {
-            padding: 2px 0 2px 10px;
-            margin: 3px 0 3px 26px;
-            border-left: 5px solid #bfbfbf;
-          }
-          .content-comment {
-            border-left: none;
-          }
         }
       }
     }
+
     .wrap-comment {
       /*height: 96px;*/
       padding: 15px 0;
       border-top: 1px solid #e5e5e5;
+
       .input {
         margin-bottom: 5px;
+
         ::v-deep .el-textarea__inner {
           border: none;
         }
       }
+
       .ctrl {
         display: flex;
         align-items: center;
         justify-content: space-between;
         padding-left: 15px;
+
         .btn-emoji {
           font-size: 20px;
         }

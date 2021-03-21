@@ -4,7 +4,7 @@
     :visible.sync="dialogTableVisible"
     :destroy-on-close="false"
     top="50px"
-    width="70%"
+    width="1300px"
     @close="close"
   >
     <template slot="title">
@@ -395,7 +395,6 @@
           });
           this.isEdited = true;
           this.setTaskInfoOrigin();
-          this.$refs.TaskLog.getList();
         }
       },
       showRichTextClick() {
@@ -492,7 +491,7 @@
         }
 
         .content {
-          flex: 1;
+          width: 580px;
         }
       }
 
