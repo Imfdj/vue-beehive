@@ -120,7 +120,7 @@
       },
       async upload(blob) {
         const formData = new FormData();
-        formData.append('file', blob, 'data.jpg');
+        formData.append('file', blob);
         const { data } = await upload(formData);
         await this.doCreate(data);
       },

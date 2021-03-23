@@ -1,75 +1,83 @@
 <template>
   <div class="task-list">
-    <div v-for="(itemList, indexList) in listData" :key="indexList" class="wrap-item">
-      <div class="task-list-info">
-        <div class="name">{{ itemList.name }}<span class="name-point"></span>{{ itemList.tasks.length }}</div>
-        <div class="more">
-          <i class="el-icon-more" @click="handleMore(itemList)"></i>
+    <draggable class="list-group" :list="listData" group="task_lists" @change="taskListDraggableChange">
+      <div v-for="(itemList, indexList) in listData" :key="indexList" class="wrap-item">
+        <div class="task-list-info">
+          <div class="name"
+            >{{ itemList.name }}<span class="name-point"></span>{{ itemList.tasks && itemList.tasks.length }}
+          </div>
+          <div class="more">
+            <i class="el-icon-more" @click="handleMore(itemList)"></i>
+          </div>
         </div>
-      </div>
-      <div class="wrap-draggable">
-        <draggable class="list-group" :list="itemList.tasks" group="people" @change="change">
-          <div
-            v-for="element in itemList.tasks"
-            :key="element.id"
-            class="list-group-item"
-            :class="[{ 'list-group-item-done': element.is_done === 1 }]"
-            @click="taskOpen(element)"
-          >
-            <div class="state">
-              <el-tooltip :content="element.state && element.state.name" :open-delay="600" placement="top">
-                <i
-                  :class="element.state && element.state.icon"
-                  :style="`color: ${element.state && element.state.color};font-size: 18px;`"
-                ></i>
-              </el-tooltip>
-            </div>
-            <div class="wrap-done">
-              <i
-                :class="`iconfont ${element.is_done === 1 ? 'icon-xuanzhong2' : 'icon-fangxing1'}`"
-                @click.stop="changeDoneState(element)"
-              ></i>
-            </div>
-            <div class="content" :class="[{ 'task-state-success': (element.state && element.state.is_done) === 1 }]">
-              <div class="name">{{ element.name }}</div>
-              <div class="info">
-                <el-tooltip :content="element.type && element.type.name" :open-delay="600" placement="top">
+        <div v-loading="itemList.loading" class="wrap-draggable">
+          <draggable class="list-group" :list="itemList.tasks" group="tasks" @change="taskDraggableChange">
+            <div
+              v-for="element in itemList.tasks"
+              :key="element.id"
+              class="list-group-item"
+              :class="[{ 'list-group-item-done': element.is_done === 1 }]"
+              @click="taskOpen(element)"
+            >
+              <div class="state">
+                <el-tooltip :content="element.state && element.state.name" :open-delay="600" placement="top">
                   <i
-                    :class="element.type && element.type.icon"
-                    :style="`color: ${element.type && element.type.color};font-size: 18px;`"
+                    :class="element.state && element.state.icon"
+                    :style="`color: ${element.state && element.state.color};font-size: 18px;`"
                   ></i>
                 </el-tooltip>
               </div>
+              <div class="wrap-done">
+                <i
+                  :class="`iconfont ${element.is_done === 1 ? 'icon-xuanzhong2' : 'icon-fangxing1'}`"
+                  @click.stop="changeDoneState(element)"
+                ></i>
+              </div>
+              <div class="content" :class="[{ 'task-state-success': (element.state && element.state.is_done) === 1 }]">
+                <div class="name">{{ element.name }}</div>
+                <div class="info">
+                  <el-tooltip :content="element.type && element.type.name" :open-delay="600" placement="top">
+                    <i
+                      :class="element.type && element.type.icon"
+                      :style="`color: ${element.type && element.type.color};font-size: 18px;`"
+                    ></i>
+                  </el-tooltip>
+                </div>
+              </div>
+              <div class="executor">
+                <BImage
+                  v-if="element.executor"
+                  class="user-avatar"
+                  :src="(element.executor && element.executor.avatar) || ''"
+                  :width="32"
+                  :height="32"
+                  :borderRadius="32"
+                ></BImage>
+              </div>
+              <div
+                v-if="(element.state && element.state.is_done) !== 1"
+                class="task-priority"
+                :style="`background-color: ${element.priority && element.priority.color};`"
+              ></div>
             </div>
-            <div class="executor">
-              <BImage
-                v-if="element.executor"
-                class="user-avatar"
-                :src="(element.executor && element.executor.avatar) || ''"
-                :width="32"
-                :height="32"
-                :borderRadius="32"
-              ></BImage>
-            </div>
-            <div
-              v-if="(element.state && element.state.is_done) !== 1"
-              class="task-priority"
-              :style="`background-color: ${element.priority && element.priority.color};`"
-            ></div>
+          </draggable>
+          <div
+            v-if="indexListCreate !== indexList"
+            class="btn-createTask"
+            @click="CreateTaskClick(itemList, indexList)"
+          >
+            <i class="el-icon-plus color-light"></i>
           </div>
-        </draggable>
-        <div v-if="indexListCreate !== indexList" class="btn-createTask" @click="CreateTaskClick(itemList, indexList)">
-          <i class="el-icon-plus color-light"></i>
-        </div>
-        <div v-else class="wrap-create-task">
-          <CreateTask
-            :itemListCreate="itemListCreate"
-            @cancelClick="cancelClick"
-            @createSuccess="createSuccess"
-          ></CreateTask>
+          <div v-else class="wrap-create-task">
+            <CreateTask
+              :itemListCreate="itemListCreate"
+              @cancelClick="cancelClick"
+              @createSuccess="createSuccess"
+            ></CreateTask>
+          </div>
         </div>
       </div>
-    </div>
+    </draggable>
     <TaskDialog ref="TaskDialog" :projectId="projectId" @close="taskDialogClose"></TaskDialog>
   </div>
 </template>
@@ -80,7 +88,7 @@
   import TaskDialog from './components/TaskDialog';
   import CreateTask from './components/CreateTask';
   import { getList } from '@/api/taskListManagement';
-  import { doEditSort, doEdit } from '@/api/taskManagement';
+  import { doEditSort, doEdit, getList as getTaskList } from '@/api/taskManagement';
   import { mapState } from 'vuex';
 
   export default {
@@ -100,7 +108,7 @@
       };
     },
     computed: {
-      ...mapState('project', ['taskStates', 'taskPrioritys', 'taskTypes', 'participators']),
+      ...mapState('project', ['taskStates', 'taskPrioritys', 'taskTypes', 'projectMembers']),
     },
     sockets: {
       sync: function (data) {
@@ -171,7 +179,7 @@
         task.priority = this.taskPrioritys?.find(item => {
           return item.id === task.task_priority_id;
         });
-        task.executor = this.participators?.find(item => {
+        task.executor = this.projectMembers?.find(item => {
           return item.id === task.executor_id;
         });
       },
@@ -179,14 +187,22 @@
         const {
           data: { rows, count },
         } = await getList({ project_id: this.projectId });
-        this.listData = rows;
-        this.listData.forEach(tasklistItem => {
-          tasklistItem.tasks.forEach(task => {
-            this.getItem(task);
+        this.listData = rows.map(item => {
+          item.tasks = [];
+          item.loading = true;
+          return item;
+        });
+        this.listData.forEach(taskListItem => {
+          getTaskList({ task_list_id: taskListItem.id, prop_order: 'sort', order: 'asc' }).then(res => {
+            taskListItem.loading = false;
+            taskListItem.tasks = res.data?.rows;
+            taskListItem.tasks?.forEach(task => {
+              this.getItem(task);
+            });
           });
         });
       },
-      async change(evt) {
+      async taskDraggableChange(evt) {
         if (evt.removed) return;
         const id = (evt.moved && evt.moved.element.id) || (evt.added && evt.added.element.id);
         const newIndex = evt.moved ? evt.moved.newIndex : evt.added && evt.added.newIndex;
@@ -210,6 +226,18 @@
           preId,
           nextId,
         });
+      },
+      async taskListDraggableChange(evt) {
+        console.log(evt);
+        const id = (evt.moved && evt.moved.element.id) || (evt.added && evt.added.element.id);
+        const oldIndex = evt.moved ? evt.moved.oldIndex : evt.added && evt.added.oldIndex;
+        const id2 = this.listData[oldIndex].id;
+        console.log(id);
+        console.log(id2);
+        // await doEditSort({
+        //   id,
+        //   pid2reId,
+        // });
       },
       CreateTaskClick(itemList, indexList) {
         this.itemListCreate = itemList;
@@ -254,8 +282,8 @@
       .task-list-info {
         display: flex;
         justify-content: space-between;
-        margin-bottom: 20px;
-        padding-right: 15px;
+        padding: 0 15px 20px 0;
+        cursor: move;
 
         .name {
           display: flex;

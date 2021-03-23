@@ -122,7 +122,7 @@ service.interceptors.response.use(
     }
   },
   async error => {
-    switch (error.response.status) {
+    switch (error.response?.status) {
       case invalidRequestCode:
         const data = error.response.data;
         switch (data.code) {
@@ -130,7 +130,7 @@ service.interceptors.response.use(
             errorMsg('操作失败,当前数据存在关联数据');
             break;
           default:
-            errorMsg(data.msg || `后端接口${error.request.status}异常`);
+            errorMsg(data.msg || `后端接口${error.request?.status}异常`);
             break;
         }
         break;
@@ -149,7 +149,7 @@ service.interceptors.response.use(
         });
         break;
       default:
-        errorMsg(error || `后端接口${error.request.status}异常`);
+        errorMsg(error || `后端接口${error.request?.status}异常`);
         break;
     }
 
