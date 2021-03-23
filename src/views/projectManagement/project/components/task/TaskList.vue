@@ -89,6 +89,7 @@
   import CreateTask from './components/CreateTask';
   import { getList } from '@/api/taskListManagement';
   import { doEditSort, doEdit, getList as getTaskList } from '@/api/taskManagement';
+  import { doEditSort as doTaskListEditSort } from '@/api/taskListManagement';
   import { mapState } from 'vuex';
 
   export default {
@@ -186,7 +187,7 @@
       async getList() {
         const {
           data: { rows, count },
-        } = await getList({ project_id: this.projectId });
+        } = await getList({ project_id: this.projectId, prop_order: 'sort', order: 'asc' });
         this.listData = rows.map(item => {
           item.tasks = [];
           item.loading = true;
@@ -228,16 +229,15 @@
         });
       },
       async taskListDraggableChange(evt) {
-        console.log(evt);
         const id = (evt.moved && evt.moved.element.id) || (evt.added && evt.added.element.id);
-        const oldIndex = evt.moved ? evt.moved.oldIndex : evt.added && evt.added.oldIndex;
-        const id2 = this.listData[oldIndex].id;
-        console.log(id);
-        console.log(id2);
-        // await doEditSort({
-        //   id,
-        //   pid2reId,
-        // });
+        const newIndex = evt.moved ? evt.moved.newIndex : evt.added && evt.added.newIndex;
+        const preId = this.listData && this.listData[newIndex - 1] && this.listData[newIndex - 1].id;
+        const nextId = this.listData && this.listData[newIndex + 1] && this.listData[newIndex + 1].id;
+        await doTaskListEditSort({
+          id,
+          preId,
+          nextId,
+        });
       },
       CreateTaskClick(itemList, indexList) {
         this.itemListCreate = itemList;

@@ -31,3 +31,11 @@ export function doDelete(data) {
     data,
   });
 }
+
+export function doEditSort(data) {
+  return request({
+    url: '/v1/task_lists/sort',
+    method: 'put',
+    data,
+  });
+}
