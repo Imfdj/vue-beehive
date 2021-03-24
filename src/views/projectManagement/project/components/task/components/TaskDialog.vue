@@ -8,20 +8,12 @@
     @close="close"
   >
     <template slot="title">
-      <el-dropdown trigger="click" placement="bottom-start" @command="commandTaskType">
+      <Dropdown :selector="taskTypeSelect" :selectList="taskTypes" @command="commandTaskType">
         <span class="el-dropdown-link-type">
           <i :class="taskTypeSelect.icon" :style="`color: ${taskTypeSelect.color};margin-right: 5px;`"></i
           >{{ taskTypeSelect.name }}
         </span>
-        <el-dropdown-menu slot="dropdown" style="width: 200px;">
-          <el-dropdown-item v-for="item in taskTypes" :key="item.id" :command="item">
-            <div style="display: flex; align-items: center; justify-content: space-between; padding: 5px 0px;">
-              <div><i :class="item.icon" :style="`color: ${item.color};font-size: 16px;`"></i>{{ item.name }}</div>
-              <i v-if="taskTypeSelect.id === item.id" class="el-icon-check" style="font-size: 16px;"></i>
-            </div>
-          </el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
+      </Dropdown>
     </template>
     <el-row v-loading="loading">
       <el-col :span="14">
@@ -32,49 +24,17 @@
           <div class="wrap-item wrap-state">
             <div class="label"><i class="iconfont icon-xuanzhong2"></i> 完成状态</div>
             <div class="content">
-              <el-dropdown trigger="click" placement="bottom-start" @command="commandTaskDoneState">
-                <span class="el-dropdown-link-state">
-                  <i
-                    :class="taskDoneStateSelect.icon"
-                    :style="`color: ${taskDoneStateSelect.color};margin-right: 5px;font-size: 16px;`"
-                  ></i
-                  >{{ taskDoneStateSelect.name }}
-                </span>
-                <el-dropdown-menu slot="dropdown" style="width: 200px;">
-                  <el-dropdown-item v-for="item in taskDoneStates" :key="item.id" :command="item">
-                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 5px 0px;">
-                      <div style="display: flex; align-items: center;">
-                        <i :class="item.icon" :style="`color: ${item.color};font-size: 16px;`"></i>{{ item.name }}
-                      </div>
-                      <i v-if="taskDoneStateSelect.id === item.id" class="el-icon-check" style="font-size: 16px;"></i>
-                    </div>
-                  </el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
+              <Dropdown
+                :selector="taskDoneStateSelect"
+                :selectList="taskDoneStates"
+                @command="commandTaskDoneState"
+              ></Dropdown>
             </div>
           </div>
           <div class="wrap-item wrap-state">
             <div class="label"><i class="el-icon-pie-chart"></i> 执行状态</div>
             <div class="content">
-              <el-dropdown trigger="click" placement="bottom-start" @command="commandTaskState">
-                <span class="el-dropdown-link-state">
-                  <i
-                    :class="taskStateSelect.icon"
-                    :style="`color: ${taskStateSelect.color};margin-right: 5px;font-size: 16px;`"
-                  ></i
-                  >{{ taskStateSelect.name }}
-                </span>
-                <el-dropdown-menu slot="dropdown" style="width: 200px;">
-                  <el-dropdown-item v-for="item in taskStates" :key="item.id" :command="item">
-                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 5px 0px;">
-                      <div style="display: flex; align-items: center;">
-                        <i :class="item.icon" :style="`color: ${item.color};font-size: 16px;`"></i>{{ item.name }}
-                      </div>
-                      <i v-if="taskStateSelect.id === item.id" class="el-icon-check" style="font-size: 16px;"></i>
-                    </div>
-                  </el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
+              <Dropdown :selector="taskStateSelect" :selectList="taskStates" @command="commandTaskState"></Dropdown>
             </div>
           </div>
           <div class="wrap-item">
@@ -207,6 +167,7 @@
   import RichText from './RichText';
   import TaskTag from './TaskTag';
   import TaskFile from './TaskFile';
+  import Dropdown from '@/components/Dropdown';
 
   export default {
     name: 'TaskDialog',
@@ -218,6 +179,7 @@
       TaskLog,
       WorkingHour,
       TaskFile,
+      Dropdown,
     },
     props: {
       projectId: {
@@ -496,17 +458,6 @@
       }
 
       .wrap-state {
-        .el-dropdown-link-state {
-          cursor: pointer;
-          user-select: none;
-          padding: 3px;
-          border: 1px solid transparent;
-          border-radius: 4px;
-        }
-
-        .el-dropdown-link-state:hover {
-          border: 1px solid #1b9aee;
-        }
       }
 
       .wrap-date {

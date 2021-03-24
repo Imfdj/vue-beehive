@@ -7,7 +7,16 @@
             >{{ itemList.name }}<span class="name-point"></span>{{ itemList.tasks && itemList.tasks.length }}
           </div>
           <div class="more">
-            <i class="el-icon-more" @click="handleMore(itemList)"></i>
+            <Dropdown
+              :selectList="selectListMore"
+              @command="
+                selector => {
+                  commandMore(selector, itemList);
+                }
+              "
+            >
+              <i class="el-icon-more"></i>
+            </Dropdown>
           </div>
         </div>
         <div v-loading="itemList.loading" class="wrap-draggable">
@@ -79,13 +88,16 @@
       </div>
     </draggable>
     <TaskDialog ref="TaskDialog" :projectId="projectId" @close="taskDialogClose"></TaskDialog>
+    <EditorTaskListDialog ref="EditorTaskListDialog"></EditorTaskListDialog>
   </div>
 </template>
 
 <script>
   import draggable from 'vuedraggable';
   import BImage from '@/components/B-image';
+  import Dropdown from '@/components/Dropdown';
   import TaskDialog from './components/TaskDialog';
+  import EditorTaskListDialog from './components/EditorTaskListDialog';
   import CreateTask from './components/CreateTask';
   import { getList } from '@/api/taskListManagement';
   import { doEditSort, doEdit, getList as getTaskList } from '@/api/taskManagement';
@@ -97,8 +109,10 @@
     components: {
       draggable,
       BImage,
+      Dropdown,
       TaskDialog,
       CreateTask,
+      EditorTaskListDialog,
     },
     data() {
       return {
@@ -106,6 +120,26 @@
         listData: [],
         indexListCreate: -1,
         itemListCreate: {},
+        selectListMore: [
+          {
+            id: 0,
+            name: '编辑列表',
+            icon: 'el-icon-edit',
+            color: '#606266',
+          },
+          {
+            id: 1,
+            name: '本列所有任务移至回收站',
+            icon: 'el-icon-delete',
+            color: '#606266',
+          },
+          {
+            id: 2,
+            name: '删除列表',
+            icon: 'el-icon-delete',
+            color: '#606266',
+          },
+        ],
       };
     },
     computed: {
@@ -114,45 +148,73 @@
     sockets: {
       sync: function (data) {
         const { params, action } = data;
-        if (/.*:task$/.test(action)) {
-          switch (action) {
-            case 'create:task':
-              this.listData.forEach(itemList => {
-                if (itemList.id === params.task_list_id) {
-                  const taskExisting = itemList.tasks?.find(task => task.id === params.id);
-                  // 如果不存在，则添加
-                  if (!taskExisting) {
-                    this.getItem(params);
-                    itemList.tasks?.push(params);
-                    itemList.tasks = this.$baseLodash.sortBy(itemList.tasks, task => task.sort);
-                  }
+        switch (action) {
+          case 'create:task':
+            this.listData.forEach(itemList => {
+              if (itemList.id === params.task_list_id) {
+                const taskExisting = itemList.tasks?.find(task => task.id === params.id);
+                // 如果不存在，则添加
+                if (!taskExisting) {
+                  this.getItem(params);
+                  itemList.tasks?.push(params);
+                  itemList.tasks = this.$baseLodash.sortBy(itemList.tasks, task => task.sort);
+                }
+              }
+            });
+            break;
+          case 'update:task':
+            this.listData.forEach(itemList => {
+              itemList.tasks?.forEach(task => {
+                if (task.id === params.id) {
+                  Object.assign(task, params);
+                  itemList.tasks = this.$baseLodash.sortBy(itemList.tasks, function (o) {
+                    return o.sort;
+                  });
+                  this.getItem(task);
+                  return false;
                 }
               });
-              break;
-            case 'update:task':
-              this.listData.forEach(itemList => {
-                itemList.tasks?.forEach(task => {
-                  if (task.id === params.id) {
-                    Object.assign(task, params);
-                    itemList.tasks = this.$baseLodash.sortBy(itemList.tasks, function (o) {
-                      return o.sort;
-                    });
-                    this.getItem(task);
-                    return false;
-                  }
-                });
-              });
-              break;
-            case 'delete:task':
-              this.listData.forEach(itemList => {
-                if (itemList.id === params.task_list_id) {
-                  itemList.tasks = itemList.tasks?.filter(task => task.id !== params.id);
-                }
-              });
-              break;
-            default:
-              break;
-          }
+            });
+            break;
+          case 'delete:task':
+            this.listData.forEach(itemList => {
+              if (itemList.id === params.task_list_id) {
+                itemList.tasks = itemList.tasks?.filter(task => task.id !== params.id);
+              }
+            });
+            break;
+          case 'create:task_list':
+            // this.listData.forEach(itemList => {
+            //   if (itemList.id === params.task_list_id) {
+            //     const taskExisting = itemList.tasks?.find(task => task.id === params.id);
+            //     // 如果不存在，则添加
+            //     if (!taskExisting) {
+            //       this.getItem(params);
+            //       itemList.tasks?.push(params);
+            //       itemList.tasks = this.$baseLodash.sortBy(itemList.tasks, task => task.sort);
+            //     }
+            //   }
+            // });
+            break;
+          case 'update:task_list':
+            this.listData.forEach(item => {
+              // TODO check
+              if (item.id === params.id) {
+                Object.assign(item, { sort: params.sort, name: params.name });
+                return false;
+              }
+            });
+            this.listData = this.$baseLodash.sortBy(this.listData, 'sort');
+            break;
+          case 'delete:task_list':
+            // this.listData.forEach(itemList => {
+            //   if (itemList.id === params.task_list_id) {
+            //     itemList.tasks = itemList.tasks?.filter(task => task.id !== params.id);
+            //   }
+            // });
+            break;
+          default:
+            break;
         }
       },
     },
@@ -166,8 +228,17 @@
       }
     },
     methods: {
-      handleMore(item) {
-        console.log(item);
+      commandMore(selector, itemList) {
+        console.log(itemList);
+        switch (selector.id) {
+          case 0: // 编辑
+            this.$refs.EditorTaskListDialog.show(itemList);
+            break;
+          case 1: // 移至回收站
+            break;
+          case 2: // 删除列表
+            break;
+        }
       },
       // 根据id获取相关项
       getItem(task) {
