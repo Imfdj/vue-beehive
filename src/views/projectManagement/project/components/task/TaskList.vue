@@ -87,6 +87,7 @@
         </div>
       </div>
     </draggable>
+    <CreateTaskList></CreateTaskList>
     <TaskDialog ref="TaskDialog" :projectId="projectId" @close="taskDialogClose"></TaskDialog>
     <EditorTaskListDialog ref="EditorTaskListDialog"></EditorTaskListDialog>
   </div>
@@ -99,7 +100,8 @@
   import TaskDialog from './components/TaskDialog';
   import EditorTaskListDialog from './components/EditorTaskListDialog';
   import CreateTask from './components/CreateTask';
-  import { getList } from '@/api/taskListManagement';
+  import CreateTaskList from './components/CreateTaskList';
+  import { getList, doDelete } from '@/api/taskListManagement';
   import { doEditSort, doEdit, getList as getTaskList } from '@/api/taskManagement';
   import { doEditSort as doTaskListEditSort } from '@/api/taskListManagement';
   import { mapState } from 'vuex';
@@ -113,6 +115,7 @@
       TaskDialog,
       CreateTask,
       EditorTaskListDialog,
+      CreateTaskList,
     },
     data() {
       return {
@@ -211,17 +214,13 @@
             });
             break;
           case 'create:task_list':
-            // this.listData.forEach(itemList => {
-            //   if (itemList.id === params.task_list_id) {
-            //     const taskExisting = itemList.tasks?.find(task => task.id === params.id);
-            //     // 如果不存在，则添加
-            //     if (!taskExisting) {
-            //       this.getItem(params);
-            //       itemList.tasks?.push(params);
-            //       itemList.tasks = this.$baseLodash.sortBy(itemList.tasks, task => task.sort);
-            //     }
-            //   }
-            // });
+            const taskExisting = this.listData?.find(item => item.id === params.id);
+            // 如果不存在，则添加
+            if (!taskExisting) {
+              params.tasks = [];
+              this.listData?.push(params);
+              this.listData = this.$baseLodash.sortBy(this.listData, item => item.sort);
+            }
             break;
           case 'update:task_list':
             this.listData.forEach(item => {
@@ -233,11 +232,7 @@
             this.listData = this.$baseLodash.sortBy(this.listData, 'sort');
             break;
           case 'delete:task_list':
-            // this.listData.forEach(itemList => {
-            //   if (itemList.id === params.task_list_id) {
-            //     itemList.tasks = itemList.tasks?.filter(task => task.id !== params.id);
-            //   }
-            // });
+            this.listData = this.listData?.filter(item => item.id !== params.id);
             break;
           default:
             break;
@@ -263,6 +258,13 @@
           case 1: // 移至回收站
             break;
           case 2: // 删除列表
+            this.$confirm('删除列表将彻底清空此列表上的所有任务，请确认是否要删除整个列表？', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning',
+            }).then(() => {
+              this.doDelete(itemList.id);
+            });
             break;
         }
       },
@@ -361,12 +363,16 @@
         task.is_done = task.is_done === 1 ? 0 : 1;
         await doEdit(task);
       },
+      async doDelete(id) {
+        await doDelete({ ids: [id] });
+      },
     },
   };
 </script>
 
 <style lang="scss" scoped>
   .task-list {
+    display: flex;
     .task-state-success {
       filter: opacity(0.5);
     }
