@@ -163,18 +163,45 @@
             });
             break;
           case 'update:task':
+            let oldTask = null;
+            let currrentItemList = null;
             this.listData.forEach(itemList => {
               itemList.tasks?.forEach(task => {
                 if (task.id === params.id) {
-                  Object.assign(task, params);
-                  itemList.tasks = this.$baseLodash.sortBy(itemList.tasks, function (o) {
-                    return o.sort;
-                  });
-                  this.getItem(task);
-                  return false;
+                  oldTask = task;
+                  currrentItemList = itemList;
                 }
               });
             });
+            // 如果新params的任务列表id和原先id相同，则为同列表 更新，否则为新列表中添加，久列表中删除
+            if (oldTask.task_list_id === params.task_list_id) {
+              Object.assign(oldTask, params);
+              currrentItemList.tasks = this.$baseLodash.sortBy(currrentItemList.tasks, function (o) {
+                return o.sort;
+              });
+              this.getItem(oldTask);
+            } else {
+              // 删除
+              const oldTaskList = this.listData.find(itemList => itemList.id === oldTask.task_list_id);
+              const oldTaskListIndex = oldTaskList.tasks?.findIndex(task => task.id === oldTask.id);
+              if (oldTaskListIndex !== -1) {
+                oldTaskList.tasks?.splice(oldTaskListIndex, 1);
+              }
+              // 添加
+              const newTaskList = this.listData.find(itemList => itemList.id === params.task_list_id);
+              const taskExisting = newTaskList.tasks?.find(task => task.id === params.id);
+              // 如果不存在，则添加，存在则更新
+              if (!taskExisting) {
+                newTaskList.tasks?.push(params);
+                this.getItem(params);
+              } else {
+                Object.assign(taskExisting, params);
+                this.getItem(taskExisting);
+              }
+              newTaskList.tasks = this.$baseLodash.sortBy(newTaskList.tasks, function (o) {
+                return o.sort;
+              });
+            }
             break;
           case 'delete:task':
             this.listData.forEach(itemList => {
@@ -198,7 +225,6 @@
             break;
           case 'update:task_list':
             this.listData.forEach(item => {
-              // TODO check
               if (item.id === params.id) {
                 Object.assign(item, { sort: params.sort, name: params.name });
                 return false;
