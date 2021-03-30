@@ -293,17 +293,16 @@
           return item.id === task.executor_id;
         });
       },
-      async getList() {
-        const {
-          data: { rows, count },
-        } = await getList({ project_id: this.projectId, prop_order: 'sort', order: 'asc' });
-        this.listData = rows.map(item => {
-          item.tasks = [];
-          item.loading = true;
-          return item;
-        });
+      searchTask(params = {}) {
         this.listData.forEach(taskListItem => {
-          getTaskList({ task_list_id: taskListItem.id, is_recycle: 0, prop_order: 'sort', order: 'asc' }).then(res => {
+          taskListItem.loading = true;
+          getTaskList({
+            task_list_id: taskListItem.id,
+            is_recycle: 0,
+            prop_order: 'sort',
+            order: 'asc',
+            ...params,
+          }).then(res => {
             taskListItem.loading = false;
             taskListItem.tasks = res.data?.rows;
             taskListItem.tasks?.forEach(task => {
@@ -311,6 +310,16 @@
             });
           });
         });
+      },
+      async getList() {
+        const {
+          data: { rows, count },
+        } = await getList({ project_id: this.projectId, prop_order: 'sort', order: 'asc' });
+        this.listData = rows.map(item => {
+          item.tasks = [];
+          return item;
+        });
+        this.searchTask();
       },
       async taskDraggableChange(evt) {
         if (evt.removed) return;

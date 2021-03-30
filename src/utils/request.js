@@ -38,6 +38,12 @@ service.interceptors.request.use(
       //这里会过滤所有为空、0、fasle的key，如果不需要请自行注释
       // config.data = _.pickBy(config.data, _.identity);
     }
+    //只针对get方式进行序列化
+    if (config.method.toLowerCase() === 'get') {
+      config.paramsSerializer = function (params) {
+        return qs.stringify(params, { arrayFormat: 'repeat' });
+      };
+    }
     if (process.env.NODE_ENV !== 'preview') {
       if (contentType === 'application/x-www-form-urlencoded;charset=UTF-8') {
         if (config.data && !config.data.param) {

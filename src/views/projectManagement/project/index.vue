@@ -46,13 +46,17 @@
       </div>
       <div class="wrap-controller">
         <el-button type="text" icon="el-icon-notebook-2">看板视图</el-button>
-        <el-button type="text" icon="el-icon-search">筛选</el-button>
-        <el-button type="text" icon="el-icon-user" @click="handleAddUser">{{ projectUser.length }}</el-button>
+        <TaskFilter @search="taskSearch">
+          <el-button type="text" icon="el-icon-search">筛选</el-button>
+        </TaskFilter>
+        <span
+          ><el-button type="text" icon="el-icon-user" @click="handleAddUser">{{ projectUser.length }}</el-button></span
+        >
         <el-button type="text" icon="el-icon-s-unfold">菜单</el-button>
       </div>
     </div>
     <div class="wrap-content">
-      <TaskList></TaskList>
+      <TaskList ref="TaskList"></TaskList>
     </div>
     <AddMemberToProjectDialog ref="AddMemberToProjectDialog" @getUserList="getUserList"></AddMemberToProjectDialog>
   </div>
@@ -60,6 +64,7 @@
 
 <script>
   import TaskList from './components/task/TaskList';
+  import TaskFilter from './components/task/components/TaskFilter';
   import store from '@/store';
   import { mapState } from 'vuex';
   import BImage from '@/components/B-image';
@@ -71,6 +76,7 @@
       TaskList,
       BImage,
       AddMemberToProjectDialog,
+      TaskFilter,
     },
     data() {
       return {
@@ -113,6 +119,18 @@
       },
       getUserList(userList) {
         this.userList = userList;
+      },
+      taskSearch(form) {
+        const params = {};
+        for (const argumentsKey in form) {
+          if (form[argumentsKey].length) {
+            params[argumentsKey] = form[argumentsKey];
+          }
+        }
+        if (form.is_done !== -1) {
+          params.is_done = form.is_done;
+        }
+        this.$refs.TaskList.searchTask(params);
       },
     },
   };
@@ -215,8 +233,8 @@
       .wrap-controller {
         display: flex;
         align-items: center;
-        justify-content: flex-end;
-
+        justify-content: space-between;
+        width: 223px;
         ::v-deep .el-button--small {
           font-size: 14px;
         }
