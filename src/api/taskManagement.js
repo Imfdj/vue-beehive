@@ -47,3 +47,11 @@ export function doEditSort(data) {
     data,
   });
 }
+
+export function doRecycleAllTaskOfTaskList(data) {
+  return request({
+    url: '/v1/tasks/recycle_all_task_of_taskList',
+    method: 'put',
+    data,
+  });
+}

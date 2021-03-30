@@ -102,7 +102,7 @@
   import CreateTask from './components/CreateTask';
   import CreateTaskList from './components/CreateTaskList';
   import { getList, doDelete } from '@/api/taskListManagement';
-  import { doEditSort, doEdit, getList as getTaskList } from '@/api/taskManagement';
+  import { doEditSort, doEdit, getList as getTaskList, doRecycleAllTaskOfTaskList } from '@/api/taskManagement';
   import { doEditSort as doTaskListEditSort } from '@/api/taskListManagement';
   import { mapState } from 'vuex';
 
@@ -176,9 +176,12 @@
                 }
               });
             });
+            if (!oldTask) return;
             // 如果新params的任务列表id和原先id相同，则为同列表 更新，否则为新列表中添加，久列表中删除
             if (oldTask.task_list_id === params.task_list_id) {
               Object.assign(oldTask, params);
+              // 筛去回收站的
+              currrentItemList.tasks = currrentItemList.tasks.filter(item => item.is_recycle !== 1);
               currrentItemList.tasks = this.$baseLodash.sortBy(currrentItemList.tasks, function (o) {
                 return o.sort;
               });
@@ -256,6 +259,13 @@
             this.$refs.EditorTaskListDialog.show(itemList);
             break;
           case 1: // 移至回收站
+            this.$confirm('您确定要把列表下的所有任务移到回收站吗？', '移到回收站', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning',
+            }).then(() => {
+              this.doRecycleAllTaskOfTaskList(itemList.id);
+            });
             break;
           case 2: // 删除列表
             this.$confirm('删除列表将彻底清空此列表上的所有任务，请确认是否要删除整个列表？', '提示', {
@@ -293,7 +303,7 @@
           return item;
         });
         this.listData.forEach(taskListItem => {
-          getTaskList({ task_list_id: taskListItem.id, prop_order: 'sort', order: 'asc' }).then(res => {
+          getTaskList({ task_list_id: taskListItem.id, is_recycle: 0, prop_order: 'sort', order: 'asc' }).then(res => {
             taskListItem.loading = false;
             taskListItem.tasks = res.data?.rows;
             taskListItem.tasks?.forEach(task => {
@@ -365,6 +375,9 @@
       },
       async doDelete(id) {
         await doDelete({ ids: [id] });
+      },
+      async doRecycleAllTaskOfTaskList(task_list_id) {
+        await doRecycleAllTaskOfTaskList({ task_list_id });
       },
     },
   };
