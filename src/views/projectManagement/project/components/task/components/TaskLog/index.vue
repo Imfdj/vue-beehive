@@ -42,10 +42,6 @@
           </div>
           <LogComment :log="log"></LogComment>
         </div>
-        <div v-if="dataListFilter.length === 0" class="no-data">
-          <i class="iconfont icon-zanwu"></i>
-          <div class="text">暂无该类型动态</div>
-        </div>
       </div>
     </div>
     <div class="wrap-comment">
@@ -247,23 +243,6 @@
 
         .btn-more:hover {
           color: #1b9aee;
-        }
-
-        .no-data {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          height: 200px;
-
-          .iconfont {
-            font-size: 60px;
-            color: #4eb0f3;
-          }
-
-          .text {
-            line-height: 30px;
-          }
         }
 
         .item {

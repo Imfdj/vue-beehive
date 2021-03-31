@@ -8,12 +8,24 @@
     @close="close"
   >
     <template slot="title">
-      <Dropdown :selector="taskTypeSelect" :selectList="taskTypes" @command="commandTaskType">
-        <span class="el-dropdown-link-type">
-          <i :class="taskTypeSelect.icon" :style="`color: ${taskTypeSelect.color};margin-right: 5px;`"></i
-          >{{ taskTypeSelect.name }}
-        </span>
-      </Dropdown>
+      <div v-if="taskInfo.is_recycle === 0" class="on-normal">
+        <Dropdown :selector="taskTypeSelect" :selectList="taskTypes" @command="commandTaskType">
+          <span class="el-dropdown-link-type">
+            <i :class="taskTypeSelect.icon" :style="`color: ${taskTypeSelect.color};margin-right: 5px;`"></i
+            >{{ taskTypeSelect.name }}
+          </span>
+        </Dropdown>
+        <TaskController :task="taskInfo"></TaskController>
+      </div>
+      <div v-else class="on-recycle">
+        <div class="tip"><i class="el-icon-delete"></i>任务已在回收站中，不可修改</div>
+        <div class="ctrl">
+          <el-button type="text" size="medium" icon="el-icon-refresh-left" @click="recoverTaskHandler"
+            >恢复内容</el-button
+          >
+          <el-button type="text" size="medium" icon="el-icon-delete" @click="deleteTaskHandler">彻底删除</el-button>
+        </div>
+      </div>
     </template>
     <el-row v-loading="loading">
       <el-col :span="14">
@@ -159,15 +171,17 @@
 
 <script>
   import { getInfo, doEdit } from '@/api/taskManagement';
-  import Participator from './Participator';
-  import TaskLog from './TaskLog';
-  import WorkingHour from './WorkingHour';
+  import Participator from '../Participator';
+  import TaskLog from '../TaskLog/index';
+  import WorkingHour from '../WorkingHour/index';
   import { mapState } from 'vuex';
   import ExecutorSelect from '@/components/ExecutorSelect';
-  import RichText from './RichText';
-  import TaskTag from './TaskTag';
-  import TaskFile from './TaskFile';
+  import RichText from '../RichText';
+  import TaskTag from '../TaskTag';
+  import TaskFile from '../TaskFile/index';
   import Dropdown from '@/components/Dropdown';
+  import TaskController from './components/TaskController';
+  import mixin from '@/mixins';
 
   export default {
     name: 'TaskDialog',
@@ -180,7 +194,9 @@
       WorkingHour,
       TaskFile,
       Dropdown,
+      TaskController,
     },
+    mixins: [mixin],
     props: {
       projectId: {
         type: Number,
@@ -309,6 +325,7 @@
       close() {
         this.dialogTableVisible = false;
         this.$emit('close', this.isEdited);
+        this.$router.replace(this.$route.path);
       },
       commandTaskType(type) {
         this.taskTypeSelect = type;
@@ -386,6 +403,13 @@
       participatorChange(users) {
         this.taskInfo.participators = users;
       },
+      recoverTaskHandler() {
+        this.recoverTask(this.taskInfo);
+      },
+      async deleteTaskHandler() {
+        await this.deleteTask(this.taskInfo);
+        this.close();
+      },
     },
   };
 </script>
@@ -395,9 +419,35 @@
   $min-height: calc(100vh - 170px);
   .task-dialog {
     white-space: normal;
+    .on-normal {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 50px;
+      padding: 5px 60px 5px 20px;
+    }
+    .on-recycle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 50px;
+      padding: 5px 60px 5px 20px;
+      background-color: $colorF5;
+      .tip {
+        color: $colorLight;
+        & i {
+          padding-right: 10px;
+        }
+      }
+      .ctrl {
+      }
+    }
 
     ::v-deep .el-dialog__body {
       padding: 0px 20px;
+    }
+    ::v-deep .el-dialog__header {
+      padding: 0px;
     }
 
     .el-dropdown-link-type {

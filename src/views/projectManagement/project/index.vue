@@ -50,9 +50,11 @@
           <el-button type="text" icon="el-icon-search">筛选</el-button>
         </TaskFilter>
         <span
-          ><el-button type="text" icon="el-icon-user" @click="handleAddUser">{{ projectUser.length }}</el-button></span
-        >
-        <el-button type="text" icon="el-icon-s-unfold">菜单</el-button>
+          ><el-button type="text" icon="el-icon-user" @click="handleAddUser">{{ projectUser.length }}</el-button>
+        </span>
+        <ProjectSetting>
+          <el-button type="text" icon="el-icon-s-unfold">菜单</el-button>
+        </ProjectSetting>
       </div>
     </div>
     <div class="wrap-content">
@@ -65,6 +67,7 @@
 <script>
   import TaskList from './components/task/TaskList';
   import TaskFilter from './components/task/components/TaskFilter';
+  import ProjectSetting from './components/task/components/ProjectSetting';
   import store from '@/store';
   import { mapState } from 'vuex';
   import BImage from '@/components/B-image';
@@ -77,6 +80,7 @@
       BImage,
       AddMemberToProjectDialog,
       TaskFilter,
+      ProjectSetting,
     },
     data() {
       return {
@@ -106,6 +110,22 @@
       await store.commit('project/setCurrentProjectId', parseInt(this.$route.params.id));
       store.dispatch('project/setTaskTags');
       store.dispatch('project/setProjectMembers');
+    },
+    sockets: {
+      sync: function (data) {
+        const { params, action } = data;
+        switch (action) {
+          case 'update:project':
+            this.projectList?.forEach(item => {
+              if (params.id === item.id) {
+                Object.assign(item, params);
+              }
+            });
+            break;
+          default:
+            break;
+        }
+      },
     },
     methods: {
       tabClick(index) {

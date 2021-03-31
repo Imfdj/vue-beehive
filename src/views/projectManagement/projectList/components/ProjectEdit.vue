@@ -35,13 +35,13 @@
                 <el-form-item label="项目拥有者">
                   <div class="user-info">
                     <BImage
-                      v-if="form.user"
-                      :src="form.user.avatar"
+                      v-if="form.creator"
+                      :src="form.creator.avatar"
                       :width="40"
                       :height="40"
                       :borderRadius="20"
                     ></BImage>
-                    <span style="margin-left: 10px;">{{ form.user && form.user.username }}</span>
+                    <span style="margin-left: 10px;">{{ form.creator && form.creator.username }}</span>
                   </div>
                 </el-form-item>
               </el-form>
@@ -92,6 +92,12 @@
       CoverImage,
       BImage,
     },
+    props: {
+      closeBehindSave: {
+        type: Boolean,
+        default: false,
+      },
+    },
     data() {
       return {
         activeName: '0',
@@ -132,6 +138,9 @@
         const { msg } = await doEdit(this.form);
         this.$baseMessage(msg, 'success');
         this.$emit('fetchData');
+        if (this.closeBehindSave) {
+          this.close();
+        }
       },
       close() {
         this.$refs['form'].resetFields();

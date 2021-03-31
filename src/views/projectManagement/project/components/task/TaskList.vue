@@ -23,6 +23,7 @@
           <draggable class="list-group" :list="itemList.tasks" group="tasks" @change="taskDraggableChange">
             <div
               v-for="element in itemList.tasks"
+              v-show="element.is_recycle === 0"
               :key="element.id"
               class="list-group-item"
               :class="[{ 'list-group-item-done': element.is_done === 1 }]"
@@ -97,7 +98,7 @@
   import draggable from 'vuedraggable';
   import BImage from '@/components/B-image';
   import Dropdown from '@/components/Dropdown';
-  import TaskDialog from './components/TaskDialog';
+  import TaskDialog from './components/TaskDialog/index';
   import EditorTaskListDialog from './components/EditorTaskListDialog';
   import CreateTask from './components/CreateTask';
   import CreateTaskList from './components/CreateTaskList';
@@ -180,8 +181,6 @@
             // 如果新params的任务列表id和原先id相同，则为同列表 更新，否则为新列表中添加，久列表中删除
             if (oldTask.task_list_id === params.task_list_id) {
               Object.assign(oldTask, params);
-              // 筛去回收站的
-              currrentItemList.tasks = currrentItemList.tasks.filter(item => item.is_recycle !== 1);
               currrentItemList.tasks = this.$baseLodash.sortBy(currrentItemList.tasks, function (o) {
                 return o.sort;
               });
@@ -298,7 +297,6 @@
           taskListItem.loading = true;
           getTaskList({
             task_list_id: taskListItem.id,
-            is_recycle: 0,
             prop_order: 'sort',
             order: 'asc',
             ...params,
@@ -376,7 +374,6 @@
         if (isEdited) {
           // this.getList();
         }
-        this.$router.replace(this.$route.path);
       },
       async changeDoneState(task) {
         task.is_done = task.is_done === 1 ? 0 : 1;

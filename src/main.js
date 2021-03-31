@@ -14,8 +14,8 @@ if (process.env.NODE_ENV === 'preview') {
 }
 if (process.env.NODE_ENV === 'production') {
   Sentry.init({
-    dsn: 'http://c13799e6f0cd4fb8bf999763badf8bc8@sentry.imfdj.top/3',
-    integrations: [new Integrations.Vue({Vue, attachProps: true})],
+    dsn: 'http://72cc1baaf2594ecea33113e606e893d7@sentry.imfdj.top/3',
+    integrations: [new Integrations.Vue({ Vue, attachProps: true })],
   });
 }
 
