@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import { remote_public_prefix } from '@/config/settings';
 import { doDelete as doDeleteTask, doEdit as doEditTask } from '@/api/taskManagement';
+import multiDownload from 'multi-download';
 
 export default {
   methods: {
@@ -43,6 +44,29 @@ export default {
           reject(e);
         }
       });
+    },
+    // 下载文件
+    multiDownload(item) {
+      multiDownload([`/${remote_public_prefix}${item.path}`], {
+        rename: () => `${item.title}${item.extension}`,
+      });
+    },
+    /**
+     * 复制文本
+     * @param text
+     */
+    doCopy(text) {
+      const input = document.createElement('input');
+      const div = document.createElement('div');
+      input.setAttribute('readonly', 'readonly');
+      input.setAttribute('value', text);
+      input.setAttribute('style', 'position: absolute;left: 100000px;');
+      div.setAttribute('style', 'position: absolute;width: 0px;height: 0px;overflow: hidden;');
+      div.appendChild(input);
+      document.body.appendChild(div);
+      input.select();
+      document.execCommand('copy');
+      document.body.removeChild(div);
     },
   },
 };

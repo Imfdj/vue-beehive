@@ -1,10 +1,7 @@
 <template>
   <div class="task-file">
     <div class="title"><i class="iconfont icon-fujian1"></i>关联文件</div>
-    <div class="btn-create-task-file" @click="uploadClick">
-      <i class="el-icon-plus"></i>上传文件
-      <input v-show="false" ref="inputFile" type="file" @change="inputChange" />
-    </div>
+    <div class="btn-create-task-file" @click="uploadClick"> <i class="el-icon-plus"></i>上传文件 </div>
     <div v-if="fileListFilter.length" class="wrap-file-list">
       <div class="title-list">关联文件列表</div>
       <div class="file-list">
@@ -38,23 +35,25 @@
         </div>
       </div>
     </div>
-    <div id="copyBox" class="copy"></div>
+    <Upload ref="Upload" @success="uploadSuccess"></Upload>
   </div>
 </template>
 
 <script>
   import BImage from '@/components/B-image';
+  import Upload from '@/components/Upload';
+  import mixin from '@/mixins';
   import { getList, doCreate, doDelete } from '@/api/projectFileManagement';
-  import { upload } from '@/api/upload';
   import { mapState } from 'vuex';
   import { remote_public_prefix } from '@/config/settings';
-  import multiDownload from 'multi-download';
 
   export default {
     name: 'TaskFile',
     components: {
       BImage,
+      Upload,
     },
+    mixins: [mixin],
     props: {
       task: {
         type: Object,
@@ -118,12 +117,6 @@
         });
         this.fileList = rows;
       },
-      async upload(blob) {
-        const formData = new FormData();
-        formData.append('file', blob);
-        const { data } = await upload(formData);
-        await this.doCreate(data);
-      },
       async doCreate(fileData) {
         await doCreate({
           title: fileData.filename?.replace(fileData.extension, ''),
@@ -138,26 +131,16 @@
         await doDelete({ ids });
       },
       uploadClick() {
-        this.$refs.inputFile.click();
-      },
-      inputChange(event) {
-        const input = event.target;
-        const files = event.target.files;
-        if (files && files[0]) {
-          this.upload(files[0]);
-        }
-        input.value = '';
+        this.$refs.Upload.uploadStart();
       },
       fileOperationClick(item, itemOperation) {
         switch (itemOperation.id) {
           case 1:
-            this.initCopy(`${window.location.origin}/${remote_public_prefix}${item.path}`);
+            this.doCopy(`${window.location.origin}/${remote_public_prefix}${item.path}`);
             this.$baseNotify('粘贴到其他对象评论框里即可进行快速关联', '复制链接成功');
             break;
           case 2:
-            multiDownload([`/${remote_public_prefix}${item.path}`], {
-              rename: () => `${item.title}${item.extension}`,
-            });
+            this.multiDownload(item);
             break;
           case 3:
             this.$baseConfirm('你确定要删除吗', null, async () => {
@@ -169,18 +152,8 @@
             break;
         }
       },
-      /**
-       * 复制
-       * @param text
-       */
-      initCopy(text) {
-        const input = document.createElement('input');
-        input.setAttribute('readonly', 'readonly');
-        input.setAttribute('value', text);
-        input.setAttribute('style', 'position: absolute;left: 100000px;');
-        document.getElementById('copyBox')?.appendChild(input);
-        input.select();
-        document.execCommand('copy');
+      async uploadSuccess(data) {
+        await this.doCreate(data);
       },
     },
   };
@@ -208,12 +181,6 @@
 <style lang="scss" scoped>
   @import '@/styles/custom.scss';
   .task-file {
-    .copy {
-      position: absolute;
-      width: 0px;
-      height: 0px;
-      overflow: hidden;
-    }
     .title {
       margin-bottom: 20px;
       line-height: 28px;

@@ -58,7 +58,8 @@
       </div>
     </div>
     <div class="wrap-content">
-      <TaskList ref="TaskList"></TaskList>
+      <TaskList v-if="indexTab === 0" ref="TaskList"></TaskList>
+      <File v-if="indexTab === 1" ref="File"></File>
     </div>
     <AddMemberToProjectDialog ref="AddMemberToProjectDialog" @getUserList="getUserList"></AddMemberToProjectDialog>
   </div>
@@ -68,6 +69,7 @@
   import TaskList from './components/task/TaskList';
   import TaskFilter from './components/task/components/TaskFilter';
   import ProjectSetting from './components/task/components/ProjectSetting';
+  import File from './components/file';
   import store from '@/store';
   import { mapState } from 'vuex';
   import BImage from '@/components/B-image';
@@ -81,6 +83,7 @@
       AddMemberToProjectDialog,
       TaskFilter,
       ProjectSetting,
+      File,
     },
     data() {
       return {
@@ -262,9 +265,9 @@
     }
 
     .wrap-content {
+      height: calc(100vh - 172px);
       padding: 20px;
-      height: calc(100% - 46px);
-      overflow-x: auto;
+      overflow: auto;
       white-space: nowrap;
     }
   }

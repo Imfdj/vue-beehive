@@ -169,7 +169,7 @@
 
       ::v-deep {
         .vab-main {
-          width: 88%;
+          width: 96%;
           margin: auto;
         }
 
