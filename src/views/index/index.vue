@@ -1,7 +1,5 @@
 <template>
-  <div class="index-container">
-    index
-  </div>
+  <div class="index-container wrap-content-main"> index </div>
 </template>
 
 <script>

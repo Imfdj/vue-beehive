@@ -70,8 +70,7 @@
   import TaskFilter from './components/task/components/TaskFilter';
   import ProjectSetting from './components/task/components/ProjectSetting';
   import File from './components/file';
-  import store from '@/store';
-  import { mapState } from 'vuex';
+  import { mapState, mapMutations } from 'vuex';
   import BImage from '@/components/B-image';
   import AddMemberToProjectDialog from '@/views/projectManagement/projectList/components/AddMemberToProjectDialog';
 
@@ -105,14 +104,23 @@
         return this.userList.filter(item => item.projectIds.includes(this.currentProjectId));
       },
     },
+    beforeRouteEnter(to, from, next) {
+      next(vm => {
+        vm.setNoNav(true);
+      });
+    },
+    beforeRouteLeave(to, from, next) {
+      this.setNoNav(false);
+      next();
+    },
     async created() {
-      store.dispatch('project/setProjectList');
-      store.dispatch('project/setTaskTypes');
-      store.dispatch('project/setTaskStates');
-      store.dispatch('project/setTaskPrioritys');
-      await store.commit('project/setCurrentProjectId', parseInt(this.$route.params.id));
-      store.dispatch('project/setTaskTags');
-      store.dispatch('project/setProjectMembers');
+      this.$store.dispatch('project/setProjectList');
+      this.$store.dispatch('project/setTaskTypes');
+      this.$store.dispatch('project/setTaskStates');
+      this.$store.dispatch('project/setTaskPrioritys');
+      await this.$store.commit('project/setCurrentProjectId', parseInt(this.$route.params.id));
+      this.$store.dispatch('project/setTaskTags');
+      this.$store.dispatch('project/setProjectMembers');
     },
     sockets: {
       sync: function (data) {
@@ -131,6 +139,7 @@
       },
     },
     methods: {
+      ...mapMutations('routes', ['setNoNav', 'setNavIndex']),
       tabClick(index) {
         this.indexTab = index;
       },
@@ -265,7 +274,7 @@
     }
 
     .wrap-content {
-      height: calc(100vh - 172px);
+      height: calc(100vh - 192px);
       padding: 20px;
       overflow: auto;
       white-space: nowrap;

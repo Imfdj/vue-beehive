@@ -17,9 +17,7 @@
             <div class="created_at">创建日期</div>
           </el-col>
           <el-col :span="2">
-            <div class="creator">
-              创建人
-            </div>
+            <div class="creator"> 创建人 </div>
           </el-col>
           <el-col :span="2">
             <div class="operator"></div>
@@ -37,14 +35,12 @@
                 :height="24"
                 :borderRadius="24"
               ></BImage>
-              <a v-if="!item.onEdit" :href="`/${remote_public_prefix}${item.path}`" target="_blank">{{
-                item.title + item.extension
-              }}</a>
+              <a v-if="!item.onEdit" :href="item.path" target="_blank">{{ item.title + item.extension }}</a>
               <el-input
                 v-else
                 v-model="item._title"
                 placeholder="请输入文件名"
-                style="width: 90%;"
+                style="width: 90%"
                 @blur="onBlur(item)"
               ></el-input>
             </div>
@@ -85,13 +81,13 @@
 
 <script>
   import mixin from '@/mixins';
-  import { remote_public_prefix } from '@/config/settings';
   import BImage from '@/components/B-image';
   import Dropdown from '@/components/Dropdown';
   import { getList, doEdit, doDelete, doCreate } from '@/api/projectFileManagement';
   import { mapState } from 'vuex';
   import { dateHumanizeFormat } from '@/utils';
   import Upload from '@/components/Upload';
+  import { isExternal } from '@/utils/validate';
 
   export default {
     name: 'File',
@@ -104,7 +100,6 @@
     data() {
       return {
         dataList: [],
-        remote_public_prefix: remote_public_prefix,
         selectList: [
           {
             id: 0,
@@ -130,7 +125,7 @@
       sync: function (data) {
         const { params, action } = data;
         switch (action) {
-          case 'create:project_file':
+          case 'create:project_file': {
             const taskExisting = this.dataList.find(item => item.id === params.id);
             // 如果不存在，则添加
             if (!taskExisting) {
@@ -139,6 +134,7 @@
               this.dataList = this.$baseLodash.reverse(this.$baseLodash.sortBy(this.dataList, item => item.id));
             }
             break;
+          }
           case 'update:project_file':
             this.dataList.forEach(item => {
               if (item.id === params.id) {
@@ -220,7 +216,7 @@
         switch (selector.id) {
           case 0:
             // 复制链接
-            this.doCopy(`${window.location.origin}/${remote_public_prefix}${item.path}`);
+            this.doCopy(isExternal(item.path) ? item.path : `${window.location.origin}${item.path}`);
             this.$baseNotify('粘贴到其他对象评论框里即可进行快速关联', '复制链接成功');
             break;
           case 1:

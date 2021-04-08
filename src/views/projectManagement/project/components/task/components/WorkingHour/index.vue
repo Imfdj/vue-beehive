@@ -47,7 +47,7 @@
             :min="0"
             :max="10000"
             placeholder="请输入计划工时(小时)"
-            style="width: 100%;"
+            style="width: 100%"
           ></el-input-number>
         </el-form-item>
       </el-form>
@@ -103,7 +103,7 @@
       sync: function (data) {
         const { params, action } = data;
         switch (action) {
-          case 'create:task_working_hour':
+          case 'create:task_working_hour': {
             const userExisting = this.workingHourList?.find(item => item.id === params.id);
             // 如果不存在，则添加
             if (!userExisting) {
@@ -113,6 +113,7 @@
               this.workingHourList?.push(params);
             }
             break;
+          }
           case 'update:task_working_hour':
             this.workingHourList.forEach(item => {
               if (item.id === params.id) {

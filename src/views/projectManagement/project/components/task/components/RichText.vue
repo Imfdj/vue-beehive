@@ -64,7 +64,7 @@
         // insertImgFn 是获取图片 url 后，插入到编辑器的方法
 
         // 上传图片，返回结果，将图片插入到编辑器中
-        insertImgFn(`/remote_public${path}`);
+        insertImgFn(path);
       };
 
       // 创建编辑器

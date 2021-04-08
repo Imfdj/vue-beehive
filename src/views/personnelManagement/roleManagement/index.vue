@@ -1,5 +1,5 @@
 <template>
-  <div class="roleManagement-container">
+  <div class="roleManagement-container wrap-content-main">
     <vab-query-form>
       <vab-query-form-left-panel :span="12">
         <el-button icon="el-icon-plus" type="primary" @click="handleEdit">添加</el-button>
@@ -56,6 +56,7 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
     ></el-pagination>
+
     <edit ref="edit" @fetchData="fetchData"></edit>
     <RoleMenuManagementEdit ref="RoleMenuManagementEdit"></RoleMenuManagementEdit>
     <RolePermissionManagementEdit ref="RolePermissionManagementEdit"></RolePermissionManagementEdit>

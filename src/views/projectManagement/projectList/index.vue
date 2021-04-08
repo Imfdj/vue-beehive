@@ -1,5 +1,5 @@
 <template>
-  <div class="project-list">
+  <div class="project-list wrap-content-main">
     <el-tabs v-model="activeName">
       <el-tab-pane v-for="(item, index) in titles" :key="index" :label="item" :name="(index + 1).toString()">
         <div v-loading="loading" class="list color-light">
@@ -8,7 +8,7 @@
             <div class="item-info">
               <div class="name">
                 <span class="name-text" @click="projectClick(project)">{{ project.name }}</span>
-                <el-tag v-if="project.is_private === 0" style="margin-left: 10px;" type="success">公开</el-tag>
+                <el-tag v-if="project.is_private === 0" style="margin-left: 10px" type="success">公开</el-tag>
               </div>
               <div class="intro">{{ project.intro }}</div>
             </div>
@@ -104,7 +104,7 @@
     data() {
       return {
         loading: false,
-        activeName: '1',
+        activeName: '',
         titles: [],
         listData: [],
         is_recycle: 0,
@@ -153,10 +153,12 @@
         const { params, action } = data;
         switch (action) {
           case 'create:project':
-            const taskExisting = this.listData.find(item => item.id === params.id);
-            // 如果不存在，则添加
-            if (!taskExisting) {
-              this.listData?.push(params);
+            {
+              const taskExisting = this.listData.find(item => item.id === params.id);
+              // 如果不存在，则添加
+              if (!taskExisting) {
+                this.listData?.push(params);
+              }
             }
             break;
           default:
@@ -164,11 +166,11 @@
         }
       },
     },
-    created() {
-      const path = this.$route.path;
-      this.activeName = path.substring(path.lastIndexOf('/') + 1);
-
-      this.getList();
+    beforeRouteEnter(to, from, next) {
+      next(vm => {
+        const path = vm.$route.path;
+        vm.activeName = path.substring(path.lastIndexOf('/') + 1);
+      });
     },
     mounted() {
       const routes = store.getters['routes/routes'];
@@ -242,6 +244,7 @@
 
 <style lang="scss" scoped>
   .project-list {
+    position: relative;
     padding: 20px;
 
     .create-project {
@@ -251,6 +254,7 @@
     }
 
     .list {
+      min-height: 500px;
       .item-list {
         display: flex;
         height: 50px;

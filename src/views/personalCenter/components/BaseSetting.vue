@@ -87,7 +87,7 @@
         const {
           data: { path },
         } = await upload(formData);
-        this.ruleForm.avatar = `/remote_public${path}`;
+        this.ruleForm.avatar = path;
       },
     },
   };

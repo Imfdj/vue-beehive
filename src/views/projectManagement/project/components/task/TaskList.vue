@@ -166,7 +166,7 @@
               }
             });
             break;
-          case 'update:task':
+          case 'update:task': {
             let oldTask = null;
             let currrentItemList = null;
             this.listData.forEach(itemList => {
@@ -208,6 +208,7 @@
               });
             }
             break;
+          }
           case 'delete:task':
             this.listData.forEach(itemList => {
               if (itemList.id === params.task_list_id) {
@@ -215,7 +216,7 @@
               }
             });
             break;
-          case 'create:task_list':
+          case 'create:task_list': {
             const taskExisting = this.listData?.find(item => item.id === params.id);
             // 如果不存在，则添加
             if (!taskExisting) {
@@ -224,6 +225,7 @@
               this.listData = this.$baseLodash.sortBy(this.listData, item => item.sort);
             }
             break;
+          }
           case 'update:task_list':
             this.listData.forEach(item => {
               if (item.id === params.id) {
@@ -392,6 +394,7 @@
 <style lang="scss" scoped>
   .task-list {
     display: flex;
+    height: 100%;
     .task-state-success {
       filter: opacity(0.5);
     }

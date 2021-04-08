@@ -107,7 +107,7 @@
         const {
           data: { path },
         } = await upload(formData);
-        this.form.cover = `/remote_public${path}`;
+        this.form.cover = path;
       },
       realTime(data) {
         this.previews = data;

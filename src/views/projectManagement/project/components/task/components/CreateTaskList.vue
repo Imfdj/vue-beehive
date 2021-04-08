@@ -4,10 +4,10 @@
       <el-popover v-model="visible" placement="bottom" width="200" trigger="click">
         <div class="create-task-list-wrap-form">
           <div class="title">新建任务列表</div>
-          <el-input v-model="name" placeholder="列表名称" style="width: 100%; margin: 15px 0;"></el-input>
+          <el-input v-model="name" placeholder="列表名称" style="width: 100%; margin: 15px 0"></el-input>
           <el-button
             type="primary"
-            style="width: 100%; margin-bottom: 10px;"
+            style="width: 100%; margin-bottom: 10px"
             :disabled="!name.length"
             @click="createClick"
             >创建
@@ -59,7 +59,7 @@
   }
 </style>
 <style lang="scss" scoped>
-  @import '@/styles/custom.scss';
+  @import 'src/styles/custom.scss';
   .create-task-list {
     div {
       width: 269px;

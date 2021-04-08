@@ -1,5 +1,4 @@
 /**
- * @copyright chuzhixin 1204505056@qq.com
  * @description 登录、获取用户信息、退出登录、清除accessToken逻辑，不建议修改
  */
 
@@ -103,7 +102,7 @@ const actions = {
         accessToken: state.accessToken,
       },
     };
-    const connection = process.env.NODE_ENV === 'production' ? 'https://beehive.imfdj.top' : '/';
+    const connection = process.env.NODE_ENV === 'production' ? '/' : '/';
     Vue.use(
       new VueSocketIO({
         debug: process.env.NODE_ENV !== 'production',

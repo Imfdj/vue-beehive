@@ -1,5 +1,5 @@
 <template>
-  <div class="userManagement-container">
+  <div class="userManagement-container wrap-content-main">
     <vab-query-form>
       <vab-query-form-left-panel :span="12">
         <el-button v-if="false" icon="el-icon-plus" type="primary" @click="handleEdit">添加</el-button>

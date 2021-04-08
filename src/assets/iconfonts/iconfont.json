@@ -6,6 +6,90 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "1105010",
+      "name": "手机",
+      "font_class": "shouji",
+      "unicode": "e617",
+      "unicode_decimal": 58903
+    },
+    {
+      "icon_id": "6282785",
+      "name": "验证码",
+      "font_class": "yanzhengma",
+      "unicode": "e6c0",
+      "unicode_decimal": 59072
+    },
+    {
+      "icon_id": "8338696",
+      "name": "邮箱",
+      "font_class": "youxiang",
+      "unicode": "e6cb",
+      "unicode_decimal": 59083
+    },
+    {
+      "icon_id": "1567684",
+      "name": "view",
+      "font_class": "view",
+      "unicode": "e6b4",
+      "unicode_decimal": 59060
+    },
+    {
+      "icon_id": "10139856",
+      "name": "view-off",
+      "font_class": "view-off",
+      "unicode": "e697",
+      "unicode_decimal": 59031
+    },
+    {
+      "icon_id": "11746775",
+      "name": "锁",
+      "font_class": "suo",
+      "unicode": "e60c",
+      "unicode_decimal": 58892
+    },
+    {
+      "icon_id": "18863066",
+      "name": "人",
+      "font_class": "ren1",
+      "unicode": "e63d",
+      "unicode_decimal": 58941
+    },
+    {
+      "icon_id": "3090318",
+      "name": "人物",
+      "font_class": "ren",
+      "unicode": "e62e",
+      "unicode_decimal": 58926
+    },
+    {
+      "icon_id": "1013201",
+      "name": "角色",
+      "font_class": "role",
+      "unicode": "e6bf",
+      "unicode_decimal": 59071
+    },
+    {
+      "icon_id": "9826644",
+      "name": "菜单",
+      "font_class": "caidan1",
+      "unicode": "e610",
+      "unicode_decimal": 58896
+    },
+    {
+      "icon_id": "12331672",
+      "name": "接口",
+      "font_class": "jiekou",
+      "unicode": "e669",
+      "unicode_decimal": 58985
+    },
+    {
+      "icon_id": "15995149",
+      "name": "工作台-默认",
+      "font_class": "gongzuotai-moren",
+      "unicode": "e6f7",
+      "unicode_decimal": 59127
+    },
+    {
       "icon_id": "1898783",
       "name": "github-square",
       "font_class": "github-square",
@@ -235,13 +319,6 @@
       "font_class": "chilunshezhi",
       "unicode": "e603",
       "unicode_decimal": 58883
-    },
-    {
-      "icon_id": "4303877",
-      "name": "人",
-      "font_class": "ren",
-      "unicode": "e6c5",
-      "unicode_decimal": 59077
     },
     {
       "icon_id": "9148975",

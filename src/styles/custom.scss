@@ -5,6 +5,12 @@ $colorF5: #f5f5f5;
 $colorF7: #f7f7f7;
 $colorE8: #e8e8e8;
 $colorBlue: #1b9aee;
+$colorDanger: #f56c6c;
+
+.wrap-content-main {
+  padding: 20px;
+  background-color: #fff;
+}
 .color-light {
   color: $colorLight;
 }
@@ -13,4 +19,8 @@ $colorBlue: #1b9aee;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.wrap-el-table-100width {
+  width: 100%;
 }

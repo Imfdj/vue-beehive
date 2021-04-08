@@ -1,5 +1,5 @@
 <template>
-  <div class="project-template">
+  <div class="project-template wrap-content-main">
     <el-tabs v-model="activeName">
       <el-tab-pane v-for="(item, index) in titles" :key="index" :label="item" :name="index.toString()">
         <div v-loading="loading" class="list">

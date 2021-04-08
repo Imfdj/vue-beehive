@@ -63,6 +63,7 @@
   import { getList } from '@/api/userManagement';
   import { updateUserDepartment, doDelete } from '@/api/departmentManagement';
   import { doEdit } from '@/api/userManagement';
+
   const dayjs = require('dayjs');
 
   export default {
@@ -133,13 +134,15 @@
     methods: {
       async getUserList() {
         this.onLoading = true;
-        const { data } = await getList({
+        const params = {
           keyword: this.memberKeyword,
           department_id: this.department_id,
           state: this.memberData.id === 3 ? 0 : null,
-          date_after_created:
-            this.memberData.id === 1 ? dayjs().subtract(30, 'day').format('YYYY-MM-DD 00:00:00') : null,
-        });
+        };
+        this.memberData.id === 1
+          ? (params.date_after_created = dayjs().subtract(30, 'day').format('YYYY-MM-DD 00:00:00'))
+          : null;
+        const { data } = await getList(params);
         this.onLoading = false;
         this.userData = data;
       },

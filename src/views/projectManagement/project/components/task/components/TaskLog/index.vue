@@ -134,7 +134,7 @@
       sync: function (data) {
         const { params, action } = data;
         switch (action) {
-          case 'create:task_log':
+          case 'create:task_log': {
             const taskExisting = this.dataList?.find(item => item.id === params.id);
             // 如果不存在，则添加
             if (!taskExisting) {
@@ -142,6 +142,7 @@
               this.dataList = this.$baseLodash.sortBy(this.dataList, 'id');
             }
             break;
+          }
           case 'update:task_log':
             this.dataList.forEach(item => {
               if (item.id === params.id) {

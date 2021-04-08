@@ -8,7 +8,7 @@
     >
     </div>
     <div
-      v-else
+      v-if="log.content && !showMore"
       :class="[
         'content',
         { 'content-comment': log.is_comment === 1, 'ellipsis-content': !showMore && log.is_comment !== 1 },

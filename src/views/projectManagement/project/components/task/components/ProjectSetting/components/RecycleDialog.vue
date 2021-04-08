@@ -83,7 +83,7 @@
 
 <style lang="scss" scoped>
   .recycle-dialog {
-    @import '@/styles/custom.scss';
+    @import 'src/styles/custom.scss';
     .wrap-recycle-list {
       min-height: 40vh;
       .item {

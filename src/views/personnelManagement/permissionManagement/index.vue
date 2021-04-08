@@ -1,5 +1,5 @@
 <template>
-  <div class="roleManagement-container">
+  <div class="roleManagement-container wrap-content-main">
     <vab-query-form>
       <vab-query-form-left-panel :span="12">
         <el-button icon="el-icon-plus" type="primary" @click="handleEdit">添加</el-button>
@@ -12,7 +12,7 @@
               v-model.trim="queryForm.keyword"
               placeholder="资源名/标识码/标识码名/路径/动作"
               clearable
-              style="width: 250px;"
+              style="width: 250px"
             />
           </el-form-item>
           <el-form-item>
@@ -76,6 +76,7 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
     ></el-pagination>
+
     <edit ref="edit" @fetchData="fetchData"></edit>
   </div>
 </template>

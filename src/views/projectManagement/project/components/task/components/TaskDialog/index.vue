@@ -67,7 +67,7 @@
                 v-model="taskInfo.start_date"
                 type="datetime"
                 placeholder="设置开始时间"
-                style="width: 183px;"
+                style="width: 183px"
                 size="mini"
                 value-format="yyyy-MM-dd HH:mm:ss"
                 @change="startDatePickerChange"
@@ -78,7 +78,7 @@
                 v-model="taskInfo.end_date"
                 type="datetime"
                 placeholder="设置截止时间"
-                style="width: 183px;"
+                style="width: 183px"
                 size="mini"
                 value-format="yyyy-MM-dd HH:mm:ss"
                 @change="endDatePickerChange"
@@ -96,13 +96,13 @@
                   :style="`color: ${taskPrioritySelect.color};border-color: ${taskPrioritySelect.color};cursor: pointer;`"
                   >{{ taskPrioritySelect.name }}
                 </el-tag>
-                <el-dropdown-menu slot="dropdown" style="width: 200px;">
+                <el-dropdown-menu slot="dropdown" style="width: 200px">
                   <el-dropdown-item v-for="item in taskPrioritys" :key="item.id" :command="item">
-                    <div style="padding: 5px 0px; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="padding: 5px 0px; display: flex; justify-content: space-between; align-items: center">
                       <el-tag effect="plain" size="medium" :style="`color: ${item.color};border-color: ${item.color};`">
                         {{ item.name }}
                       </el-tag>
-                      <i v-if="taskPrioritySelect.id === item.id" class="el-icon-check" style="font-size: 16px;"></i>
+                      <i v-if="taskPrioritySelect.id === item.id" class="el-icon-check" style="font-size: 16px"></i>
                     </div>
                   </el-dropdown-item>
                 </el-dropdown-menu>
@@ -271,7 +271,7 @@
             Object.assign(this.taskInfo, params);
             this.setTaskInfoOrigin();
             break;
-          case 'create:task_task_tag':
+          case 'create:task_task_tag': {
             const taskExisting = this.taskInfo.task_tags?.find(item => item.id === params.id);
             // 如果不存在，则添加
             if (!taskExisting) {
@@ -279,11 +279,12 @@
               this.setTaskInfoOrigin();
             }
             break;
+          }
           case 'delete:task_task_tag':
             this.taskInfo.task_tags = this.taskInfo.task_tags?.filter(item => item.id !== params.task_tag_id);
             this.setTaskInfoOrigin();
             break;
-          case 'create:user_task':
+          case 'create:user_task': {
             const userExisting = this.taskInfo.participators?.find(item => item.id === params.id);
             // 如果不存在，则添加
             if (!userExisting) {
@@ -291,6 +292,7 @@
               this.setTaskInfoOrigin();
             }
             break;
+          }
           case 'delete:user_task':
             this.taskInfo.participators = this.taskInfo.participators?.filter(item => item.id !== params.user_id);
             this.setTaskInfoOrigin();

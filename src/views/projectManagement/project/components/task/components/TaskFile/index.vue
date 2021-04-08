@@ -1,21 +1,15 @@
 <template>
   <div class="task-file">
     <div class="title"><i class="iconfont icon-fujian1"></i>关联文件</div>
-    <div class="btn-create-task-file" @click="uploadClick"> <i class="el-icon-plus"></i>上传文件 </div>
+    <div class="btn-create-task-file" @click="uploadClick"><i class="el-icon-plus"></i>上传文件</div>
     <div v-if="fileListFilter.length" class="wrap-file-list">
       <div class="title-list">关联文件列表</div>
       <div class="file-list">
         <div v-for="item in fileListFilter" :key="item.id" class="item">
-          <BImage
-            class="user-avatar"
-            :src="`/${remote_public_prefix}${item.path}` || ''"
-            :width="24"
-            :height="24"
-            :borderRadius="24"
-          ></BImage>
+          <BImage class="user-avatar" :src="item.path || ''" :width="24" :height="24" :borderRadius="24"></BImage>
           <div class="title-file ellipsis">
             <span class="name">
-              <a :href="`/${remote_public_prefix}${item.path}`" target="_blank">{{ item.title }}</a>
+              <a :href="item.path" target="_blank">{{ item.title }}</a>
             </span>
           </div>
           <span v-if="item.project" class="project-name ellipsis">{{ item.project.name }}</span>
@@ -45,7 +39,7 @@
   import mixin from '@/mixins';
   import { getList, doCreate, doDelete } from '@/api/projectFileManagement';
   import { mapState } from 'vuex';
-  import { remote_public_prefix } from '@/config/settings';
+  import { isExternal } from '@/utils/validate';
 
   export default {
     name: 'TaskFile',
@@ -62,7 +56,6 @@
     },
     data() {
       return {
-        remote_public_prefix,
         fileList: [],
         fileOperations: [
           { id: 1, name: '复制链接', icon: 'iconfont icon-lianjie' },
@@ -92,7 +85,7 @@
       sync: function (data) {
         const { params, action } = data;
         switch (action) {
-          case 'create:project_file':
+          case 'create:project_file': {
             const taskExisting = this.fileList.find(item => item.id === params.id);
             // 如果不存在，则添加
             if (!taskExisting) {
@@ -100,6 +93,7 @@
               this.fileList = this.$baseLodash.sortBy(this.fileList, item => item.id);
             }
             break;
+          }
           case 'delete:project_file':
             this.fileList = this.fileList.filter(item => item.id !== params.id);
             break;
@@ -136,7 +130,7 @@
       fileOperationClick(item, itemOperation) {
         switch (itemOperation.id) {
           case 1:
-            this.doCopy(`${window.location.origin}/${remote_public_prefix}${item.path}`);
+            this.doCopy(isExternal(item.path) ? item.path : `${window.location.origin}${item.path}`);
             this.$baseNotify('粘贴到其他对象评论框里即可进行快速关联', '复制链接成功');
             break;
           case 2:
@@ -160,7 +154,7 @@
 </script>
 
 <style lang="scss">
-  @import '@/styles/custom.scss';
+  @import 'src/styles/custom.scss';
   .btn-operation-list-popover {
     .btn-operation-list {
       .btn-item {
@@ -179,7 +173,7 @@
   }
 </style>
 <style lang="scss" scoped>
-  @import '@/styles/custom.scss';
+  @import 'src/styles/custom.scss';
   .task-file {
     .title {
       margin-bottom: 20px;

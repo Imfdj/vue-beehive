@@ -1,5 +1,5 @@
 <template>
-  <div class="departmentManagement-container">
+  <div class="departmentManagement-container wrap-content-main">
     <div class="wrap-nav">
       <div class="wrap-search">
         <el-input
@@ -7,7 +7,7 @@
           prefix-icon="el-icon-search"
           placeholder="输入'用户名/邮箱'回车搜索"
           size="medium"
-          style="width: 228px;"
+          style="width: 228px"
           @keyup.enter.native="searchForKeyword"
         ></el-input>
       </div>
@@ -25,7 +25,7 @@
       <span class="title-box"
         >部门
         <btn-icon
-          style="margin-left: 120px;"
+          style="margin-left: 120px"
           iconClass="iconfont icon-jia"
           @click.native="addDepartmentOperationBtnClick"
         >
@@ -86,11 +86,8 @@
     },
     created() {
       this.fetchData();
-      this.addNewStyle('.app-main-container {width: 1100px !important;margin: 0 auto;}');
     },
-    beforeDestroy() {
-      this.addNewStyle('.app-main-container {width: 100% !important;}');
-    },
+
     methods: {
       async fetchData() {
         const {
@@ -98,16 +95,6 @@
           totalCount,
         } = await getList(this.queryForm);
         this.departmentList = rows.sort((a, b) => b.sort - a.sort);
-      },
-      addNewStyle(newStyle) {
-        let styleElement = document.getElementById('styles_js');
-        if (!styleElement) {
-          styleElement = document.createElement('style');
-          styleElement.type = 'text/css';
-          styleElement.id = 'styles_js';
-          document.getElementsByTagName('head')[0].appendChild(styleElement);
-        }
-        styleElement.appendChild(document.createTextNode(newStyle));
       },
       memberSelectClick(index) {
         this.memberSelectIndex = index;
@@ -135,6 +122,8 @@
 <style lang="scss" scoped>
   .departmentManagement-container {
     display: flex;
+    width: 1100px;
+    margin: 0 auto;
 
     .wrap-nav {
       width: 247px;

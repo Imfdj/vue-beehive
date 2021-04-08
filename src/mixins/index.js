@@ -1,5 +1,4 @@
 import dayjs from 'dayjs';
-import { remote_public_prefix } from '@/config/settings';
 import { doDelete as doDeleteTask, doEdit as doEditTask } from '@/api/taskManagement';
 import multiDownload from 'multi-download';
 
@@ -7,9 +6,6 @@ export default {
   methods: {
     dateFormat(date, template) {
       return dayjs(date).format(template);
-    },
-    remoteResourcePath(path) {
-      return `${remote_public_prefix}/${path}`;
     },
     recoverTask(task) {
       return new Promise((resolve, reject) => {
@@ -47,7 +43,7 @@ export default {
     },
     // 下载文件
     multiDownload(item) {
-      multiDownload([`/${remote_public_prefix}${item.path}`], {
+      multiDownload([item.path], {
         rename: () => `${item.title}${item.extension}`,
       });
     },

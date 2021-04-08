@@ -35,11 +35,13 @@ service.interceptors.request.use(
       config.headers['x-csrf-token'] = store.getters['user/accessCsrf'];
     }
     if (config.data) {
-      //这里会过滤所有为空、0、fasle的key，如果不需要请自行注释
-      // config.data = _.pickBy(config.data, _.identity);
+      //这里会过滤所有为null的key，如果不需要请自行注释
+      config.data = _.pickBy(config.data, item => !_.isNull(item));
     }
     //只针对get方式进行序列化
     if (config.method.toLowerCase() === 'get') {
+      //这里会过滤所有为null的key，如果不需要请自行注释
+      config.params = _.pickBy(config.params, item => !_.isNull(item));
       config.paramsSerializer = function (params) {
         return qs.stringify(params, { arrayFormat: 'repeat' });
       };
@@ -129,7 +131,7 @@ service.interceptors.response.use(
   },
   async error => {
     switch (error.response?.status) {
-      case invalidRequestCode:
+      case invalidRequestCode: {
         const data = error.response.data;
         switch (data.code) {
           case 1451:
@@ -140,6 +142,7 @@ service.interceptors.response.use(
             break;
         }
         break;
+      }
       case noAuthenticationCode:
         await store.dispatch('user/resetAccessToken');
         router.push(`/login?redirect=${router.app.$route.fullPath}`);

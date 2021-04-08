@@ -18,7 +18,7 @@
             v-model="form.project_template_id"
             :loading="loading"
             placeholder="请选择项目模板（必选）"
-            style="width: 100%;"
+            style="width: 100%"
           >
             <el-option v-for="item in optionsTemplate" :key="item.id" :label="item.name" :value="item.id"> </el-option>
           </el-select>
@@ -132,7 +132,7 @@
         const {
           data: { path },
         } = await upload(formData);
-        this.form.cover = `/remote_public${path}`;
+        this.form.cover = path;
       },
       realTime(data) {
         this.previews = data;

@@ -1,5 +1,5 @@
 <template>
-  <div class="roleManagement-container">
+  <div class="roleManagement-container wrap-content-main">
     <vab-query-form>
       <vab-query-form-left-panel :span="12">
         <el-button icon="el-icon-plus" type="primary" @click="handleEdit">添加</el-button>
@@ -78,6 +78,7 @@
         </template>
       </el-table-column>
     </el-table>
+
     <edit ref="edit" @fetchData="fetchData"></edit>
   </div>
 </template>
@@ -91,7 +92,7 @@
     components: { Edit },
     data() {
       return {
-        list: null,
+        list: [],
         listLoading: true,
         selectRows: '',
         elementLoadingText: '正在加载...',

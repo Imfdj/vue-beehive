@@ -2,7 +2,7 @@
   <div class="task-tag">
     <div v-show="!showEdit" class="wrap-bean">
       <div class="wrap-header">
-        <el-input v-model="name" style="width: 205px;" placeholder="搜索标签"></el-input>
+        <el-input v-model="name" style="width: 205px" placeholder="搜索标签"></el-input>
         <i class="el-icon-circle-plus-outline" @click="showEditClick"></i>
       </div>
       <div class="wrap-list">
@@ -20,7 +20,7 @@
       <div class="header">
         <i class="el-icon-arrow-left" @click="closeEdit"></i>
         {{ form.id ? '编辑' : '新建' }}标签
-        <div style="width: 20px;"></div>
+        <div style="width: 20px"></div>
       </div>
       <div class="content">
         <el-input v-model="form.name" placeholder="标签名称"></el-input>
@@ -37,11 +37,11 @@
         </div>
         <div v-if="form.id" class="wrap-btn">
           <el-popconfirm title="确定删除此标签吗？" @onConfirm="DeleteTaskTag">
-            <el-button slot="reference" type="danger" style="width: 110px;" plain>删除</el-button>
+            <el-button slot="reference" type="danger" style="width: 110px" plain>删除</el-button>
           </el-popconfirm>
-          <el-button type="primary" style="width: 110px;" :disabled="!form.name" @click="EditTaskTag">完成 </el-button>
+          <el-button type="primary" style="width: 110px" :disabled="!form.name" @click="EditTaskTag">完成 </el-button>
         </div>
-        <el-button v-else type="primary" style="width: 100%;" :disabled="!form.name" @click="CreateTaskTag"
+        <el-button v-else type="primary" style="width: 100%" :disabled="!form.name" @click="CreateTaskTag"
           >创建
         </el-button>
       </div>
@@ -50,7 +50,6 @@
 </template>
 
 <script>
-  import store from '@/store';
   import { doChange } from '@/api/taskTaskTagManagement';
   import {
     doCreate as doCreateTaskTag,
@@ -126,7 +125,7 @@
           project_id: this.project_id,
         });
         this.$baseMessage(msg, 'success');
-        store.dispatch('project/setTaskTags', this.project_id);
+        this.$store.dispatch('project/setTaskTags', this.project_id);
         this.closeEdit();
       },
       async EditTaskTag() {
@@ -135,7 +134,7 @@
           project_id: this.project_id,
         });
         this.$baseMessage(msg, 'success');
-        store.dispatch('project/setTaskTags', this.project_id);
+        this.$store.dispatch('project/setTaskTags', this.project_id);
         this.closeEdit();
       },
       async DeleteTaskTag() {
@@ -143,7 +142,7 @@
           ids: [this.form.id],
         });
         this.$baseMessage(msg, 'success');
-        store.dispatch('project/setTaskTags', this.project_id);
+        this.$store.dispatch('project/setTaskTags', this.project_id);
         this.closeEdit();
       },
       colorClick(item) {
