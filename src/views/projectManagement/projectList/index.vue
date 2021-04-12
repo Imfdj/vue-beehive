@@ -71,8 +71,18 @@
     <ProjectCreate ref="create"></ProjectCreate>
     <ProjectEdit ref="edit" @fetchData="getList"></ProjectEdit>
     <AddMemberToProjectDialog ref="AddMemberToProjectDialog"></AddMemberToProjectDialog>
+    <div v-if="listData.length > pageSize" class="wrap-el-pagination">
+      <el-pagination
+        background
+        :total="count"
+        :current-page="pageNo"
+        :page-size="pageSize"
+        @current-change="handleCurrentChange"
+        layout="prev, pager, next"
+      >
+      </el-pagination>
+    </div>
     <!--    TODO 空数据提示-->
-    <!--    TODO 分页-->
     <!--    TODO 全部项目需要包含归档-->
     <!--    TODO 裁剪图片样式bug-->
     <!--    TODO 任务增加完成状态-->
@@ -110,15 +120,22 @@
         is_recycle: 0,
         is_archived: null,
         collection: 0,
+        count: 0,
+        pageNo: 1,
+        pageSize: 10,
       };
     },
     computed: {
       ...mapState('user', ['userInfo']),
       listDataFilter() {
-        const data = this.$baseLodash.sortBy(this.listData, 'collector');
-        return this.$baseLodash.sortBy(data.reverse(), o => {
+        let data = this.$baseLodash.sortBy(this.listData, 'collector');
+        data = this.$baseLodash.sortBy(data.reverse(), o => {
           return o.is_private;
         });
+        data = data.filter((item, index) => {
+          return index >= (this.pageNo - 1) * this.pageSize && index <= this.pageNo * this.pageSize;
+        });
+        return data;
       },
     },
     watch: {
@@ -182,8 +199,6 @@
       async getList() {
         this.loading = true;
         const params = {
-          limit: 1000,
-          offset: 0,
           collection: this.collection,
         };
         this.is_recycle !== null ? (params.is_recycle = this.is_recycle) : null;
@@ -193,6 +208,8 @@
         } = await getList(params);
         this.loading = false;
         this.listData = rows;
+        this.count = count;
+        this.pageNo = 1;
       },
       handleAddUser(item) {
         this.$refs.AddMemberToProjectDialog.show(item.id);
@@ -237,6 +254,9 @@
       },
       projectClick(project) {
         this.$router.push(`/pojectManagement/Project/${project.id}`);
+      },
+      handleCurrentChange(val) {
+        this.pageNo = val;
       },
     },
   };

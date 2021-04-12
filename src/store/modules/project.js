@@ -13,6 +13,7 @@ const state = {
   taskTags: [],
   projectMembers: [], // 项目成员
   currentProjectId: null, // 当前项目ID
+  indexTab: 0, // 项目导航栏的index
 };
 const mutations = {
   setProjectList(state, projectList) {
@@ -35,6 +36,9 @@ const mutations = {
   },
   setProjectMembers(state, projectMembers) {
     state.projectMembers = projectMembers;
+  },
+  setIndexTab(state, indexTab) {
+    state.indexTab = indexTab;
   },
 };
 const actions = {

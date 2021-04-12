@@ -117,19 +117,11 @@ S.Color.prototype = {
 };
 
 S.UI = (function () {
-  var input = document.querySelector('.ui-input'),
-    ui = document.querySelector('.ui'),
-    help = document.querySelector('.help'),
-    commands = document.querySelector('.commands'),
-    overlay = document.querySelector('.overlay'),
-    canvas = document.querySelector('.canvas'),
-    interval,
+  var interval,
     isTouch = 'ontouchstart' in window || navigator.msMaxTouchPoints,
     currentAction,
-    resizeTimer,
     time,
     maxShapeSize = 30,
-    firstAction = true,
     sequence = [],
     cmd = '#';
 
@@ -180,7 +172,6 @@ S.UI = (function () {
   function performAction(value) {
     var action, current;
     sequence = typeof value === 'object' ? value : sequence.concat(value.split('|'));
-    // input.value = '';
 
     timedAction(
       function () {
@@ -245,7 +236,7 @@ S.UI = (function () {
             break;
 
           case 'icon':
-            S.ShapeBuilder.imageFile('/static/' + value + '.png', function (obj) {
+            S.ShapeBuilder.imageFile('/static/img/' + value + '.png', function (obj) {
               S.Shape.switchShape(obj);
             });
             break;

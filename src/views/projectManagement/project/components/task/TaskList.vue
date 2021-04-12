@@ -370,7 +370,7 @@
       },
       taskOpen(task) {
         this.$refs.TaskDialog.show(task.id);
-        this.$router.push(`${this.$route.path}?taskId=${task.id}`);
+        this.$router.replace(`${this.$route.path}?taskId=${task.id}`);
       },
       taskDialogClose(isEdited) {
         if (isEdited) {

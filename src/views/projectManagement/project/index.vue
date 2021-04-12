@@ -60,6 +60,7 @@
     <div class="wrap-content">
       <TaskList v-if="indexTab === 0" ref="TaskList"></TaskList>
       <File v-if="indexTab === 1" ref="File"></File>
+      <Overview v-if="indexTab === 2" ref="Overview"></Overview>
     </div>
     <AddMemberToProjectDialog ref="AddMemberToProjectDialog" @getUserList="getUserList"></AddMemberToProjectDialog>
   </div>
@@ -69,7 +70,8 @@
   import TaskList from './components/task/TaskList';
   import TaskFilter from './components/task/components/TaskFilter';
   import ProjectSetting from './components/task/components/ProjectSetting';
-  import File from './components/file';
+  import File from './components/File';
+  import Overview from './components/Overview';
   import { mapState, mapMutations } from 'vuex';
   import BImage from '@/components/B-image';
   import AddMemberToProjectDialog from '@/views/projectManagement/projectList/components/AddMemberToProjectDialog';
@@ -83,17 +85,17 @@
       TaskFilter,
       ProjectSetting,
       File,
+      Overview,
     },
     data() {
       return {
         tabs: ['任务', '文件', '概览', '版本', '日程'],
-        indexTab: 0,
         userList: [],
         keywordProjectName: '',
       };
     },
     computed: {
-      ...mapState('project', ['currentProjectId', 'projectList']),
+      ...mapState('project', ['currentProjectId', 'projectList', 'indexTab']),
       currentProject() {
         return this.projectList.find(item => item.id === this.currentProjectId) || {};
       },
@@ -140,8 +142,9 @@
     },
     methods: {
       ...mapMutations('routes', ['setNoNav', 'setNavIndex']),
+      ...mapMutations('project', ['setIndexTab']),
       tabClick(index) {
-        this.indexTab = index;
+        this.setIndexTab(index);
       },
       dropdownCommand(projectId) {
         this.$router.push(this.$route.path.replace(/\/\d+$/, `/${projectId}`));
