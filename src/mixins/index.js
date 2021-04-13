@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import { doDelete as doDeleteTask, doEdit as doEditTask } from '@/api/taskManagement';
 import multiDownload from 'multi-download';
+import store from '@/store';
 
 export default {
   methods: {
@@ -41,12 +42,14 @@ export default {
         }
       });
     },
+
     // 下载文件
     multiDownload(item) {
       multiDownload([item.path], {
         rename: () => `${item.title}${item.extension}`,
       });
     },
+
     /**
      * 复制文本
      * @param text
@@ -63,6 +66,16 @@ export default {
       input.select();
       document.execCommand('copy');
       document.body.removeChild(div);
+    },
+
+    /**
+     * 验证资源权限
+     * @param string
+     * @return Boolean
+     */
+    checkPermission(permission) {
+      const permissions = (store.getters['user/userInfo'] && store.getters['user/userInfo'].permissions) || [];
+      return permissions.includes(permission);
     },
   },
 };

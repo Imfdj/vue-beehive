@@ -17,7 +17,6 @@ const state = {
   refreshToken: getRefreshToken(),
   username: '',
   avatar: '',
-  permissions: [],
   userInfo: {},
 };
 const getters = {
@@ -26,8 +25,8 @@ const getters = {
   refreshToken: state => state.refreshToken,
   username: state => state.username,
   avatar: state => state.avatar,
-  permissions: state => state.permissions,
   userInfo: state => state.userInfo,
+  permissions: state => state.userInfo?.permissions || [],
 };
 const mutations = {
   setAccessToken(state, accessToken) {
@@ -41,9 +40,6 @@ const mutations = {
   },
   setAvatar(state, avatar) {
     state.avatar = avatar;
-  },
-  setPermissions(state, permissions) {
-    state.permissions = permissions;
   },
   setUserInfo(state, userInfo) {
     state.userInfo = userInfo;
@@ -64,9 +60,6 @@ const actions = {
   //     result: 'OK',
   //   });
   // },
-  setPermissions({ commit }, permissions) {
-    commit('setPermissions', permissions);
-  },
   async login({ commit }, userInfo) {
     // 如果存在username，password则为账号密码登录，否则为github授权登录
     const { code, data, msg } =
@@ -117,7 +110,6 @@ const actions = {
     );
 
     if (permissions && username) {
-      commit('setPermissions', permissions);
       commit('setusername', username);
       commit('setAvatar', avatar);
       commit('setUserInfo', data);
@@ -135,7 +127,6 @@ const actions = {
     Vue.prototype.$socket.disconnect();
   },
   resetAccessToken({ commit }) {
-    commit('setPermissions', []);
     commit('setAccessToken', JSON.stringify({}));
     removeAccessToken();
   },

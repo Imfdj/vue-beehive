@@ -1,37 +1,32 @@
 <template>
   <div class="project-task">
     <div class="wrap-nav">
-      <el-breadcrumb separator="/">
-        <el-breadcrumb-item :to="{ path: '/' }"><i class="el-icon-s-home"></i>首页</el-breadcrumb-item>
-        <el-breadcrumb-item>
-          <el-dropdown trigger="click" placement="top" class="project-task-project-dropdown" @command="dropdownCommand">
-            <span class="el-dropdown-link">
-              <span class="project-name">{{ currentProject.name }}</span>
-              <i class="el-icon-arrow-down el-icon--right"></i>
-            </span>
-            <el-dropdown-menu slot="dropdown">
-              <div class="wrap-project-task-dropdown">
-                <el-input
-                  v-model="keywordProjectName"
-                  size="medium"
-                  class="project-task-wrap-dropdown-input"
-                  placeholder="搜索"
-                  prefix-icon="el-icon-search"
-                ></el-input>
-                <el-dropdown-item v-for="item in listProjectDataFilter" :key="item.id" :command="item.id">
-                  <div class="project-task-wrap-dropdown-item">
-                    <div class="info">
-                      <BImage :src="item.cover || ''" :width="32" :height="32" :borderRadius="32"></BImage>
-                      <div class="name">{{ item.name }}</div>
-                    </div>
-                    <i v-if="item.id === currentProject.id" class="el-icon-check"></i>
-                  </div>
-                </el-dropdown-item>
+      <el-dropdown trigger="click" placement="top" class="project-task-project-dropdown" @command="dropdownCommand">
+        <span class="el-dropdown-link">
+          <span class="project-name">{{ currentProject.name }}</span>
+          <i class="el-icon-arrow-down el-icon--right"></i>
+        </span>
+        <el-dropdown-menu slot="dropdown">
+          <div class="wrap-project-task-dropdown">
+            <el-input
+              v-model="keywordProjectName"
+              size="medium"
+              class="project-task-wrap-dropdown-input"
+              placeholder="搜索"
+              prefix-icon="el-icon-search"
+            ></el-input>
+            <el-dropdown-item v-for="item in listProjectDataFilter" :key="item.id" :command="item.id">
+              <div class="project-task-wrap-dropdown-item">
+                <div class="info">
+                  <BImage :src="item.cover || ''" :width="32" :height="32" :borderRadius="32"></BImage>
+                  <div class="name">{{ item.name }}</div>
+                </div>
+                <i v-if="item.id === currentProject.id" class="el-icon-check"></i>
               </div>
-            </el-dropdown-menu>
-          </el-dropdown>
-        </el-breadcrumb-item>
-      </el-breadcrumb>
+            </el-dropdown-item>
+          </div>
+        </el-dropdown-menu>
+      </el-dropdown>
 
       <div class="tab">
         <div

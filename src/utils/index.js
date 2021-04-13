@@ -1,5 +1,7 @@
 import dayjs from 'dayjs';
+import lodash from 'lodash';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
+
 dayjs.extend(weekOfYear);
 
 /**
@@ -110,4 +112,12 @@ export const dateHumanizeFormat = function (date) {
   }
 
   return data;
+};
+
+/**
+ * time时间后执行callback，如存在未执行Timeout则清除
+ * @copyright Imfdj imfdjjj@gmail.com
+ */
+export const getPermissionStr = function (permissions) {
+  return lodash.mapValues(permissions, o => `${o.method}:/api${o.url}`);
 };

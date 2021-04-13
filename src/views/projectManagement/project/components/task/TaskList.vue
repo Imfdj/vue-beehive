@@ -88,7 +88,7 @@
         </div>
       </div>
     </draggable>
-    <CreateTaskList></CreateTaskList>
+    <CreateTaskList v-permission="taskListPermissions.doCreate"></CreateTaskList>
     <TaskDialog ref="TaskDialog" :projectId="projectId" @close="taskDialogClose"></TaskDialog>
     <EditorTaskListDialog ref="EditorTaskListDialog"></EditorTaskListDialog>
   </div>
@@ -102,10 +102,17 @@
   import EditorTaskListDialog from './components/EditorTaskListDialog';
   import CreateTask from './components/CreateTask';
   import CreateTaskList from './components/CreateTaskList';
-  import { getList, doDelete } from '@/api/taskListManagement';
-  import { doEditSort, doEdit, getList as getTaskList, doRecycleAllTaskOfTaskList } from '@/api/taskManagement';
+  import { getList, doDelete, permissions as taskListPermissions } from '@/api/taskListManagement';
+  import {
+    doEditSort,
+    doEdit,
+    getList as getTaskList,
+    doRecycleAllTaskOfTaskList,
+    permissions as taskPermissions,
+  } from '@/api/taskManagement';
   import { doEditSort as doTaskListEditSort } from '@/api/taskListManagement';
   import { mapState } from 'vuex';
+  import mixin from '@/mixins';
 
   export default {
     name: 'TaskList',
@@ -118,8 +125,11 @@
       EditorTaskListDialog,
       CreateTaskList,
     },
+    mixins: [mixin],
     data() {
       return {
+        taskListPermissions,
+        taskPermissions,
         projectId: parseInt(this.$route.params.id),
         listData: [],
         indexListCreate: -1,
@@ -244,6 +254,7 @@
       },
     },
     created() {
+      this.initPermissions();
       this.getList();
     },
     mounted() {
@@ -253,8 +264,21 @@
       }
     },
     methods: {
+      initPermissions() {
+        this.selectListMore = this.selectListMore.filter((item, index) => {
+          if (index === 0) {
+            return this.checkPermission(this.taskListPermissions.doEdit);
+          }
+          if (index === 1) {
+            return this.checkPermission(this.taskPermissions.doRecycleAllTaskOfTaskList);
+          }
+          if (index === 2) {
+            return this.checkPermission(this.taskListPermissions.doDelete);
+          }
+          return true;
+        });
+      },
       commandMore(selector, itemList) {
-        console.log(itemList);
         switch (selector.id) {
           case 0: // 编辑
             this.$refs.EditorTaskListDialog.show(itemList);

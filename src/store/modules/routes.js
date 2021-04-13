@@ -3,7 +3,7 @@
  */
 import { asyncRoutes, constantRoutes } from '@/router';
 import { getRouterList } from '@/api/router';
-import { filterAllRoutes, filterAsyncRoutes, listToTree } from '@/utils/handleRoutes';
+import { filterAllRoutes, listToTree } from '@/utils/handleRoutes';
 
 const state = {
   routes: [],
@@ -25,9 +25,6 @@ const getters = {
   },
 };
 const mutations = {
-  setRoutes(state, routes) {
-    state.routes = constantRoutes.concat(routes);
-  },
   setAllRoutes(state, routes) {
     state.routes = constantRoutes.concat(routes);
   },
@@ -45,16 +42,6 @@ const mutations = {
   },
 };
 const actions = {
-  async setRoutes({ commit }, permissions) {
-    let accessedRoutes = [];
-    if (permissions.includes('admin')) {
-      accessedRoutes = asyncRoutes;
-    } else {
-      accessedRoutes = await filterAsyncRoutes(asyncRoutes, permissions);
-    }
-    commit('setRoutes', accessedRoutes);
-    return accessedRoutes;
-  },
   async setAllRoutes({ commit }) {
     let { data } = await getRouterList();
     data.push({ path: '*', redirect: '/404', hidden: true });

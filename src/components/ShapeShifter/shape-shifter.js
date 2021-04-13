@@ -236,7 +236,7 @@ S.UI = (function () {
             break;
 
           case 'icon':
-            S.ShapeBuilder.imageFile('/static/img/' + value + '.png', function (obj) {
+            S.ShapeBuilder.imageFile('static/img/' + value + '.png', function (obj) {
               S.Shape.switchShape(obj);
             });
             break;

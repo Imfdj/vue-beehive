@@ -37,40 +37,6 @@ export function filterAllRoutes(constantRoutes) {
 }
 
 /**
- * @description 判断当前路由是否包含权限
- * @param permissions
- * @param route
- * @returns {boolean|*}
- */
-function hasPermission(permissions, route) {
-  if (route.meta && route.meta.permissions) {
-    return permissions.some(role => route.meta.permissions.includes(role));
-  } else {
-    return true;
-  }
-}
-
-/**
- * @description intelligence模式根据permissions数组拦截路由
- * @param routes
- * @param permissions
- * @returns {[]}
- */
-export function filterAsyncRoutes(routes, permissions) {
-  const finallyRoutes = [];
-  routes.forEach(route => {
-    const item = { ...route };
-    if (hasPermission(permissions, item)) {
-      if (item.children) {
-        item.children = filterAsyncRoutes(item.children, permissions);
-      }
-      finallyRoutes.push(item);
-    }
-  });
-  return finallyRoutes;
-}
-
-/**
  * 数组转树形结构
  * @param list 源数组
  * @param tree 树
