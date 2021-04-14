@@ -19,6 +19,13 @@
         </div>
       </div>
       <div class="wrap-ctrl">
+        <MessageBox>
+          <div class="wrap-message-icon">
+            <el-badge value="99" class="item">
+              <i class="iconfont icon-lingdang-xianxing"></i>
+            </el-badge>
+          </div>
+        </MessageBox>
         <UserOperation>
           <div class="user">
             <BImage class="user-avatar" :src="userInfo.avatar" :width="32" :height="32" :borderRadius="32"></BImage>
@@ -34,6 +41,7 @@
   import BImage from '@/components/B-image';
   import { mapGetters, mapMutations, mapState } from 'vuex';
   import UserOperation from './UserOperation';
+  import MessageBox from './MessageBox';
   import { title } from '@/config/settings';
 
   export default {
@@ -41,6 +49,7 @@
     components: {
       BImage,
       UserOperation,
+      MessageBox,
     },
     props: {
       isMenuCollapse: {
@@ -152,10 +161,23 @@
           display: flex;
           align-items: center;
           height: 65px;
-          padding: 0 20px;
+          padding: 0 40px 0 20px;
           cursor: pointer;
           .user-avatar {
             margin-right: 10px;
+          }
+          &:hover {
+            background-color: #f9f9f9;
+          }
+        }
+        .wrap-message-icon {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 60px;
+          height: 65px;
+          & i {
+            font-size: 20px;
           }
           &:hover {
             background-color: #f9f9f9;
