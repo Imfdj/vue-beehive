@@ -3,7 +3,9 @@
     <vab-query-form>
       <vab-query-form-left-panel :span="12">
         <el-button v-if="false" icon="el-icon-plus" type="primary" @click="handleEdit">添加</el-button>
-        <el-button icon="el-icon-delete" type="danger" @click="handleDelete">批量删除</el-button>
+        <el-button v-permission="userPermissions.doDelete" icon="el-icon-delete" type="danger" @click="handleDelete"
+          >批量删除</el-button
+        >
       </vab-query-form-left-panel>
       <vab-query-form-right-panel :span="12">
         <el-form :inline="true" :model="queryForm" @submit.native.prevent>
@@ -66,7 +68,7 @@
 </template>
 
 <script>
-  import { getList, doDelete } from '@/api/userManagement';
+  import { getList, doDelete, permissions as userPermissions } from '@/api/user';
   import Edit from './components/UserManagementEdit';
   import UserRoleManagementEdit from './components/UserRoleManagementEdit';
   import { mapState } from 'vuex';
@@ -76,6 +78,7 @@
     components: { Edit, UserRoleManagementEdit },
     data() {
       return {
+        userPermissions,
         list: null,
         listLoading: true,
         layout: 'total, sizes, prev, pager, next, jumper',

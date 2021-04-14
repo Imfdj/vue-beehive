@@ -26,7 +26,7 @@
 </template>
 
 <script>
-  import { doEdit, doCreate } from '@/api/userManagement';
+  import { doEdit, register } from '@/api/user';
 
   export default {
     name: 'UserManagementEdit',
@@ -69,7 +69,7 @@
         this.$refs['form'].validate(async valid => {
           if (valid) {
             if (this.title === '添加') {
-              const { msg } = await doCreate(this.form);
+              const { msg } = await register(this.form);
               this.$baseMessage(msg, 'success');
             } else {
               const { msg } = await doEdit(this.form);

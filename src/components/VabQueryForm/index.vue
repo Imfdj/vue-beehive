@@ -22,13 +22,16 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: flex-start;
   }
 
   .vab-query-form {
     margin-bottom: 10px;
 
     ::v-deep {
+      .el-col {
+        min-height: 1px;
+      }
+
       .top-panel {
         @include panel;
       }

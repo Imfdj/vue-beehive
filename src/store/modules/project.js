@@ -3,7 +3,7 @@ import { getList as getTaskTypeList } from '@/api/taskTypeManagement';
 import { getList as getTaskStateList } from '@/api/taskStateManagement';
 import { getList as getTaskPriorityList } from '@/api/taskPriorityManagement';
 import { getList as getTaskTagsList } from '@/api/taskTagManagement';
-import { getList as getProjectMembers } from '@/api/userManagement';
+import { getList as getProjectMembers } from '@/api/user';
 
 const state = {
   projectList: [],

@@ -34,7 +34,7 @@
           </div>
         </div>
         <div v-if="showAddUser" class="wrap-footer">
-          <el-button type="primary" style="width: 100%;" @click="handleAddUser">邀请新成员</el-button>
+          <el-button type="primary" style="width: 100%" @click="handleAddUser">邀请新成员</el-button>
         </div>
       </div>
       <div slot="reference" class="btn">
@@ -48,7 +48,7 @@
 
 <script>
   import BImage from '@/components/B-image';
-  import { getList } from '@/api/userManagement';
+  import { getList } from '@/api/user';
   import { waitTimeout } from '@/utils';
   import AddMemberToProjectDialog from '@/views/projectManagement/projectList/components/AddMemberToProjectDialog';
   import { mapState } from 'vuex';

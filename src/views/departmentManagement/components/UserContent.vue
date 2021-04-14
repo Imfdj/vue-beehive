@@ -60,9 +60,9 @@
   import BtnTooltip from '@/components/Btn-tooltip';
   import AddMemberToDepartmentDialog from './AddMemberToDepartmentDialog';
   import DepartmentOperation from './DepartmentOperation';
-  import { getList } from '@/api/userManagement';
+  import { getList } from '@/api/user';
   import { updateUserDepartment, doDelete } from '@/api/departmentManagement';
-  import { doEdit } from '@/api/userManagement';
+  import { doEdit } from '@/api/user';
 
   const dayjs = require('dayjs');
 

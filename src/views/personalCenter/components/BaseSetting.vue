@@ -31,8 +31,7 @@
   import Cropper from '@/components/Cropper';
   import { mapState } from 'vuex';
   import { upload } from '@/api/upload';
-  import { update } from '@/api/user';
-  import store from '@/store';
+  import { doEdit } from '@/api/user';
 
   export default {
     name: 'BaseSetting',
@@ -69,7 +68,7 @@
       submitForm(formName) {
         this.$refs[formName].validate(async valid => {
           if (valid) {
-            await update(this.ruleForm);
+            await doEdit(this.ruleForm);
             this.$store.dispatch('user/getInfo');
           } else {
             console.log('error submit!!');

@@ -1,6 +1,73 @@
 import request from '@/utils/request';
 import { encryptedData } from '@/utils/encrypt';
 import { loginRSA } from '@/config/settings';
+import { getPermissionStr } from '@/utils';
+
+const methodUrl = {
+  getList: {
+    url: '/v1/users/list',
+    method: 'get',
+  },
+  doEdit: {
+    url: '/v1/users',
+    method: 'put',
+  },
+  doDelete: {
+    url: '/v1/users',
+    method: 'delete',
+  },
+  login: {
+    url: '/v1/users/login',
+    method: 'post',
+  },
+  getInfo: {
+    url: '/v1/users/user_info',
+    method: 'get',
+  },
+  logout: {
+    url: '/v1/users/logout',
+    method: 'post',
+  },
+  register: {
+    url: '/v1/users',
+    method: 'post',
+  },
+  usersPassword: {
+    url: '/v1/users/password',
+    method: 'put',
+  },
+  doRefreshToken: {
+    url: '/v1/users/refreshToken',
+    method: 'post',
+  },
+  githubLogin: {
+    url: '/v1/users/github/login',
+    method: 'post',
+  },
+};
+
+export const permissions = getPermissionStr(methodUrl);
+
+export function getList(params) {
+  return request({
+    ...methodUrl.getList,
+    params,
+  });
+}
+
+export function doEdit(data) {
+  return request({
+    ...methodUrl.doEdit,
+    data,
+  });
+}
+
+export function doDelete(data) {
+  return request({
+    ...methodUrl.doDelete,
+    data,
+  });
+}
 
 export async function login(data) {
   let password = data.password;
@@ -8,8 +75,7 @@ export async function login(data) {
     password = await encryptedData(data.password);
   }
   return request({
-    url: '/v1/users/login',
-    method: 'post',
+    ...methodUrl.login,
     data: {
       ...data,
       password,
@@ -19,54 +85,40 @@ export async function login(data) {
 
 export function getInfo() {
   return request({
-    url: '/v1/users/user_info',
-    method: 'get',
+    ...methodUrl.getInfo,
   });
 }
 
 export function logout() {
   return request({
-    url: '/v1/users/logout',
-    method: 'post',
+    ...methodUrl.logout,
   });
 }
 
 export function register(data) {
   return request({
-    url: '/v1/users',
-    method: 'post',
-    data,
-  });
-}
-
-export function update(data) {
-  return request({
-    url: '/v1/users',
-    method: 'put',
+    ...methodUrl.register,
     data,
   });
 }
 
 export function usersPassword(data) {
   return request({
-    url: '/v1/users/password',
-    method: 'put',
+    ...methodUrl.usersPassword,
     data,
   });
 }
 
 export function doRefreshToken(data) {
   return request({
-    url: '/v1/users/refreshToken',
-    method: 'post',
+    ...methodUrl.doRefreshToken,
     data,
   });
 }
 
 export function githubLogin(data) {
   return request({
-    url: '/v1/users/github/login',
-    method: 'post',
+    ...methodUrl.githubLogin,
     data,
   });
 }

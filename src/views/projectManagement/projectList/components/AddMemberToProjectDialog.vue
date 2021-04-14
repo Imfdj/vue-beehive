@@ -30,7 +30,7 @@
             <el-button v-if="!item.projectIds.includes(projectId)" size="mini" plain @click="add(item)">
               <i class="iconfont icon-jiaren"></i> 邀请
             </el-button>
-            <span v-else><i class="iconfont icon-ren" style="margin-right: 5px;"></i>已加入</span>
+            <span v-else><i class="iconfont icon-ren" style="margin-right: 5px"></i>已加入</span>
           </div>
         </div>
       </div>
@@ -49,7 +49,7 @@
 </template>
 
 <script>
-  import { getList } from '@/api/userManagement';
+  import { getList } from '@/api/user';
   import { doCreate } from '@/api/userProjectManagement';
   import BImage from '@/components/B-image';
   import { waitTimeout } from '@/utils';

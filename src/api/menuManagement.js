@@ -1,41 +1,51 @@
 import request from '@/utils/request';
+import { getPermissionStr } from '@/utils';
 
-export function getTree(data) {
-  return request({
-    url: '/menuManagement/getTree',
+const methodUrl = {
+  getList: {
+    url: '/v1/menus/list',
+    method: 'get',
+  },
+  doCreate: {
+    url: '/v1/menus',
     method: 'post',
-    data,
-  });
-}
+  },
+  doEdit: {
+    url: '/v1/menus',
+    method: 'put',
+  },
+  doDelete: {
+    url: '/v1/menus',
+    method: 'delete',
+  },
+};
+
+export const permissions = getPermissionStr(methodUrl);
 
 export function getList(params) {
   return request({
-    url: '/v1/menus/list',
-    method: 'get',
+    ...methodUrl.getList,
     params,
   });
 }
 
 export function doCreate(data) {
   return request({
-    url: '/v1/menus',
-    method: 'post',
+    ...methodUrl.doCreate,
     data,
   });
 }
 
 export function doEdit(data) {
   return request({
-    url: '/v1/menus',
-    method: 'put',
+    ...methodUrl.doEdit,
     data,
   });
 }
 
 export function doDelete(data) {
   return request({
-    url: '/v1/menus',
-    method: 'delete',
+    ...methodUrl.doDelete,
     data,
   });
 }

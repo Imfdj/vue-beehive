@@ -21,7 +21,7 @@
               <el-button v-if="departmentData.id !== item.department_id" size="mini" plain @click="addDepartment(item)">
                 <i class="iconfont icon-jiaren"></i> 添加
               </el-button>
-              <span v-else><i class="iconfont icon-ren" style="margin-right: 5px;"></i>已添加</span>
+              <span v-else><i class="iconfont icon-ren" style="margin-right: 5px"></i>已添加</span>
             </div>
           </div>
         </div>
@@ -41,7 +41,7 @@
 </template>
 
 <script>
-  import { getList } from '@/api/userManagement';
+  import { getList } from '@/api/user';
   import { updateUserDepartment } from '@/api/departmentManagement';
   import { waitTimeout } from '@/utils';
   import BImage from '@/components/B-image';
