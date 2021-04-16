@@ -159,6 +159,14 @@
     computed: {
       ...mapState('project', ['taskStates', 'taskPrioritys', 'taskTypes', 'projectMembers']),
     },
+    watch: {
+      $route(newValue, oldValue) {
+        // 如果路由中有taskId参数，则打开任务弹窗
+        if (newValue.query.taskId) {
+          this.$refs.TaskDialog.show(parseInt(newValue.query.taskId));
+        }
+      },
+    },
     sockets: {
       sync: function (data) {
         const { params, action } = data;

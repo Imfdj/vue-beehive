@@ -154,7 +154,6 @@
 </script>
 
 <style lang="scss">
-  @import 'src/styles/custom.scss';
   .btn-operation-list-popover {
     .btn-operation-list {
       .btn-item {
@@ -173,7 +172,6 @@
   }
 </style>
 <style lang="scss" scoped>
-  @import 'src/styles/custom.scss';
   .task-file {
     .title {
       margin-bottom: 20px;

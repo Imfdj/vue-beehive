@@ -107,7 +107,6 @@
 </script>
 
 <style lang="scss" scoped>
-  @import 'src/styles/custom';
   .project-log {
     width: 690px;
     padding: 10px 20px;

@@ -74,6 +74,33 @@ $color-lucency-input-bgc: rgba(246, 244, 252, 0.57);
 // 登录、注册、找回密码页面按钮背景色
 $color-lucency-btn-bgc: rgba(255, 199, 80, 0.52);
 
+$colorLight: rgba(0, 0, 0, 0.45);
+$color333: #333;
+$colorE5: #e5e5e5;
+$colorF5: #f5f5f5;
+$colorF7: #f7f7f7;
+$colorE8: #e8e8e8;
+$colorBlue: #1b9aee;
+$colorDanger: #f56c6c;
+
+.wrap-content-main {
+  padding: 20px;
+  background-color: #fff;
+}
+.color-light {
+  color: $colorLight;
+}
+
+.ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wrap-el-table-100width {
+  width: 100%;
+}
+
 :export {
   //菜单文字颜色变量导出
   menu-color: $base-menu-color;

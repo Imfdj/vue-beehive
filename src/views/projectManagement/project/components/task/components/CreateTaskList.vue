@@ -59,7 +59,6 @@
   }
 </style>
 <style lang="scss" scoped>
-  @import 'src/styles/custom.scss';
   .create-task-list {
     div {
       width: 269px;

@@ -16,7 +16,7 @@
             <div class="bullshit-oops">{{ oops }}</div>
             <div class="bullshit-headline">{{ headline }}</div>
             <div class="bullshit-info">{{ info }}</div>
-            <a class="bullshit-return-home" href="#/index">{{ jumpTime }}s&nbsp;{{ btn }}</a>
+            <a class="bullshit-return-home" href="/">{{ jumpTime }}s&nbsp;{{ btn }}</a>
           </div>
         </el-col>
       </el-row>

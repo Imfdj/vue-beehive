@@ -239,7 +239,6 @@
 </script>
 
 <style lang="scss" scoped>
-  @import 'src/styles/custom';
   .file {
     width: 1076px;
     min-height: 100%;

@@ -131,7 +131,6 @@
 </script>
 
 <style lang="scss" scoped>
-  @import 'src/styles/custom';
   .project-info {
     width: 289px;
     padding: 6px 18px 18px 18px;

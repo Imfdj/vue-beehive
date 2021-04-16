@@ -19,9 +19,9 @@
         </div>
       </div>
       <div class="wrap-ctrl">
-        <MessageBox>
+        <MessageBox @getCount="getMessageCount">
           <div class="wrap-message-icon">
-            <el-badge value="99" class="item">
+            <el-badge v-show="messageCount" :value="messageCount" class="item">
               <i class="iconfont icon-lingdang-xianxing"></i>
             </el-badge>
           </div>
@@ -58,7 +58,9 @@
       },
     },
     data() {
-      return {};
+      return {
+        messageCount: 0,
+      };
     },
     computed: {
       ...mapState('user', ['userInfo']),
@@ -84,6 +86,9 @@
         if (this.navIndex !== 0) {
           this.navClick(0);
         }
+      },
+      getMessageCount(count) {
+        this.messageCount = count;
       },
     },
   };
@@ -176,6 +181,7 @@
           justify-content: center;
           width: 60px;
           height: 65px;
+          cursor: pointer;
           & i {
             font-size: 20px;
           }

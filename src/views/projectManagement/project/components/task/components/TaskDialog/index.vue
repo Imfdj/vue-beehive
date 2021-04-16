@@ -417,7 +417,6 @@
 </script>
 
 <style lang="scss" scoped>
-  @import 'src/styles/custom';
   $min-height: calc(100vh - 170px);
   .task-dialog {
     white-space: normal;

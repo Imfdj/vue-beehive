@@ -35,7 +35,6 @@
 </script>
 
 <style lang="scss">
-  @import 'src/styles/custom';
   .user-popover {
     padding: 4px 0 !important;
     .options {
