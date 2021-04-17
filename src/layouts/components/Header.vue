@@ -21,7 +21,7 @@
       <div class="wrap-ctrl">
         <MessageBox @getCount="getMessageCount">
           <div class="wrap-message-icon">
-            <el-badge v-show="messageCount" :value="messageCount" class="item">
+            <el-badge :hidden="!messageCount" :value="messageCount" class="item">
               <i class="iconfont icon-lingdang-xianxing"></i>
             </el-badge>
           </div>

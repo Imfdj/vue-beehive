@@ -66,7 +66,6 @@
   import { getList, doDelete } from '@/api/taskWorkingHourManagement';
   import EditorWorkingHourDialog from './components/EditorWorkingHourDialog';
   import BImage from '@/components/B-image';
-  import dayjs from 'dayjs';
   import { mapState } from 'vuex';
 
   export default {
@@ -164,9 +163,9 @@
       },
       startDateFormat(work_time) {
         if (new Date(work_time).getFullYear() === new Date().getFullYear()) {
-          return dayjs(work_time).format('M月D日');
+          return this.$baseDayjs(work_time).format('M月D日');
         }
-        return dayjs(work_time).format('YYYY年M月D日');
+        return this.$baseDayjs(work_time).format('YYYY年M月D日');
       },
       editClick(row) {
         this.$refs.EditorWorkingHourDialog.show(row);

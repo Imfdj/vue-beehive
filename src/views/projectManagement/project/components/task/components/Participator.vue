@@ -1,6 +1,6 @@
 <template>
   <div class="participator">
-    <div class="title">参与者 <span class="point"></span>{{ 1 }}</div>
+    <div class="title">参与者 <span class="point"></span>{{ users.length }}</div>
     <div class="user-list">
       <div v-for="user in users" :key="user.id" class="item">
         <BImage class="user-avatar" :src="user.avatar || ''" :width="24" :height="24" :borderRadius="24"></BImage>

@@ -46,7 +46,6 @@
 <script>
   import BImage from '@/components/B-image';
   import { mapState } from 'vuex';
-  import dayjs from 'dayjs';
   import { doEdit } from '@/api/projectManagement';
 
   export default {
@@ -101,7 +100,7 @@
     computed: {
       ...mapState('project', ['projectList', 'currentProjectId']),
       createdAt() {
-        return dayjs(this.project.created_at).format('YYYY年M月D日');
+        return this.$baseDayjs(this.project.created_at).format('YYYY年M月D日');
       },
     },
     created() {

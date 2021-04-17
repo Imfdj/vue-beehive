@@ -64,8 +64,6 @@
   import { updateUserDepartment, doDelete } from '@/api/departmentManagement';
   import { doEdit } from '@/api/user';
 
-  const dayjs = require('dayjs');
-
   export default {
     name: 'UserContent',
     components: {
@@ -140,7 +138,7 @@
           state: this.memberData.id === 3 ? 0 : null,
         };
         this.memberData.id === 1
-          ? (params.date_after_created = dayjs().subtract(30, 'day').format('YYYY-MM-DD 00:00:00'))
+          ? (params.date_after_created = this.$baseDayjs().subtract(30, 'day').format('YYYY-MM-DD 00:00:00'))
           : null;
         const { data } = await getList(params);
         this.onLoading = false;

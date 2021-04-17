@@ -162,7 +162,12 @@
             :creatorId="taskInfo.creator_id"
             @change="participatorChange"
           ></Participator>
-          <TaskLog ref="TaskLog" :projectId="projectId" :taskId="taskId"></TaskLog>
+          <TaskLog
+            ref="TaskLog"
+            :projectId="projectId"
+            :participators="taskInfo.participators || []"
+            :taskInfo="taskInfo"
+          ></TaskLog>
         </div>
       </el-col>
     </el-row>

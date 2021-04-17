@@ -50,8 +50,8 @@
           v-model="content"
           type="textarea"
           :autosize="{ minRows: 1, maxRows: 1 }"
-          placeholder="@ 提及他人，按Enter快速发布"
-          @keyup.enter.native="doCreate"
+          placeholder="@ 提及他人，按Ctrl + Enter快速发布"
+          @keyup.ctrl.enter.native="doCreate"
         ></el-input>
       </div>
       <div class="ctrl">
@@ -66,6 +66,7 @@
   import BImage from '@/components/B-image';
   import LogComment from './components/LogComment';
   import { getList, doCreate } from '@/api/taskLogManagement';
+  import { doCreate as doCreateMessage } from '@/api/messageManagement';
   import { dateHumanizeFormat } from '@/utils';
   import { mapState } from 'vuex';
 
@@ -76,12 +77,16 @@
       LogComment,
     },
     props: {
-      taskId: {
-        type: Number,
+      taskInfo: {
+        type: Object,
         required: true,
       },
       projectId: {
         type: Number,
+        required: true,
+      },
+      participators: {
+        type: Array,
         required: true,
       },
     },
@@ -138,6 +143,9 @@
             const taskExisting = this.dataList?.find(item => item.id === params.id);
             // 如果不存在，则添加
             if (!taskExisting) {
+              params.operator = this.participators.find(item => item.id === params.operator_id) || {};
+              params.created_at = this.$baseDayjs(params.created_at).format('YYYY-MM-DD HH:mm:ss');
+              params.created_at_humanize = dateHumanizeFormat(params.created_at).value;
               this.dataList?.push(params);
               this.dataList = this.$baseLodash.sortBy(this.dataList, 'id');
             }
@@ -162,7 +170,7 @@
     methods: {
       async getList() {
         const query = {
-          task_id: this.taskId,
+          task_id: this.taskInfo.id,
         };
         if (this.is_comment !== '') {
           query.is_comment = this.is_comment;
@@ -177,6 +185,26 @@
           };
         });
       },
+      doCreateMessage(content) {
+        let mentions = content.match(/(@(\S+)\s)|(@(\S+)$)/g);
+        mentions = mentions && mentions.map(item => item.replace(/@|\s|\r\n|\n|\r/g, ''));
+        mentions = this.$baseLodash.uniq(mentions);
+        if (mentions) {
+          // 根据@xxx用户名集合，在参与者中找出对应用户集合，且排除操作者自己
+          const receivers = this.participators.filter(user => {
+            return mentions.find(username => user.username === username && username !== this.userInfo.username);
+          });
+          receivers.forEach(receiver => {
+            doCreateMessage({
+              actor_id: this.userInfo.id,
+              receiver_id: receiver.id,
+              content: `在任务 <span class="task-name">${this.taskInfo.name}</span> 中@了你`,
+              type: 'mention',
+              url: `/pojectManagement/Project/${this.projectId}?taskId=${this.taskInfo.id}`,
+            });
+          });
+        }
+      },
       async doCreate() {
         if (this.content.trim() === '' || this.isOnCreate) {
           return;
@@ -184,14 +212,14 @@
         this.isOnCreate = true;
         const { msg } = await doCreate({
           content: this.content,
-          task_id: this.taskId,
+          task_id: this.taskInfo.id,
           project_id: this.projectId,
           operator_id: this.userInfo.id,
           type: 'comment',
           is_comment: 1,
         });
-        this.getList();
         this.isOnCreate = false;
+        this.doCreateMessage(this.content);
         this.content = '';
         this.$baseMessage(msg, 'success');
       },
