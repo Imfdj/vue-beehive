@@ -112,10 +112,10 @@
       cursor: pointer;
       .logo-img {
         height: 30px;
-        margin-right: 6px;
       }
       .logo-title {
         font-size: 26px;
+        margin-left: 6px;
       }
     }
     .menu-collapse {

@@ -68,10 +68,11 @@
 
 <script>
   import mixin from '@/mixins';
-  import { getList } from '@/api/messageManagement';
+  import { getList, doEdit } from '@/api/messageManagement';
   import InformList from './components/InformList';
   import { mapState } from 'vuex';
   import { dateHumanizeFormat } from '@/utils';
+  import Notify from '@wcjiang/notify';
 
   export default {
     name: 'MessageBox',
@@ -81,9 +82,15 @@
     mixins: [mixin],
     data() {
       return {
+        notify: null,
         activeName: 'inform',
         dataList: [],
         count: 0,
+        messageTypes: {
+          mention: '有人@你',
+          inform: '你有一则通知',
+          personal: '你有一条私信',
+        },
       };
     },
     computed: {
@@ -109,6 +116,7 @@
               this.dataList = this.$baseLodash.reverse(this.$baseLodash.sortBy(this.dataList, 'id'));
               this.dataListFilter();
               this.count++;
+              this.createNotify(params);
             }
             break;
           }
@@ -133,9 +141,39 @@
       },
     },
     created() {
+      this.initNotify();
       this.getList();
     },
     methods: {
+      initNotify() {
+        this.notify = new Notify({
+          // effect: 'flash',
+          effect: 'scroll',
+          interval: 300,
+          message: '有消息拉！',
+          // audio: {
+          //   file: [mp4, mp3, wav],
+          // },
+          notification: {
+            title: '通知！',
+            body: '您来了一条新消息',
+          },
+          updateFavicon: {
+            // favicon font color
+            textColor: '#fff',
+            // Background color, set the background color to be transparent, set the value to "transparent"
+            backgroundColor: '#00219a',
+          },
+          onclick: () => {
+            this.doRead(this.notify.messageData);
+            const { url } = this.notify.messageData;
+            if (url) {
+              this.$router.push(url);
+            }
+            this.notify.close();
+          },
+        });
+      },
       handleClick(tab, event) {
         console.log(tab, event);
       },
@@ -159,6 +197,25 @@
           return item.is_read === 0;
         });
       },
+      doRead(item) {
+        doEdit({
+          ...item,
+          is_read: 1,
+        });
+      },
+      createNotify(params) {
+        const notifyBody = `${params.actor.username} ${params.content.replace(/<[^>]*>|<\/[^>]*>/gm, '')}`;
+        this.notify
+          .setTitle(this.messageTypes[params.type])
+          .notify({
+            title: this.messageTypes[params.type],
+            body: notifyBody,
+            // openurl: params.url,
+            icon: 'https://beta.vilson.xyz/static/upload//20200720/f3f72c8945d2cf7157654abbf8ab9218.jpg',
+          })
+          .player();
+        this.notify.messageData = params;
+      },
     },
   };
 </script>
@@ -166,16 +223,19 @@
 <style lang="scss">
   .message-box-popover {
     padding: 0 !important;
+
     .message-box {
       .el-tabs__nav-scroll {
         display: flex;
         justify-content: center;
       }
+
       .wrap-pane {
         min-height: 300px;
         max-height: 500px;
         color: $colorLight3;
         overflow: auto;
+
         .no-message-tip {
           display: flex;
           flex-direction: column;
@@ -184,14 +244,17 @@
           color: $colorLight;
           height: 300px;
           line-height: 50px;
+
           .iconfont {
             font-size: 50px;
           }
         }
       }
+
       .el-badge__content.is-fixed {
         top: 12px !important;
       }
+
       .el-tabs__header {
         margin: 0;
       }
