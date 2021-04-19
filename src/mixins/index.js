@@ -2,6 +2,7 @@ import dayjs from 'dayjs';
 import { doDelete as doDeleteTask, doEdit as doEditTask } from '@/api/taskManagement';
 import multiDownload from 'multi-download';
 import store from '@/store';
+import axios from 'axios';
 
 export default {
   methods: {
@@ -76,6 +77,21 @@ export default {
     checkPermission(permission) {
       const permissions = (store.getters['user/userInfo'] && store.getters['user/userInfo'].permissions) || [];
       return permissions.includes(permission);
+    },
+
+    /**
+     * 获取picsum随机图片路径
+     * @param string
+     * @return string
+     */
+    async getRandomPicsumPicturePath(path = 'https://picsum.photos/100') {
+      const {
+        request: { responseURL },
+      } = await axios({
+        url: path,
+        method: 'get',
+      });
+      return responseURL;
     },
   },
 };

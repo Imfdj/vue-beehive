@@ -42,9 +42,11 @@
   import { isPassword, isEmail } from '@/utils/validate';
   import { register } from '@/api/user';
   import { create as createVerificationCode } from '@/api/verification_code';
+  import mixins from '@/mixins';
 
   export default {
     username: 'RegisterForm',
+    mixins: [mixins],
     directives: {
       focus: {
         inserted(el) {
@@ -143,6 +145,7 @@
       handleReister() {
         this.$refs['registerForm'].validate(async valid => {
           if (valid) {
+            this.form.avatar = await this.getRandomPicsumPicturePath('https://picsum.photos/290/160');
             const { msg } = await register({ ...this.form, verification_type: 1 });
             this.$baseMessage(msg, 'success');
             // 注册成功后，直接登陆

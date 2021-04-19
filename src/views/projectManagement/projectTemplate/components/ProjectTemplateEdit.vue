@@ -41,6 +41,7 @@
   import Cropper from '@/components/Cropper';
   import BImage from '@/components/B-image';
   import { upload } from '@/api/upload';
+  import mixins from '@/mixins';
 
   export default {
     name: 'ProjectTemplateEdit',
@@ -48,6 +49,7 @@
       Cropper,
       BImage,
     },
+    mixins: [mixins],
     data() {
       return {
         form: {
@@ -87,6 +89,10 @@
         this.$refs['form'].validate(async valid => {
           if (valid) {
             if (this.title === '添加模板') {
+              // 如果封面为空，则随机一张
+              if (this.form.cover === '') {
+                this.form.cover = await this.getRandomPicsumPicturePath('https://picsum.photos/290/160');
+              }
               const { msg } = await doCreate(this.form);
               this.$baseMessage(msg, 'success');
             } else {

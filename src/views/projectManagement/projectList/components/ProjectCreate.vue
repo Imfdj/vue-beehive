@@ -20,7 +20,7 @@
             placeholder="请选择项目模板（必选）"
             style="width: 100%"
           >
-            <el-option v-for="item in optionsTemplate" :key="item.id" :label="item.name" :value="item.id"> </el-option>
+            <el-option v-for="item in optionsTemplate" :key="item.id" :label="item.name" :value="item.id"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item prop="intro">
@@ -53,6 +53,7 @@
   import BImage from '@/components/B-image';
   import { upload } from '@/api/upload';
   import store from '@/store';
+  import mixins from '@/mixins';
 
   export default {
     name: 'ProjectCreate',
@@ -60,6 +61,7 @@
       Cropper,
       BImage,
     },
+    mixins: [mixins],
     data() {
       return {
         loading: false,
@@ -93,7 +95,7 @@
         this.loading = false;
         this.optionsTemplate = rows;
       },
-      showCreate(row) {
+      async showCreate(row) {
         if (!row) {
           this.title = '添加项目';
         } else {
@@ -112,6 +114,10 @@
         this.$refs['form'].validate(async valid => {
           if (valid) {
             if (this.title === '添加项目') {
+              // 如果封面为空，则随机一张
+              if (this.form.cover === '') {
+                this.form.cover = await this.getRandomPicsumPicturePath('https://picsum.photos/290/160');
+              }
               const { msg } = await doCreate(this.form);
               this.$baseMessage(msg, 'success');
             } else {
