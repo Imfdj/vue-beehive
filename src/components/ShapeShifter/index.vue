@@ -1,7 +1,7 @@
 <template>
   <div>
     <canvas ref="canvas" class="canvas"></canvas>
-    <img v-show="false" ref="logo" src="static/img/logo.png" alt="" />
+    <img v-show="false" ref="logo" src="@/assets/logo.png" alt="" />
   </div>
 </template>
 
@@ -28,7 +28,7 @@
       console.log(this.$refs.logo.src);
       console.log(this.$refs.logo.target?.src);
       const src = this.$refs.logo.src || this.$refs.logo.target?.src || '';
-      const publicPath = src.replace('static/img/logo.png', '');
+      const publicPath = src.substring(0, src.indexOf('static/img'));
       console.log(publicPath);
       S.ShapeBuilder.setPublicPath(publicPath);
       S.init(this.$refs.canvas);
