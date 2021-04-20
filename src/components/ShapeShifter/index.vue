@@ -18,6 +18,10 @@
     },
     mounted() {
       // 设置icon图片前缀路径
+      console.log(33);
+      console.log(33);
+      console.log(33);
+      console.log(publicPath);
       S.ShapeBuilder.setPublicPath(publicPath);
       S.init(this.$refs.canvas);
 

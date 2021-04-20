@@ -123,6 +123,7 @@
       // 如果存在code，则视为github登录状态
       let { code } = qs.parse(window.location.search?.replace(/^\?/, ''));
       if (code) {
+        this.loading = true;
         this.login({ code });
       }
     },
