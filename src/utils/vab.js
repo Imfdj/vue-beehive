@@ -128,13 +128,14 @@ const install = (Vue, opts = {}) => {
   };
 
   /* 全局Notification */
-  Vue.prototype.$baseNotify = (message, title, type, position) => {
+  Vue.prototype.$baseNotify = (message, title, type = 'success', position = 'bottom-left', offset) => {
     Notification({
-      title: title,
-      message: message,
-      position: position || 'bottom-left',
-      type: type || 'success',
+      title,
+      message,
+      position,
+      type,
       duration: messageDuration,
+      offset,
     });
   };
 

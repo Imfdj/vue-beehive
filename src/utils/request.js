@@ -123,9 +123,7 @@ service.interceptors.response.use(
           errorMsg(msg || `后端接口${code}异常`);
           break;
       }
-      return Promise.reject(
-        'vue-admin-beautiful请求异常拦截:' + JSON.stringify({ url: config.url, code, msg }) || 'Error'
-      );
+      return Promise.reject('vue-beehive请求异常拦截:' + JSON.stringify({ url: config.url, code, msg }) || 'Error');
     } else {
       return data;
     }

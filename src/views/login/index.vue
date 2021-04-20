@@ -25,6 +25,7 @@
   import LoginForm from './components/LoginForm';
   import RegisterForm from './components/RegisterForm';
   import RetrievePasswordForm from './components/RetrievePasswordForm';
+  import qs from 'qs';
 
   export default {
     name: 'Login',
@@ -50,7 +51,14 @@
       this.simulateArr = ['#icon logo', this.logoTitle, ''];
     },
     mounted() {
-      this.$refs.ShapeShifter.simulate(`#icon logo|${this.logoTitle}|#icon logo`);
+      // 如果路由中带有code参数则认为是github登录中，显示github Icon
+      let { code } = qs.parse(window.location.search?.replace(/^\?/, ''));
+      if (code) {
+        this.$refs.ShapeShifter.simulate('#icon github');
+      } else {
+        this.$refs.ShapeShifter.simulate(this.simulateArr[this.simulateIndex]);
+        this.simulateIndex = (this.simulateIndex + 1) % 3;
+      }
     },
     methods: {
       clickHandler() {

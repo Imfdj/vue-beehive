@@ -37,7 +37,7 @@ module.exports = {
   //token名称
   tokenName: 'Authorization',
   //token在localStorage、sessionStorage、cookie存储的key的名称
-  tokenTableName: 'vue-admin-beautiful',
+  tokenTableName: 'vue-beehive',
   //token存储位置localStorage sessionStorage cookie
   storage: 'localStorage',
   //token失效回退到登录页时是否记录本次的路由
