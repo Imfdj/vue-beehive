@@ -420,7 +420,8 @@ S.ShapeBuilder = (function () {
     shapeCanvas = document.createElement('canvas'),
     shapeContext = shapeCanvas.getContext('2d'),
     fontSize = 500,
-    fontFamily = 'Avenir, Helvetica Neue, Helvetica, Arial, sans-serif';
+    fontFamily = 'Avenir, Helvetica Neue, Helvetica, Arial, sans-serif',
+    publicPath = '';
 
   function fit() {
     shapeCanvas.width = Math.floor(window.innerWidth / gap) * gap;
@@ -481,6 +482,10 @@ S.ShapeBuilder = (function () {
       window.addEventListener('resize', fit);
     },
 
+    setPublicPath(value) {
+      publicPath = value;
+    },
+
     imageFile: function (url, callback) {
       var image = new Image(),
         a = S.Drawing.getArea();
@@ -495,7 +500,7 @@ S.ShapeBuilder = (function () {
         callback(S.ShapeBuilder.letter('What?'));
       };
 
-      image.src = url;
+      image.src = publicPath + url;
     },
 
     circle: function (d) {

@@ -62,8 +62,7 @@ const actions = {
   // },
   async login({ commit }, userInfo) {
     // 如果存在username，password则为账号密码登录，否则为github授权登录
-    const { code, data, msg } =
-      userInfo.username && userInfo.password ? await login(userInfo) : await githubLogin(userInfo);
+    const { code, data, msg } = !userInfo.code ? await login(userInfo) : await githubLogin(userInfo);
     if (code !== 0) {
       Vue.prototype.$baseMessage(msg, 'error');
       return;

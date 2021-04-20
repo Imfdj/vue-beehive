@@ -145,10 +145,6 @@
           this.loading = false;
         });
         const routerPath = this.redirect === '/404' || this.redirect === '/401' ? '/' : this.redirect;
-        console.log(123123);
-        console.log(123123);
-        console.log(123123);
-        console.log(routerPath);
         await this.$router.push(routerPath).catch(() => {});
         this.loading = false;
       },

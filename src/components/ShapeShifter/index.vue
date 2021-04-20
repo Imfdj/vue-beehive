@@ -4,7 +4,7 @@
 
 <script>
   import S from './shape-shifter';
-  import { title } from '@/config/settings';
+  import { title, publicPath } from '@/config/settings';
 
   export default {
     name: 'index',
@@ -17,6 +17,8 @@
       },
     },
     mounted() {
+      // 设置icon图片前缀路径
+      S.ShapeBuilder.setPublicPath(publicPath);
       S.init(this.$refs.canvas);
 
       // S.UI.simulate('Shape|Shifter|Type|to start|#icon thumbs-up|#countdown 3||');
