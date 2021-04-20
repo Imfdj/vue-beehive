@@ -1,10 +1,13 @@
 <template>
-  <canvas ref="canvas" class="canvas"></canvas>
+  <div>
+    <canvas ref="canvas" class="canvas"></canvas>
+    <img v-show="false" ref="logo" src="static/img/logo.png" alt="" />
+  </div>
 </template>
 
 <script>
   import S from './shape-shifter';
-  import { title, publicPath } from '@/config/settings';
+  import { title } from '@/config/settings';
 
   export default {
     name: 'index',
@@ -21,6 +24,11 @@
       console.log(33);
       console.log(33);
       console.log(33);
+      console.log(this.$refs.logo);
+      console.log(this.$refs.logo.src);
+      console.log(this.$refs.logo.target?.src);
+      const src = this.$refs.logo.src || this.$refs.logo.target?.src || '';
+      const publicPath = src.replace('static/img/logo.png', '');
       console.log(publicPath);
       S.ShapeBuilder.setPublicPath(publicPath);
       S.init(this.$refs.canvas);
