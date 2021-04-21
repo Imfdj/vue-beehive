@@ -59,7 +59,7 @@ module.exports = {
   //消息框消失时间
   messageDuration: 3000,
   //最长请求时间
-  requestTimeout: 5000,
+  requestTimeout: 10000,
   //操作正常code，支持String、Array两种方式
   successCode: [200, 201, 204, 0],
   //参数错误code

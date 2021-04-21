@@ -159,7 +159,7 @@
         });
       },
       handleLoginGithub() {
-        window.location.href = `${github_auth_authorize_url}?client_id=${github_auth_client_id}&redirect_uri=${github_auth_redirect_uri}`;
+        window.location.href = `${github_auth_authorize_url}?client_id=${github_auth_client_id}&redirect_uri=${github_auth_redirect_uri}?redirect=${this.redirect}`;
       },
       changeStatus(status) {
         this.$emit('changeStatus', status);
