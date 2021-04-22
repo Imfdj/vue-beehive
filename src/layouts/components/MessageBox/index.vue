@@ -54,6 +54,7 @@
             </el-badge>
           </template>
           <div class="wrap-pane">
+            <InformList :data="data.personal || []"></InformList>
             <div v-if="!(data.personal && data.personal.length)" class="no-message-tip">
               <i class="iconfont icon-icon--"></i>
               你已查看所有私信

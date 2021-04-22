@@ -3,23 +3,27 @@ import { getPermissionStr } from '@/utils';
 
 const methodUrl = {
   getList: {
-    url: '/v1/projects/list',
+    url: '/v1/invites/list',
     method: 'get',
   },
   doCreate: {
-    url: '/v1/projects',
+    url: '/v1/invites',
     method: 'post',
   },
   doEdit: {
-    url: '/v1/projects',
+    url: '/v1/invites',
     method: 'put',
   },
   doDelete: {
-    url: '/v1/projects',
+    url: '/v1/invites',
     method: 'delete',
   },
-  getInfo: {
-    url: '/v1/projects',
+  getValid: {
+    url: '/v1/invites/valid',
+    method: 'get',
+  },
+  getInfoByUUID: {
+    url: '/v1/invites/uuid',
     method: 'get',
   },
 };
@@ -54,9 +58,16 @@ export function doDelete(data) {
   });
 }
 
-export function getInfo(params) {
+export function getValid(params) {
   return request({
-    ...methodUrl.getInfo,
+    ...methodUrl.getValid,
+    params,
+  });
+}
+
+export function getInfoByUUID(params) {
+  return request({
+    ...methodUrl.getInfoByUUID,
     params,
   });
 }

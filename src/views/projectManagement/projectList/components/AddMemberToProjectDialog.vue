@@ -27,8 +27,14 @@
             </div>
           </div>
           <div class="wrap-ctrl color-light">
-            <el-button v-if="!item.projectIds.includes(projectId)" size="mini" plain @click="add(item)">
-              <i class="iconfont icon-jiaren"></i> 邀请
+            <el-button
+              v-if="!item.projectIds.includes(projectId)"
+              size="mini"
+              :disabled="item.invited"
+              plain
+              @click="add(item)"
+            >
+              <i class="iconfont icon-jiaren"></i> {{ item.invited ? '已邀请' : '邀请' }}
             </el-button>
             <span v-else><i class="iconfont icon-ren" style="margin-right: 5px"></i>已加入</span>
           </div>
@@ -50,7 +56,7 @@
 
 <script>
   import { getList } from '@/api/user';
-  import { doCreate } from '@/api/userProjectManagement';
+  import { doCreate as doCreateInvite } from '@/api/inviteManagement';
   import BImage from '@/components/B-image';
   import { waitTimeout } from '@/utils';
 
@@ -66,23 +72,12 @@
         timer: 0,
         projectId: null,
         userData: [],
+        userList: [],
         pageNo: 1,
         pageSize: 6,
       };
     },
-    computed: {
-      userList() {
-        return (
-          this.userData.rows &&
-          this.userData.rows.map(item => {
-            return {
-              ...item,
-              projectIds: item.projects && item.projects.map(project => project.id),
-            };
-          })
-        );
-      },
-    },
+    computed: {},
     watch: {
       dialogVisible(newValue, oldValue) {
         if (newValue) {
@@ -116,19 +111,27 @@
           offset: (this.pageNo - 1) * this.pageSize,
         });
         this.userData = data;
-        console.log(data);
+        this.userList = this.userData.rows.map(item => {
+          return {
+            ...item,
+            projectIds: item.projects && item.projects.map(project => project.id),
+            invited: false,
+          };
+        });
       },
-      async doCreateExec(body) {
-        const { data } = await doCreate(body);
-        this.$message.success('添加成功');
-        this.getUserList();
+      async doCreateInvite(body) {
+        await doCreateInvite(body);
+        this.$message.success('已成功发出邀请');
         this.$emit('doCreateSuccess');
       },
-      add(user) {
-        this.doCreateExec({
-          user_id: user.id,
-          project_id: this.projectId,
+      async add(user) {
+        await this.doCreateInvite({
+          group: 'Projects',
+          group_id: this.projectId,
+          receiver_id: user.id,
         });
+        // 设置此用户已邀请
+        user.invited = true;
       },
     },
   };
