@@ -133,12 +133,14 @@ const actions = {
   },
   async refreshToken({ commit, state }) {
     try {
+      // 解析refreshToken，拿到userInfo
+      const userInfo = JSON.parse(window.atob(state.refreshToken.match(/\.(.*)\./)[1])).data.userInfo;
       const {
         code,
         data: { accessToken, refreshToken },
       } = await doRefreshToken({
         refreshToken: state.refreshToken,
-        secret: await encryptedData(state.userInfo.id),
+        secret: await encryptedData(userInfo.id),
       });
       if (code === 0) {
         commit(
