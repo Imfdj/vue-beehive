@@ -34,8 +34,8 @@ service.interceptors.request.use(
       config.headers[tokenName] = store.getters['user/accessToken'];
       config.headers['x-csrf-token'] = store.getters['user/accessCsrf'];
     }
-    // 如果config.data存在，且不是FormData
-    if (config.data && !(config.data instanceof FormData)) {
+    // 如果config.data存在，且是Json
+    if (config.data && Object.prototype.toString.call(config.data).slice(8, -1).toLowerCase() === 'object') {
       //这里会过滤所有为null的key，如果不需要请自行注释
       config.data = _.pickBy(config.data, item => !_.isNull(item));
     }
