@@ -2,13 +2,12 @@
   <div class="project-list wrap-content-main">
     <el-tabs v-model="activeName">
       <el-tab-pane v-for="(item, index) in titles" :key="index" :label="item" :name="(index + 1).toString()">
-        <div v-loading="loading" class="list color-light">
-          <div v-for="project in listDataFilter" :key="project.id" class="item-list">
+        <div v-if="listData.length" v-loading="loading" class="list color-light">
+          <div v-for="project in listData" :key="project.id" class="item-list">
             <BImage :src="project.cover"></BImage>
             <div class="item-info">
               <div class="name">
                 <span class="name-text" @click="projectClick(project)">{{ project.name }}</span>
-                <el-tag v-if="project.is_private === 0" style="margin-left: 10px" type="success">公开</el-tag>
               </div>
               <div class="intro">{{ project.intro }}</div>
             </div>
@@ -65,13 +64,14 @@
             </div>
           </div>
         </div>
+        <EmptyImage v-if="!listData.length && !loading" :height="400" :heightImg="230" text=""></EmptyImage>
       </el-tab-pane>
     </el-tabs>
     <el-button class="create-project" type="primary" icon="el-icon-plus" @click="handleCreate">创建新项目</el-button>
     <ProjectCreate ref="create"></ProjectCreate>
     <ProjectEdit ref="edit" @fetchData="getList"></ProjectEdit>
     <AddMemberToProjectDialog ref="AddMemberToProjectDialog"></AddMemberToProjectDialog>
-    <div v-if="listData.length > pageSize" class="wrap-el-pagination">
+    <div v-if="count > pageSize" class="wrap-el-pagination">
       <el-pagination
         background
         :total="count"
@@ -82,16 +82,15 @@
       >
       </el-pagination>
     </div>
-    <!--    TODO 空数据提示-->
     <!--    TODO 全部项目需要包含归档-->
     <!--    TODO 裁剪图片样式bug-->
-    <!--    TODO 任务增加完成状态-->
   </div>
 </template>
 
 <script>
   import store from '@/store';
   import BImage from '@/components/B-image';
+  import EmptyImage from '@/components/EmptyImage';
   import BtnTooltip from '@/components/Btn-tooltip';
   import { getList, doEdit } from '@/api/projectManagement';
   import { doChange as doChangeCollect } from '@/api/userProjectCollectManagement';
@@ -109,6 +108,7 @@
       ProjectCreate,
       ProjectEdit,
       AddMemberToProjectDialog,
+      EmptyImage,
     },
     mixins: [mixin],
     data() {
@@ -127,20 +127,11 @@
     },
     computed: {
       ...mapState('user', ['userInfo']),
-      listDataFilter() {
-        let data = this.$baseLodash.sortBy(this.listData, 'collector');
-        data = this.$baseLodash.sortBy(data.reverse(), o => {
-          return o.is_private;
-        });
-        data = data.filter((item, index) => {
-          return index >= (this.pageNo - 1) * this.pageSize && index <= this.pageNo * this.pageSize;
-        });
-        return data;
-      },
     },
     watch: {
       activeName(newValue, oldValue) {
         this.collection = 0;
+        this.pageNo = 1;
         switch (newValue) {
           case '1':
             this.is_recycle = 0;
@@ -171,11 +162,16 @@
         switch (action) {
           case 'create:project':
             {
-              const taskExisting = this.listData.find(item => item.id === params.id);
-              // 如果不存在，则添加
-              if (!taskExisting) {
-                this.listData?.push(params);
+              // 如果是自己创建的
+              if (params.manager_id === this.userInfo.id) {
+                this.pageNo = 1;
+                this.getList();
               }
+              // const taskExisting = this.listData.find(item => item.id === params.id);
+              // // 如果不存在，则添加
+              // if (!taskExisting) {
+              //   this.listData?.push(params);
+              // }
             }
             break;
           default:
@@ -200,6 +196,10 @@
         this.loading = true;
         const params = {
           collection: this.collection,
+          limit: this.pageSize,
+          offset: (this.pageNo - 1) * this.pageSize,
+          prop_order: 'id',
+          order: 'desc',
         };
         this.is_recycle !== null ? (params.is_recycle = this.is_recycle) : null;
         this.is_archived !== null ? (params.is_archived = this.is_archived) : null;
@@ -209,7 +209,6 @@
         this.loading = false;
         this.listData = rows;
         this.count = count;
-        this.pageNo = 1;
       },
       handleAddUser(item) {
         this.$refs.AddMemberToProjectDialog.show(item.id);
@@ -257,6 +256,7 @@
       },
       handleCurrentChange(val) {
         this.pageNo = val;
+        this.getList();
       },
     },
   };
@@ -265,6 +265,7 @@
 <style lang="scss" scoped>
   .project-list {
     position: relative;
+    min-height: 790px;
     padding: 20px;
 
     .create-project {
@@ -274,11 +275,10 @@
     }
 
     .list {
-      min-height: 500px;
       .item-list {
         display: flex;
         height: 50px;
-        padding: 12px 0;
+        padding: 10px 0;
         line-height: 25px;
         border-bottom: 1px solid #e8e8e8;
 

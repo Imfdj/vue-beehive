@@ -116,7 +116,7 @@
             if (this.title === '添加项目') {
               // 如果封面为空，则随机一张
               if (this.form.cover === '') {
-                this.form.cover = await this.getRandomPicsumPicturePath('https://picsum.photos/290/160');
+                this.form.cover = await this.getRandomImgPath();
               }
               const { msg } = await doCreate(this.form);
               this.$baseMessage(msg, 'success');

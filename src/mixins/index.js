@@ -93,5 +93,24 @@ export default {
       });
       return responseURL;
     },
+
+    /**
+     * 从localstorage中获取picsum随机图片路径
+     * @param string
+     * @return string
+     */
+    async getRandomImgPath(path = 'https://picsum.photos/290/160') {
+      let data = localStorage.getItem(path);
+      // 异步重新设置新的写入localStorage
+      this.getRandomPicsumPicturePath(path).then(data => {
+        localStorage.setItem(path, data);
+      });
+      // 存在则返回
+      if (data) {
+        return data;
+      }
+      // 不存在，则同步获取
+      return await this.getRandomPicsumPicturePath(path);
+    },
   },
 };

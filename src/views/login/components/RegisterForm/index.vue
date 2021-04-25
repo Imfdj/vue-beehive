@@ -145,7 +145,7 @@
       handleReister() {
         this.$refs['registerForm'].validate(async valid => {
           if (valid) {
-            this.form.avatar = await this.getRandomPicsumPicturePath('https://picsum.photos/290/160');
+            this.form.avatar = await this.getRandomPicsumPicturePath('https://picsum.photos/100');
             const { msg } = await register({ ...this.form, verification_type: 1 });
             this.$baseMessage(msg, 'success');
             // 注册成功后，直接登陆
