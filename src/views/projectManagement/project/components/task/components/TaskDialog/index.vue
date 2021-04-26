@@ -164,7 +164,6 @@
           ></Participator>
           <TaskLog
             ref="TaskLog"
-            :projectId="projectId"
             :participators="taskInfo.participators || []"
             :taskInfo="taskInfo"
             :taskId="taskId"
@@ -203,12 +202,6 @@
       TaskController,
     },
     mixins: [mixin],
-    props: {
-      projectId: {
-        type: Number,
-        required: true,
-      },
-    },
     data() {
       return {
         dialogTableVisible: false,

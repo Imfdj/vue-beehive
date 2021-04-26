@@ -89,7 +89,7 @@
       </div>
     </draggable>
     <CreateTaskList v-permission="taskListPermissions.doCreate"></CreateTaskList>
-    <TaskDialog ref="TaskDialog" :projectId="projectId" @close="taskDialogClose"></TaskDialog>
+    <TaskDialog ref="TaskDialog" @close="taskDialogClose"></TaskDialog>
     <EditorTaskListDialog ref="EditorTaskListDialog"></EditorTaskListDialog>
   </div>
 </template>
@@ -130,7 +130,6 @@
       return {
         taskListPermissions,
         taskPermissions,
-        projectId: parseInt(this.$route.params.id),
         listData: [],
         indexListCreate: -1,
         itemListCreate: {},
@@ -157,10 +156,14 @@
       };
     },
     computed: {
-      ...mapState('project', ['taskStates', 'taskPrioritys', 'taskTypes', 'projectMembers']),
+      ...mapState('project', ['taskStates', 'taskPrioritys', 'taskTypes', 'projectMembers', 'currentProjectId']),
     },
     watch: {
       $route(newValue, oldValue) {
+        // 如果路由是项目切换
+        if (newValue.params.id !== oldValue.params.id) {
+          this.init();
+        }
         // 如果路由中有taskId参数，则打开任务弹窗
         if (newValue.query.taskId) {
           this.$refs.TaskDialog.show(parseInt(newValue.query.taskId));
@@ -262,8 +265,7 @@
       },
     },
     created() {
-      this.initPermissions();
-      this.getList();
+      this.init();
     },
     mounted() {
       // 如果当前路径中存在taskId，则打开任务弹窗
@@ -272,6 +274,10 @@
       }
     },
     methods: {
+      init() {
+        this.initPermissions();
+        this.getList();
+      },
       initPermissions() {
         this.selectListMore = this.selectListMore.filter((item, index) => {
           if (index === 0) {
@@ -346,7 +352,7 @@
       async getList() {
         const {
           data: { rows, count },
-        } = await getList({ project_id: this.projectId, prop_order: 'sort', order: 'asc' });
+        } = await getList({ project_id: this.currentProjectId, prop_order: 'sort', order: 'asc' });
         this.listData = rows.map(item => {
           item.tasks = [];
           return item;

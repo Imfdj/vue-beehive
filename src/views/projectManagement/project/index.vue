@@ -3,8 +3,10 @@
     <div class="wrap-nav">
       <el-dropdown trigger="click" placement="top" class="project-task-project-dropdown" @command="dropdownCommand">
         <span class="el-dropdown-link">
-          <span class="project-name">{{ currentProject.name }}</span>
-          <i class="el-icon-arrow-down el-icon--right"></i>
+          <span class="wrap-link">
+            <span class="project-name">{{ currentProject.name }}</span>
+            <i class="el-icon-arrow-down el-icon--right"></i>
+          </span>
         </span>
         <el-dropdown-menu slot="dropdown">
           <div class="wrap-project-task-dropdown">
@@ -15,15 +17,17 @@
               placeholder="搜索"
               prefix-icon="el-icon-search"
             ></el-input>
-            <el-dropdown-item v-for="item in listProjectDataFilter" :key="item.id" :command="item.id">
-              <div class="project-task-wrap-dropdown-item">
-                <div class="info">
-                  <BImage :src="item.cover || ''" :width="32" :height="32" :borderRadius="32"></BImage>
-                  <div class="name">{{ item.name }}</div>
+            <div class="wrap-el-dropdown-item">
+              <el-dropdown-item v-for="item in listProjectDataFilter" :key="item.id" :command="item.id">
+                <div class="project-task-wrap-dropdown-item">
+                  <div class="info">
+                    <BImage :src="item.cover || ''" :width="32" :height="32" :borderRadius="32"></BImage>
+                    <div class="name">{{ item.name }}</div>
+                  </div>
+                  <i v-if="item.id === currentProject.id" class="el-icon-check"></i>
                 </div>
-                <i v-if="item.id === currentProject.id" class="el-icon-check"></i>
-              </div>
-            </el-dropdown-item>
+              </el-dropdown-item>
+            </div>
           </div>
         </el-dropdown-menu>
       </el-dropdown>
@@ -104,8 +108,10 @@
         vm.setNoNav(true);
       });
     },
-    beforeRouteUpdate(to, from, next) {
+    async beforeRouteUpdate(to, from, next) {
       if (to.name === 'Project') {
+        // 重置项目关联
+        await this.initProjectRelevancy(to.params.id);
         this.setIndexTab(0);
       }
       next();
@@ -119,14 +125,11 @@
       next();
     },
     async created() {
-      this.getUserList();
       this.$store.dispatch('project/setProjectList');
       this.$store.dispatch('project/setTaskTypes');
       this.$store.dispatch('project/setTaskStates');
       this.$store.dispatch('project/setTaskPrioritys');
-      await this.$store.commit('project/setCurrentProjectId', parseInt(this.$route.params.id));
-      this.$store.dispatch('project/setTaskTags');
-      this.$store.dispatch('project/setProjectMembers');
+      this.initProjectRelevancy(this.$route.params.id);
     },
     sockets: {
       sync: function (data) {
@@ -147,6 +150,13 @@
     methods: {
       ...mapMutations('routes', ['setNoNav', 'setNavIndex']),
       ...mapMutations('project', ['setIndexTab']),
+      // 初始化项目关联
+      async initProjectRelevancy(projectId) {
+        await this.$store.commit('project/setCurrentProjectId', parseInt(projectId));
+        this.getUserList();
+        this.$store.dispatch('project/setTaskTags');
+        this.$store.dispatch('project/setProjectMembers');
+      },
       tabClick(index) {
         this.setIndexTab(index);
       },
@@ -180,10 +190,6 @@
 
 <style lang="scss" scoped>
   .wrap-project-task-dropdown {
-    max-height: 500px;
-    overflow-x: hidden;
-    overflow-y: auto;
-
     .project-task-wrap-dropdown-input {
       width: 94%;
       margin: 5px 3% 5px 3%;
@@ -192,32 +198,36 @@
         border-radius: 4px;
       }
     }
-
-    .project-task-wrap-dropdown-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      width: 220px;
-      height: 60px;
-
-      .info {
+    .wrap-el-dropdown-item {
+      max-height: 500px;
+      overflow-x: hidden;
+      overflow-y: auto;
+      .project-task-wrap-dropdown-item {
         display: flex;
         align-items: center;
+        justify-content: space-between;
+        width: 220px;
+        height: 60px;
 
-        .name {
-          width: 140px;
-          line-height: 20px;
-          padding-left: 10px;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
+        .info {
+          display: flex;
+          align-items: center;
+
+          .name {
+            width: 140px;
+            line-height: 20px;
+            padding-left: 10px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+          }
         }
-      }
 
-      & i {
-        font-size: 18px;
+        & i {
+          font-size: 18px;
+        }
       }
     }
   }
@@ -227,13 +237,24 @@
 
     .project-task-project-dropdown {
       cursor: pointer;
-
-      .project-name {
-        display: inline-block;
-        max-width: 160px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+      width: 223px;
+      .wrap-link {
+        display: flex;
+        align-items: center;
+        .project-name {
+          display: inline-block;
+          min-width: 60px;
+          max-width: 223px;
+          line-height: 100%;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          text-align: center;
+        }
+        .el-icon-arrow-down {
+          font-size: 16px;
+          font-weight: 600;
+        }
       }
     }
 

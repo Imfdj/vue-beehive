@@ -85,10 +85,6 @@
         type: Number,
         required: true,
       },
-      projectId: {
-        type: Number,
-        required: true,
-      },
       participators: {
         type: Array,
         required: true,
@@ -120,6 +116,7 @@
     },
     computed: {
       ...mapState('user', ['userInfo']),
+      ...mapState('project', ['currentProjectId']),
       dataListFilter() {
         return this.showAll
           ? this.dataList
@@ -204,7 +201,7 @@
               receiver_id: receiver.id,
               content: `在任务 <span class="task-name">${this.taskInfo.name}</span> 中@了你`,
               type: 'mention',
-              url: `/pojectManagement/Project/${this.projectId}?taskId=${this.taskInfo.id}`,
+              url: `/pojectManagement/Project/${this.currentProjectId}?taskId=${this.taskInfo.id}`,
             });
           });
         }
@@ -217,7 +214,7 @@
         const { msg } = await doCreate({
           content: this.content,
           task_id: this.taskInfo.id,
-          project_id: this.projectId,
+          project_id: this.currentProjectId,
           operator_id: this.userInfo.id,
           type: 'comment',
           is_comment: 1,
