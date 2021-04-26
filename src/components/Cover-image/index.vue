@@ -49,6 +49,9 @@
         this.coverCopy = newValue;
       },
     },
+    created() {
+      this.coverCopy = this.cover;
+    },
     methods: {
       uploadCoverClick() {
         this.$refs.Cropper.show();

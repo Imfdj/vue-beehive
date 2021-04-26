@@ -85,7 +85,7 @@
         }
       },
       userList(newValue, oldValue) {
-        this.$emit('getUserList', newValue);
+        this.$emit('userListChange', newValue);
       },
     },
     created() {

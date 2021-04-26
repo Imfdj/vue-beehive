@@ -81,6 +81,10 @@
         type: Object,
         required: true,
       },
+      taskId: {
+        type: Number,
+        required: true,
+      },
       projectId: {
         type: Number,
         required: true,
@@ -170,7 +174,7 @@
     methods: {
       async getList() {
         const query = {
-          task_id: this.taskInfo.id,
+          task_id: this.taskId,
         };
         if (this.is_comment !== '') {
           query.is_comment = this.is_comment;

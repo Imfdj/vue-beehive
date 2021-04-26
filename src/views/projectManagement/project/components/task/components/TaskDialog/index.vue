@@ -167,6 +167,7 @@
             :projectId="projectId"
             :participators="taskInfo.participators || []"
             :taskInfo="taskInfo"
+            :taskId="taskId"
           ></TaskLog>
         </div>
       </el-col>

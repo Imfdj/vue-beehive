@@ -45,7 +45,7 @@
           <el-button type="text" icon="el-icon-search">筛选</el-button>
         </TaskFilter>
         <span
-          ><el-button type="text" icon="el-icon-user" @click="handleAddUser">{{ projectUser.length }}</el-button>
+          ><el-button type="text" icon="el-icon-user" @click="handleAddUser">{{ userProjectCount }}</el-button>
         </span>
         <ProjectSetting>
           <el-button type="text" icon="el-icon-s-unfold">菜单</el-button>
@@ -57,7 +57,7 @@
       <File v-if="indexTab === 1" ref="File"></File>
       <Overview v-if="indexTab === 2" ref="Overview"></Overview>
     </div>
-    <AddMemberToProjectDialog ref="AddMemberToProjectDialog" @getUserList="getUserList"></AddMemberToProjectDialog>
+    <AddMemberToProjectDialog ref="AddMemberToProjectDialog"></AddMemberToProjectDialog>
   </div>
 </template>
 
@@ -70,6 +70,7 @@
   import { mapState, mapMutations } from 'vuex';
   import BImage from '@/components/B-image';
   import AddMemberToProjectDialog from '@/views/projectManagement/projectList/components/AddMemberToProjectDialog';
+  import { getList as getUserList } from '@/api/user';
 
   export default {
     name: 'ProjectTask',
@@ -85,8 +86,8 @@
     data() {
       return {
         tabs: ['任务', '文件', '概览', '版本', '日程'],
-        userList: [],
         keywordProjectName: '',
+        userProjectCount: 0,
       };
     },
     computed: {
@@ -97,9 +98,6 @@
       listProjectDataFilter() {
         return this.projectList.filter(item => item.name.includes(this.keywordProjectName));
       },
-      projectUser() {
-        return this.userList.filter(item => item.projectIds.includes(this.currentProjectId));
-      },
     },
     beforeRouteEnter(to, from, next) {
       next(vm => {
@@ -107,8 +105,6 @@
       });
     },
     beforeRouteUpdate(to, from, next) {
-      console.log(33221166);
-      console.log(to);
       if (to.name === 'Project') {
         this.setIndexTab(0);
       }
@@ -123,6 +119,7 @@
       next();
     },
     async created() {
+      this.getUserList();
       this.$store.dispatch('project/setProjectList');
       this.$store.dispatch('project/setTaskTypes');
       this.$store.dispatch('project/setTaskStates');
@@ -159,9 +156,6 @@
       handleAddUser() {
         this.$refs.AddMemberToProjectDialog.show(this.currentProjectId);
       },
-      getUserList(userList) {
-        this.userList = userList;
-      },
       taskSearch(form) {
         const params = {};
         for (const argumentsKey in form) {
@@ -173,6 +167,12 @@
           params.is_done = form.is_done;
         }
         this.$refs.TaskList.searchTask(params);
+      },
+      async getUserList() {
+        const {
+          data: { count },
+        } = await getUserList({ project_id: this.currentProjectId });
+        this.userProjectCount = count;
       },
     },
   };
