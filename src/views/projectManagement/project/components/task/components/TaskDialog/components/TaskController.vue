@@ -4,10 +4,10 @@
       icon="iconfont icon-lianjie"
       tooltipContent="复制任务链接"
       type="text"
-      @click="handleRecycle()"
+      @click="handleCopyTaskLink"
     ></BtnTooltip>
     <span>
-      <BtnTooltip icon="iconfont icon-zan" tooltipContent="点个赞" type="text" @click="handleRecycle()"></BtnTooltip>
+      <BtnTooltip icon="iconfont icon-zan" tooltipContent="点个赞" type="text" @click="handleDoLike"></BtnTooltip>
     </span>
     <Dropdown :selectList="selectList" @command="command">
       <BtnTooltip icon="el-icon-more" tooltipContent="打开菜单" type="text"></BtnTooltip>
@@ -19,6 +19,7 @@
   import BtnTooltip from '@/components/Btn-tooltip';
   import Dropdown from '@/components/Dropdown';
   import { doEdit } from '@/api/taskManagement';
+  import mixin from '@/mixins';
 
   export default {
     name: 'TaskController',
@@ -26,6 +27,7 @@
       BtnTooltip,
       Dropdown,
     },
+    mixins: [mixin],
     props: {
       task: {
         type: Object,
@@ -59,7 +61,12 @@
       };
     },
     methods: {
-      handleRecycle() {},
+      handleCopyTaskLink() {
+        const { project_id, id } = this.task;
+        this.doCopy(`${window.location.origin}/pojectManagement/Project/${project_id}?taskId=${id}`);
+        this.$baseNotify('可粘贴到地址栏中，快速打开此任务', '复制链接成功');
+      },
+      handleDoLike() {},
       async command(item) {
         switch (item.id) {
           case 0:
@@ -84,8 +91,11 @@
             });
             break;
           case 3:
-            // 以新标签页打开
-
+            {
+              // 以新标签页打开
+              const { project_id, id } = this.task;
+              window.open(`${window.location.origin}/pojectManagement/Project/${project_id}?taskId=${id}`, '_blank');
+            }
             break;
           default:
             break;

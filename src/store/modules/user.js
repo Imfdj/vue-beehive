@@ -124,12 +124,12 @@ const actions = {
     await dispatch('resetAccessToken');
     await resetRouter();
     commit('setUserInfo', {});
-    // 断开socket连接
-    Vue.prototype.$socket.disconnect();
   },
   resetAccessToken({ commit }) {
     commit('setAccessToken', JSON.stringify({}));
     removeAccessToken();
+    // 断开socket连接
+    Vue.prototype.$socket.disconnect();
   },
   async refreshToken({ commit, state }) {
     try {
