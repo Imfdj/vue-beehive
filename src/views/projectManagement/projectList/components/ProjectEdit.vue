@@ -26,6 +26,12 @@
                     placeholder="介绍一下这个项目"
                   ></el-input>
                 </el-form-item>
+                <el-form-item label="项目公开性">
+                  <el-select v-model="form.is_private" placeholder="请选择" style="width: 100%">
+                    <el-option v-for="item in optionsPrivet" :key="item.value" :label="item.label" :value="item.value">
+                    </el-option>
+                  </el-select>
+                </el-form-item>
                 <el-form-item label="项目拥有者">
                   <div class="user-info">
                     <BImage
@@ -74,7 +80,7 @@
 </template>
 
 <script>
-  import { doEdit } from '@/api/projectManagement';
+  import { doDelete, doEdit } from '@/api/projectManagement';
   import CoverImage from '@/components/Cover-image';
   import BImage from '@/components/B-image';
 
@@ -101,9 +107,20 @@
           intro: '',
           progress: '',
           cover: '',
+          is_private: '',
           manager_id: '',
           is_auto_progress: false,
         },
+        optionsPrivet: [
+          {
+            value: 1,
+            label: '私有项目（仅项目成员可查看和编辑）',
+          },
+          {
+            value: 0,
+            label: '公开项目（所有人都可通过链接访问，仅项目成员可编辑）',
+          },
+        ],
       };
     },
     methods: {
@@ -160,7 +177,7 @@
 <style lang="scss" scoped>
   .project-edit {
     .wrap-pane {
-      height: 530px;
+      height: 600px;
       padding: 0 10px;
       .special {
         display: flex;

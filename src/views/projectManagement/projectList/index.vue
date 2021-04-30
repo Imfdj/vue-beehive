@@ -2,12 +2,13 @@
   <div class="project-list wrap-content-main">
     <el-tabs v-model="activeName">
       <el-tab-pane v-for="(item, index) in titles" :key="index" :label="item" :name="(index + 1).toString()">
-        <div v-if="listData.length" v-loading="loading" class="list color-light">
-          <div v-for="project in listData" :key="project.id" class="item-list">
+        <div v-loading="loading" class="list color-light">
+          <div v-for="project in listDataFilter" :key="project.id" class="item-list">
             <BImage :src="project.cover"></BImage>
             <div class="item-info">
               <div class="name">
                 <span class="name-text" @click="projectClick(project)">{{ project.name }}</span>
+                <el-tag v-if="project.is_private === 0" style="margin-left: 10px" type="success">公开</el-tag>
               </div>
               <div class="intro">{{ project.intro }}</div>
             </div>
@@ -71,7 +72,7 @@
     <ProjectCreate ref="create"></ProjectCreate>
     <ProjectEdit ref="edit" @fetchData="getList"></ProjectEdit>
     <AddMemberToProjectDialog ref="AddMemberToProjectDialog"></AddMemberToProjectDialog>
-    <div v-if="count > pageSize" class="wrap-el-pagination">
+    <div v-if="listData.length > pageSize" class="wrap-el-pagination">
       <el-pagination
         background
         :total="count"
@@ -127,11 +128,20 @@
     },
     computed: {
       ...mapState('user', ['userInfo']),
+      listDataFilter() {
+        let data = this.$baseLodash.sortBy(this.listData, 'collector');
+        data = this.$baseLodash.sortBy(data.reverse(), o => {
+          return o.is_private;
+        });
+        data = data.filter((item, index) => {
+          return index >= (this.pageNo - 1) * this.pageSize && index <= this.pageNo * this.pageSize;
+        });
+        return data;
+      },
     },
     watch: {
       activeName(newValue, oldValue) {
         this.collection = 0;
-        this.pageNo = 1;
         switch (newValue) {
           case '1':
             this.is_recycle = 0;
@@ -196,10 +206,6 @@
         this.loading = true;
         const params = {
           collection: this.collection,
-          limit: this.pageSize,
-          offset: (this.pageNo - 1) * this.pageSize,
-          prop_order: 'id',
-          order: 'desc',
         };
         this.is_recycle !== null ? (params.is_recycle = this.is_recycle) : null;
         this.is_archived !== null ? (params.is_archived = this.is_archived) : null;
@@ -209,6 +215,7 @@
         this.loading = false;
         this.listData = rows;
         this.count = count;
+        this.pageNo = 1;
       },
       handleAddUser(item) {
         this.$refs.AddMemberToProjectDialog.show(item.id);
@@ -256,7 +263,6 @@
       },
       handleCurrentChange(val) {
         this.pageNo = val;
-        this.getList();
       },
     },
   };
