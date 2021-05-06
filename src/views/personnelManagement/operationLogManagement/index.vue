@@ -1,14 +1,18 @@
 <template>
-  <div class="roleManagement-container wrap-content-main">
+  <div class="operation-log-management-container wrap-content-main">
     <vab-query-form>
       <vab-query-form-left-panel :span="12">
-        <el-button icon="el-icon-plus" type="primary" @click="handleEdit">添加</el-button>
         <el-button icon="el-icon-delete" type="danger" @click="handleDelete">批量删除</el-button>
       </vab-query-form-left-panel>
       <vab-query-form-right-panel :span="12">
         <el-form :inline="true" :model="queryForm" @submit.native.prevent>
           <el-form-item>
-            <el-input v-model.trim="queryForm.keyword" placeholder="请输入角色名" clearable />
+            <el-input
+              v-model="queryForm.keyword"
+              placeholder="资源名/标识码/标识码名/路径/动作"
+              clearable
+              style="width: 250px"
+            />
           </el-form-item>
           <el-form-item>
             <el-button icon="el-icon-search" type="primary" @click="queryData">查询</el-button>
@@ -25,25 +29,37 @@
       @sort-change="sortChang"
     >
       <el-table-column show-overflow-tooltip type="selection"></el-table-column>
-      <el-table-column show-overflow-tooltip prop="id" label="id" :sortable="'custom'"></el-table-column>
-      <el-table-column show-overflow-tooltip prop="name" label="角色名" :sortable="'custom'"></el-table-column>
-      <el-table-column show-overflow-tooltip prop="is_default" label="是否为默认角色" :sortable="'custom'">
+      <el-table-column prop="operator_username" label="操作人">
         <template slot-scope="scope">
-          <i
-            :class="scope.row.is_default === 1 ? 'el-icon-check' : ''"
-            :style="`color: ${scope.row.is_default === 1 ? '#67C23A' : '#F56C6C'};font-size: 24px;`"
-          ></i>
+          {{ scope.row.operator_username }}
         </template>
       </el-table-column>
-      <el-table-column show-overflow-tooltip fixed="right" label="操作" width="270">
+      <el-table-column prop="created_at" label="日期" align="center"></el-table-column>
+      <el-table-column prop="status" label="状态码" show-overflow-tooltip align="center" width="100px">
+        <template slot-scope="scope">
+          <el-tag :type="getStatusTagType(scope.row.status)">{{ scope.row.status }}</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column prop="ip" label="请求IP" width="120px" align="center" show-overflow-tooltip></el-table-column>
+      <el-table-column prop="method" label="请求方法" width="100px" align="center">
+        <template slot-scope="scope">
+          <el-tag :type="getMethodTagType(scope.row.method)">{{ scope.row.method }}</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column prop="url" label="请求路径"></el-table-column>
+      <el-table-column prop="params" label="请求体" align="center">
+        <template slot-scope="scope">
+          <el-popover popper-class="operation-log-params-popover" placement="top-start" width="300" trigger="hover">
+            <div class="wrap-operation-log-params">
+              {{ scope.row.params }}
+            </div>
+            <el-button slot="reference" type="text" icon="el-icon-view" size="medium"></el-button>
+          </el-popover>
+        </template>
+      </el-table-column>
+      <el-table-column show-overflow-tooltip fixed="right" label="操作" width="200">
         <template v-slot="scope">
-          <el-button type="text" @click="handlePermissionEdit(scope.row)">资源管理</el-button>
-          <el-button type="text" @click="handleMenuEdit(scope.row)">菜单管理</el-button>
-          <el-button type="text" @click="handleEdit(scope.row)">编辑</el-button>
           <el-button type="text" @click="handleDelete(scope.row)">删除</el-button>
-          <el-button v-if="scope.row.is_default === 0" type="text" @click="handleSetDefault(scope.row)"
-            >设为默认</el-button
-          >
         </template>
       </el-table-column>
     </el-table>
@@ -56,22 +72,14 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
     ></el-pagination>
-
-    <edit ref="edit" @fetchData="fetchData"></edit>
-    <RoleMenuManagementEdit ref="RoleMenuManagementEdit"></RoleMenuManagementEdit>
-    <RolePermissionManagementEdit ref="RolePermissionManagementEdit"></RolePermissionManagementEdit>
   </div>
 </template>
 
 <script>
-  import { getList, doDelete, doSetDefault } from '@/api/roleManagement';
-  import Edit from './components/RoleManagementEdit';
-  import RoleMenuManagementEdit from './components/RoleMenuManagementEdit';
-  import RolePermissionManagementEdit from './components/RolePermissionManagementEdit';
+  import { getList, doDelete } from '@/api/operationLogManagement';
 
   export default {
-    name: 'RoleManagement',
-    components: { Edit, RoleMenuManagementEdit, RolePermissionManagementEdit },
+    name: 'OperationLogManagement',
     data() {
       return {
         list: null,
@@ -102,35 +110,6 @@
         this.queryForm.pageNo = 1;
         this.fetchData();
       },
-      /**
-       * 菜单管理
-       * @param row
-       */
-      handleMenuEdit(row) {
-        if (row.id) {
-          this.$refs['RoleMenuManagementEdit'].showEdit(row);
-        } else {
-          this.$refs['RoleMenuManagementEdit'].showEdit();
-        }
-      },
-      /**
-       * 资源管理
-       * @param row
-       */
-      handlePermissionEdit(row) {
-        if (row.id) {
-          this.$refs['RolePermissionManagementEdit'].showEdit(row);
-        } else {
-          this.$refs['RolePermissionManagementEdit'].showEdit();
-        }
-      },
-      handleEdit(row) {
-        if (row.id) {
-          this.$refs['edit'].showEdit(row);
-        } else {
-          this.$refs['edit'].showEdit();
-        }
-      },
       handleDelete(row) {
         if (row.id) {
           this.$baseConfirm('你确定要删除当前项吗', null, async () => {
@@ -151,13 +130,6 @@
             return false;
           }
         }
-      },
-      handleSetDefault(row) {
-        this.$baseConfirm(`你确定要设置 “${row.name}” 为默认角色吗`, null, async () => {
-          await doSetDefault({ id: row.id });
-          this.$baseMessage('设置成功', 'success');
-          this.fetchData();
-        });
       },
       handleSizeChange(val) {
         this.queryForm.pageSize = val;
@@ -181,6 +153,49 @@
         this.total = count;
         this.listLoading = false;
       },
+      getStatusTagType(status) {
+        let type = '';
+        switch (true) {
+          case /^2.*/.test(status):
+            type = 'success';
+            break;
+          case /^4.*/.test(status):
+            type = 'warning';
+            break;
+          case /^5.*/.test(status):
+            type = 'danger';
+            break;
+          default:
+            type = 'warning';
+        }
+        return type;
+      },
+      getMethodTagType(method) {
+        let type = '';
+        switch (method) {
+          case 'POST':
+            type = 'success';
+            break;
+          case 'PUT':
+            type = '';
+            break;
+          case 'DELETE':
+            type = 'info';
+            break;
+          default:
+            type = 'info';
+        }
+        return type;
+      },
     },
   };
 </script>
+
+<style lang="scss">
+  .operation-log-params-popover {
+    .wrap-operation-log-params {
+      max-height: 500px;
+      overflow: auto;
+    }
+  }
+</style>
