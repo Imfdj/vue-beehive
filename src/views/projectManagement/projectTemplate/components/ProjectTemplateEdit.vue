@@ -4,10 +4,7 @@
       <el-form ref="form" :model="form" :rules="rules" label-width="0px">
         <el-form-item prop="cover" class="cover-item">
           <div class="upload-img">
-            <div v-if="form.cover" class="img-cover" @click="uploadCoverClick">
-              <BImage :src="form.cover" :width="290" :height="160"></BImage>
-            </div>
-            <div v-else class="btn-upload-img" @click="uploadCoverClick"><i class="el-icon-plus"></i>添加封面</div>
+            <CoverImage :cover="form.cover" @uploaded="CoverUploaded"></CoverImage>
           </div>
         </el-form-item>
         <el-form-item prop="name">
@@ -21,33 +18,18 @@
         <el-button type="primary" @click="save">确 定</el-button>
       </div>
     </el-dialog>
-    <cropper
-      ref="Cropper"
-      dialogWidth="800px"
-      :autoCropWidth="290"
-      :autoCropHeight="160"
-      @realTime="realTime"
-      @getCropBlob="getCropBlob"
-    >
-      <div class="wrap-review-cropper">
-        <img :src="previews.url" :style="previews.img" />
-      </div>
-    </cropper>
   </div>
 </template>
 
 <script>
   import { doEdit, doCreate } from '@/api/projectTemplateManagement';
-  import Cropper from '@/components/Cropper';
-  import BImage from '@/components/B-image';
-  import { upload } from '@/api/upload';
   import mixins from '@/mixins';
+  import CoverImage from '@/components/Cover-image';
 
   export default {
     name: 'ProjectTemplateEdit',
     components: {
-      Cropper,
-      BImage,
+      CoverImage,
     },
     mixins: [mixins],
     data() {
@@ -106,20 +88,8 @@
           }
         });
       },
-      async getCropBlob(blob) {
-        this.$refs.Cropper.hide();
-        const formData = new FormData();
-        formData.append('file', blob, 'data.jpg');
-        const {
-          data: { path },
-        } = await upload(formData);
-        this.form.cover = path;
-      },
-      realTime(data) {
-        this.previews = data;
-      },
-      uploadCoverClick() {
-        this.$refs.Cropper.show();
+      CoverUploaded(url) {
+        this.form.cover = url;
       },
     },
   };
