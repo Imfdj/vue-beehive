@@ -22,6 +22,10 @@ const methodUrl = {
     url: '/v1/projects',
     method: 'get',
   },
+  getStatistics: {
+    url: '/v1/projects/statistics',
+    method: 'get',
+  },
 };
 
 export const permissions = getPermissionStr(methodUrl);
@@ -57,6 +61,13 @@ export function doDelete(data) {
 export function getInfo(params) {
   return request({
     ...methodUrl.getInfo,
+    params,
+  });
+}
+
+export function getStatistics(params) {
+  return request({
+    ...methodUrl.getStatistics,
     params,
   });
 }

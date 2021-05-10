@@ -53,44 +53,56 @@
     components: {
       BImage,
     },
+    props: {
+      statisticsData: {
+        type: Object,
+        required: true,
+      },
+    },
     data() {
       return {
         enableEditIntro: false,
         statusList: [
           {
+            name: 'done',
             tip: '已完成',
-            num: 5,
-            percentage: 5,
+            num: 0,
+            percentage: 0,
             percentageColor: '#9ED979',
           },
           {
+            name: 'undone',
             tip: '未完成',
-            num: 5,
-            percentage: 5,
+            num: 0,
+            percentage: 0,
             percentageColor: '#FF8478',
           },
           {
+            name: 'overdue',
             tip: '已逾期',
-            num: 5,
-            percentage: 5,
+            num: 0,
+            percentage: 0,
             percentageColor: '#FF8478',
           },
           {
+            name: 'unreceived',
             tip: '待认领',
-            num: 5,
-            percentage: 5,
+            num: 0,
+            percentage: 0,
             percentageColor: '#A1A4D9',
           },
           {
+            name: 'dueToday',
             tip: '今日到期',
-            num: 5,
-            percentage: 5,
+            num: 0,
+            percentage: 0,
             percentageColor: '#ccc',
           },
           {
+            name: 'completedOverdue',
             tip: '逾期完成',
-            num: 5,
-            percentage: 5,
+            num: 0,
+            percentage: 0,
             percentageColor: '#FF8478',
           },
         ],
@@ -101,6 +113,14 @@
       ...mapState('project', ['projectList', 'currentProjectId']),
       createdAt() {
         return this.$baseDayjs(this.project.created_at).format('YYYY年M月D日');
+      },
+    },
+    watch: {
+      statisticsData(newValue, oldValue) {
+        this.statusList.forEach(item => {
+          item.num = newValue[item.name];
+          item.percentage = Math.floor((item.num / newValue.taskCount) * 100);
+        });
       },
     },
     created() {

@@ -1,24 +1,42 @@
 <template>
   <div class="overview">
+    <TaskStatisticsEcharts :statisticsData="statisticsData"></TaskStatisticsEcharts>
     <ProjectLog></ProjectLog>
-    <ProjectInfo></ProjectInfo>
+    <ProjectInfo :statisticsData="statisticsData"></ProjectInfo>
   </div>
 </template>
 
 <script>
+  import TaskStatisticsEcharts from './components/TaskStatisticsEcharts';
   import ProjectLog from './components/ProjectLog';
   import ProjectInfo from './components/ProjectInfo';
+  import { getStatistics } from '@/api/projectManagement';
+  import { mapState } from 'vuex';
 
   export default {
     name: 'Overview',
     components: {
+      TaskStatisticsEcharts,
       ProjectLog,
       ProjectInfo,
     },
     data() {
-      return {};
+      return {
+        statisticsData: {},
+      };
     },
-    methods: {},
+    computed: {
+      ...mapState('project', ['currentProjectId']),
+    },
+    created() {
+      this.getStatistics();
+    },
+    methods: {
+      async getStatistics() {
+        const { data } = await getStatistics({ id: this.currentProjectId });
+        this.statisticsData = data;
+      },
+    },
   };
 </script>
 
