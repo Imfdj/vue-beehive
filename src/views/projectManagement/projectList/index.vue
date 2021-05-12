@@ -259,7 +259,7 @@
         this.$refs['create'].showCreate();
       },
       projectClick(project) {
-        this.$router.push(`/pojectManagement/Project/${project.id}`);
+        this.$router.push(`${this.$configSettings.project_path}/${project.id}`);
       },
       handleCurrentChange(val) {
         this.pageNo = val;

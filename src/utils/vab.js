@@ -1,4 +1,5 @@
 import { loadingText, messageDuration, title } from '@/config/settings';
+import configSettings from '@/config/settings';
 import * as lodash from 'lodash';
 import dayjs from 'dayjs';
 import { Loading, Message, MessageBox, Notification } from 'element-ui';
@@ -163,6 +164,8 @@ const install = (Vue, opts = {}) => {
   Vue.prototype.$baseDayjs = dayjs;
   /* 全局事件总线 */
   Vue.prototype.$baseEventBus = new Vue();
+  /* 全局settings配置 */
+  Vue.prototype.$configSettings = configSettings;
 };
 
 if (typeof window !== 'undefined' && window.Vue) {

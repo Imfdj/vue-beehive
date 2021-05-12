@@ -58,7 +58,7 @@
                 <el-switch v-model="switchValue" active-color="#409EFF" inactive-color="#909399" @change="switchChange">
                 </el-switch>
               </div>
-              <div class="bottom"> 根据当前任务的完成情况自动计算项目进度。 </div>
+              <div class="bottom"> 根据当前任务的完成情况自动计算项目进度。</div>
             </div>
           </el-tab-pane>
           <el-tab-pane>
@@ -81,8 +81,10 @@
 
 <script>
   import { doDelete, doEdit } from '@/api/projectManagement';
+  import { doQuit } from '@/api/userProjectManagement';
   import CoverImage from '@/components/Cover-image';
   import BImage from '@/components/B-image';
+  import { mapState } from 'vuex';
 
   export default {
     name: 'ProjectEdit',
@@ -123,6 +125,9 @@
         ],
       };
     },
+    computed: {
+      ...mapState('user', ['userInfo']),
+    },
     methods: {
       showEdit(item) {
         this.form = Object.assign({}, item);
@@ -160,8 +165,15 @@
         });
       },
       doQuit() {
-        // TODO 退出
-        this.save();
+        this.$baseConfirm('你确定要退出此项目吗', null, async () => {
+          await doQuit({
+            user_id: this.userInfo.id,
+            project_id: this.form.id,
+          });
+          this.$baseNotify('', `已成功退出项目 ${this.form.name}`);
+          this.close();
+          this.$router.replace(this.$configSettings.project_list_path);
+        });
       },
       async doRecycle() {
         this.$baseConfirm('你确定要将此项目移至回收站吗', null, async () => {

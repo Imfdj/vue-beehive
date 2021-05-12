@@ -100,7 +100,7 @@
       goToTask(item) {
         // 导航栏切换为任务
         this.setIndexTab(0);
-        this.$router.replace(`/pojectManagement/Project/${item.project_id}?taskId=${item.task_id}`);
+        this.$router.replace(`${this.$configSettings.project_path}/${item.project_id}?taskId=${item.task_id}`);
       },
     },
   };

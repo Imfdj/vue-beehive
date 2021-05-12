@@ -201,7 +201,7 @@
               receiver_id: receiver.id,
               content: `在任务 <span class="task-name">${this.taskInfo.name}</span> 中@了你`,
               type: 'mention',
-              url: `/pojectManagement/Project/${this.currentProjectId}?taskId=${this.taskInfo.id}`,
+              url: `${this.$configSettings.project_path}/${this.currentProjectId}?taskId=${this.taskInfo.id}`,
             });
           });
         }

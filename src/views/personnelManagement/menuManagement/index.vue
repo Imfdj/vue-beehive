@@ -70,6 +70,7 @@
         :sortable="'custom'"
       ></el-table-column>
       <el-table-column show-overflow-tooltip prop="redirect" label="路由重定向" :sortable="'custom'"></el-table-column>
+      <el-table-column show-overflow-tooltip prop="sort" label="排序" :sortable="'sort'"></el-table-column>
       <el-table-column show-overflow-tooltip fixed="right" label="操作" width="200">
         <template v-slot="scope">
           <el-button type="text" @click="handleEdit(scope.row, true)">添加下级菜单</el-button>
@@ -176,7 +177,7 @@
         this.listLoading = true;
         const {
           data: { rows },
-        } = await getList({ ...this.queryForm, limit: 1000 });
+        } = await getList({ ...this.queryForm, limit: 1000, prop_order: 'sort', order: 'desc' });
         const childrenNav = [];
         // 后端数据, 根级树数组,  根级 PID
         this.listToTree(rows, childrenNav, 0);

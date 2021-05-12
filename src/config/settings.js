@@ -93,4 +93,8 @@ module.exports = {
   //github授权登录重定向地址
   github_auth_redirect_uri:
     process.env.NODE_ENV === 'production' ? 'https://beehive.imfdj.top/login' : 'http://localhost/login',
+  // 项目列表路径
+  project_list_path: '/projectManagement/ProjectLists',
+  // 项目路径
+  project_path: '/projectManagement/Project',
 };

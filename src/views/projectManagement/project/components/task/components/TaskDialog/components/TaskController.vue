@@ -63,7 +63,7 @@
     methods: {
       handleCopyTaskLink() {
         const { project_id, id } = this.task;
-        this.doCopy(`${window.location.origin}/pojectManagement/Project/${project_id}?taskId=${id}`);
+        this.doCopy(`${window.location.origin}${this.$configSettings.project_path}/${project_id}?taskId=${id}`);
         this.$baseNotify('可粘贴到地址栏中，快速打开此任务', '复制链接成功');
       },
       handleDoLike() {},
@@ -94,7 +94,10 @@
             {
               // 以新标签页打开
               const { project_id, id } = this.task;
-              window.open(`${window.location.origin}/pojectManagement/Project/${project_id}?taskId=${id}`, '_blank');
+              window.open(
+                `${window.location.origin}${this.$configSettings.project_path}/${project_id}?taskId=${id}`,
+                '_blank'
+              );
             }
             break;
           default:

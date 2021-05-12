@@ -18,6 +18,10 @@ const methodUrl = {
     url: '/v1/user_projects',
     method: 'delete',
   },
+  doQuit: {
+    url: '/v1/user_projects/quit',
+    method: 'delete',
+  },
 };
 
 export const permissions = getPermissionStr(methodUrl);
@@ -46,6 +50,13 @@ export function doEdit(data) {
 export function doDelete(data) {
   return request({
     ...methodUrl.doDelete,
+    data,
+  });
+}
+
+export function doQuit(data) {
+  return request({
+    ...methodUrl.doQuit,
     data,
   });
 }

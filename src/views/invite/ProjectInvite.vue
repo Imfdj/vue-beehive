@@ -120,7 +120,7 @@
           ...this.data,
           is_accept: 1,
         });
-        this.$router.push(`/pojectManagement/Project/${this.data.group_id}`);
+        this.$router.push(`${this.$configSettings.project_path}/${this.data.group_id}`);
       },
     },
   };
