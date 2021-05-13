@@ -46,7 +46,7 @@
                 </el-form-item>
               </el-form>
               <div class="foot">
-                <el-button type="primary" @click="save">确 定</el-button>
+                <el-button type="primary" :disabled="!isManager" @click="save">确 定</el-button>
               </div>
             </div>
           </el-tab-pane>
@@ -55,7 +55,13 @@
             <div class="wrap-pane preference">
               <div class="top">
                 <span>自动更新项目进度</span>
-                <el-switch v-model="switchValue" active-color="#409EFF" inactive-color="#909399" @change="switchChange">
+                <el-switch
+                  v-model="switchValue"
+                  active-color="#409EFF"
+                  inactive-color="#909399"
+                  :disabled="!isManager"
+                  @change="switchChange"
+                >
                 </el-switch>
               </div>
               <div class="bottom"> 根据当前任务的完成情况自动计算项目进度。</div>
@@ -67,9 +73,9 @@
               <div class="title">项目操作</div>
               <div class="tip color-light">您可以执行以下操作</div>
               <div class="wrap-btn">
-                <el-button type="danger" plain @click="doPigeonhole">归档项目</el-button>
-                <el-button type="danger" plain @click="doQuit">退出</el-button>
-                <el-button type="danger" @click="doRecycle">移至回收站</el-button>
+                <el-button type="danger" plain :disabled="!isManager" @click="doPigeonhole">归档项目</el-button>
+                <el-button type="danger" plain :disabled="isManager" @click="doQuit">退出</el-button>
+                <el-button type="danger" :disabled="!isManager" @click="doRecycle">移至回收站</el-button>
               </div>
             </div>
           </el-tab-pane>
@@ -127,6 +133,9 @@
     },
     computed: {
       ...mapState('user', ['userInfo']),
+      isManager() {
+        return this.userInfo.id === this.form.manager_id;
+      },
     },
     methods: {
       showEdit(item) {

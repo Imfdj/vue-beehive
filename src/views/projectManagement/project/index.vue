@@ -71,7 +71,7 @@
   import ProjectSetting from './components/task/components/ProjectSetting';
   import File from './components/File';
   import Overview from './components/Overview';
-  import { mapState, mapMutations } from 'vuex';
+  import { mapState, mapMutations, mapGetters } from 'vuex';
   import BImage from '@/components/B-image';
   import AddMemberToProjectDialog from '@/views/projectManagement/projectList/components/AddMemberToProjectDialog';
   import { getList as getUserList } from '@/api/user';
@@ -96,9 +96,7 @@
     },
     computed: {
       ...mapState('project', ['currentProjectId', 'projectList', 'indexTab']),
-      currentProject() {
-        return this.projectList.find(item => item.id === this.currentProjectId) || {};
-      },
+      ...mapGetters('project', ['currentProject']),
       listProjectDataFilter() {
         return this.projectList.filter(item => item.name.includes(this.keywordProjectName));
       },
@@ -164,7 +162,7 @@
         this.$router.push(this.$route.path.replace(/\/\d+$/, `/${projectId}`));
       },
       handleAddUser() {
-        this.$refs.AddMemberToProjectDialog.show(this.currentProjectId);
+        this.$refs.AddMemberToProjectDialog.show(this.currentProject);
       },
       taskSearch(form) {
         const params = {};

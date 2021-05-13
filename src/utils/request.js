@@ -143,8 +143,9 @@ service.interceptors.response.use(
         break;
       }
       case noAuthenticationCode:
-        await store.dispatch('user/resetAccessToken');
-        router.push(`/login?redirect=${router.app.$route.fullPath}`);
+        // await store.dispatch('user/resetAccessToken');
+        // router.push(`/login?redirect=${router.app.$route.fullPath}`);
+        router.push(`/401`);
         break;
       case noPermissionCode:
         router.push({

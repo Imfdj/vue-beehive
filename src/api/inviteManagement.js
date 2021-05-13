@@ -26,6 +26,10 @@ const methodUrl = {
     url: '/v1/invites/uuid',
     method: 'get',
   },
+  doAcceptInvite: {
+    url: '/v1/invites/accept',
+    method: 'put',
+  },
 };
 
 export const permissions = getPermissionStr(methodUrl);
@@ -69,5 +73,12 @@ export function getInfoByUUID(params) {
   return request({
     ...methodUrl.getInfoByUUID,
     params,
+  });
+}
+
+export function doAcceptInvite(data) {
+  return request({
+    ...methodUrl.doAcceptInvite,
+    data,
   });
 }

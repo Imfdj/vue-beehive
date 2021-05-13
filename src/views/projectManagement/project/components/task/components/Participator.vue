@@ -54,7 +54,7 @@
               </div>
             </div>
           </div>
-          <div class="wrap-footer">
+          <div v-if="isManager" class="wrap-footer">
             <el-button type="primary" style="width: 100%" @click="handleAddUser">邀请新成员</el-button>
           </div>
         </div>
@@ -72,7 +72,7 @@
   import { getList } from '@/api/user';
   import { doChange } from '@/api/userTaskManagement';
   import { waitTimeout } from '@/utils';
-  import { mapState } from 'vuex';
+  import { mapState, mapGetters } from 'vuex';
   import AddMemberToProjectDialog from '@/views/projectManagement/projectList/components/AddMemberToProjectDialog';
 
   export default {
@@ -103,7 +103,12 @@
       };
     },
     computed: {
+      ...mapState('user', ['userInfo']),
       ...mapState('project', ['currentProjectId']),
+      ...mapGetters('project', ['currentProject']),
+      isManager() {
+        return this.userInfo.id === this.currentProject.manager_id;
+      },
       dataListFilter() {
         const data = this.$baseLodash.cloneDeep(this.dataList.rows) || [];
         return data.filter(user => {
@@ -158,7 +163,7 @@
         }
       },
       handleAddUser() {
-        this.$refs.AddMemberToProjectDialog.show(this.currentProjectId);
+        this.$refs.AddMemberToProjectDialog.show(this.currentProject);
       },
     },
   };

@@ -33,7 +33,7 @@
             <i v-if="executor.id === user.id" class="el-icon-check"></i>
           </div>
         </div>
-        <div v-if="showAddUser" class="wrap-footer">
+        <div v-if="showAddUser && isManager" class="wrap-footer">
           <el-button type="primary" style="width: 100%" @click="handleAddUser">邀请新成员</el-button>
         </div>
       </div>
@@ -51,7 +51,7 @@
   import { getList } from '@/api/user';
   import { waitTimeout } from '@/utils';
   import AddMemberToProjectDialog from '@/views/projectManagement/projectList/components/AddMemberToProjectDialog';
-  import { mapState } from 'vuex';
+  import { mapGetters, mapState } from 'vuex';
 
   export default {
     name: 'ExecutorSelect',
@@ -90,7 +90,12 @@
       };
     },
     computed: {
+      ...mapState('user', ['userInfo']),
       ...mapState('project', ['currentProjectId']),
+      ...mapGetters('project', ['currentProject']),
+      isManager() {
+        return this.userInfo.id === this.currentProject.manager_id;
+      },
       dataListFilter() {
         const data = this.$baseLodash.cloneDeep(this.dataList.rows) || [];
         // 如果需要增加待认领项
@@ -136,7 +141,7 @@
         this.setHide();
       },
       handleAddUser() {
-        this.$refs.AddMemberToProjectDialog.show(this.currentProjectId);
+        this.$refs.AddMemberToProjectDialog.show(this.currentProject);
       },
     },
   };

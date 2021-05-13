@@ -19,7 +19,7 @@
             type="primary"
             size="medium"
             style="width: 100%; border-radius: 12px"
-            @click="doCreate"
+            @click="doAcceptInvite"
             >立刻加入
           </el-button>
           <el-button
@@ -54,8 +54,8 @@
 
 <script>
   import mixin from '@/mixins';
-  import { getInfoByUUID, doEdit } from '@/api/inviteManagement';
-  import { doCreate, getList } from '@/api/userProjectManagement';
+  import { getInfoByUUID, doAcceptInvite } from '@/api/inviteManagement';
+  import { getList } from '@/api/userProjectManagement';
   import { getInfo as getInfoProject } from '@/api/projectManagement';
   import { mapState } from 'vuex';
   import BImage from '@/components/B-image';
@@ -111,15 +111,8 @@
           this.joined = false;
         }
       },
-      async doCreate() {
-        await doCreate({
-          user_id: this.data.receiver_id || this.userInfo.id,
-          project_id: this.data.group_id,
-        });
-        await doEdit({
-          ...this.data,
-          is_accept: 1,
-        });
+      async doAcceptInvite() {
+        await doAcceptInvite({ uuid: this.$route.params.id });
         this.$router.push(`${this.$configSettings.project_path}/${this.data.group_id}`);
       },
     },

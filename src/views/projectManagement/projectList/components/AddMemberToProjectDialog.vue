@@ -1,15 +1,15 @@
 <template>
   <el-dialog
-    title="邀请新成员"
+    :title="dialogTitle"
     :visible.sync="dialogVisible"
     custom-class="add-member-to-project-dialog"
     width="530px"
     append-to-body
   >
     <div class="wrap-content">
-      <div class="wrap-intro">
+      <div v-if="isManager" class="wrap-intro">
         账号邀请
-        <el-button type="text" size="medium">通过链接邀请</el-button>
+        <el-button type="text" disabled size="medium">通过链接邀请</el-button>
       </div>
       <el-input
         v-model="keyword"
@@ -17,7 +17,7 @@
         prefix-icon="el-icon-search"
         @keyup.native="keywordChange"
       ></el-input>
-      <div class="user-list">
+      <div v-loading="loading" class="user-list">
         <div v-for="(item, index) in userList" :key="index" class="wrap-list-item">
           <BImage class="user-avatar" :src="item.avatar || ''" :width="32" :height="32" :borderRadius="32"></BImage>
           <div class="user-info">
@@ -28,7 +28,7 @@
           </div>
           <div class="wrap-ctrl color-light">
             <el-button
-              v-if="!item.projectIds.includes(projectId)"
+              v-if="!item.projectIds.includes(project.id)"
               size="mini"
               :disabled="item.invited"
               plain
@@ -59,6 +59,7 @@
   import { doCreate as doCreateInvite } from '@/api/inviteManagement';
   import BImage from '@/components/B-image';
   import { waitTimeout } from '@/utils';
+  import { mapState } from 'vuex';
 
   export default {
     name: 'AddMemberToProjectDialog',
@@ -68,16 +69,25 @@
     data() {
       return {
         dialogVisible: false,
+        loading: false,
         keyword: '',
         timer: 0,
-        projectId: null,
+        project: {},
         userData: [],
         userList: [],
         pageNo: 1,
         pageSize: 6,
       };
     },
-    computed: {},
+    computed: {
+      ...mapState('user', ['userInfo']),
+      isManager() {
+        return this.userInfo.id === this.project.manager_id;
+      },
+      dialogTitle() {
+        return this.isManager ? '邀请新成员' : '项目成员';
+      },
+    },
     watch: {
       dialogVisible(newValue, oldValue) {
         if (newValue) {
@@ -92,8 +102,8 @@
       this.getUserList();
     },
     methods: {
-      show(projectId) {
-        this.projectId = projectId;
+      show(project) {
+        this.project = project;
         this.dialogVisible = true;
       },
       keywordChange() {
@@ -105,11 +115,18 @@
         this.getUserList();
       },
       async getUserList() {
-        const { data } = await getList({
+        this.loading = true;
+        this.userList = [];
+        this.userData = [];
+        const params = {
           keyword: this.keyword,
           limit: this.pageSize,
           offset: (this.pageNo - 1) * this.pageSize,
-        });
+        };
+        if (!this.isManager) {
+          params.project_id = this.project.id;
+        }
+        const { data } = await getList(params);
         this.userData = data;
         this.userList = this.userData.rows.map(item => {
           return {
@@ -118,6 +135,7 @@
             invited: false,
           };
         });
+        this.loading = false;
       },
       async doCreateInvite(body) {
         await doCreateInvite(body);
@@ -127,7 +145,7 @@
       async add(user) {
         await this.doCreateInvite({
           group: 'Projects',
-          group_id: this.projectId,
+          group_id: this.project.id,
           receiver_id: user.id,
         });
         // 设置此用户已邀请

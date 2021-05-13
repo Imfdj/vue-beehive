@@ -27,8 +27,8 @@
             <div class="item-control">
               <BtnTooltip
                 v-if="is_recycle === 0 && is_archived === null"
-                icon="iconfont icon-jiaren"
-                tooltipContent="添加成员"
+                :icon="getMemberIcon(project)"
+                :tooltipContent="getMemberTooltipContent(project)"
                 @click="handleAddUser(project)"
               ></BtnTooltip>
               <BtnTooltip
@@ -98,7 +98,7 @@
   import ProjectCreate from './components/ProjectCreate';
   import ProjectEdit from './components/ProjectEdit';
   import AddMemberToProjectDialog from './components/AddMemberToProjectDialog';
-  import { mapState } from 'vuex';
+  import { mapGetters, mapState } from 'vuex';
   import mixin from '@/mixins';
 
   export default {
@@ -218,7 +218,7 @@
         this.pageNo = 1;
       },
       handleAddUser(item) {
-        this.$refs.AddMemberToProjectDialog.show(item.id);
+        this.$refs.AddMemberToProjectDialog.show(item);
       },
       handleEdit(item) {
         this.$refs['edit'].showEdit(item);
@@ -263,6 +263,12 @@
       },
       handleCurrentChange(val) {
         this.pageNo = val;
+      },
+      getMemberIcon(project) {
+        return `iconfont ${this.userInfo.id === project.manager_id ? 'icon-jiaren' : 'icon-ren'}`;
+      },
+      getMemberTooltipContent(project) {
+        return this.userInfo.id === project.manager_id ? '添加成员' : '项目成员';
       },
     },
   };

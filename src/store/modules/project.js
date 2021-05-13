@@ -15,6 +15,11 @@ const state = {
   currentProjectId: null, // 当前项目ID
   indexTab: 0, // 项目导航栏的index
 };
+
+const getters = {
+  currentProject: state => state.projectList.find(item => item.id === state.currentProjectId) || {},
+};
+
 const mutations = {
   setProjectList(state, projectList) {
     state.projectList = projectList;
@@ -92,4 +97,4 @@ const actions = {
   },
 };
 
-export default { state, mutations, actions };
+export default { state, getters, mutations, actions };
