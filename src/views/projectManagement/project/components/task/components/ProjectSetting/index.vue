@@ -19,6 +19,7 @@
 <script>
   import ProjectEdit from '@/views/projectManagement/projectList/components/ProjectEdit';
   import RecycleDialog from './components/RecycleDialog';
+  import { mapGetters } from 'vuex';
 
   export default {
     name: 'ProjectSetting',
@@ -57,19 +58,13 @@
       };
     },
     computed: {
-      projectData() {
-        const projectList = this.$store.state.project.projectList;
-        const currentProjectId = this.$store.state.project.currentProjectId;
-        return projectList?.find(item => {
-          return item.id === currentProjectId;
-        });
-      },
+      ...mapGetters('project', ['currentProject']),
     },
     methods: {
       select(index) {
         switch (index) {
           case 0:
-            this.$refs['ProjectEdit'].showEdit(this.projectData);
+            this.$refs['ProjectEdit'].showEdit(this.currentProject);
             break;
           case 1:
             break;
