@@ -17,7 +17,11 @@ const state = {
 };
 
 const getters = {
+  // 当前项目
   currentProject: state => state.projectList.find(item => item.id === state.currentProjectId) || {},
+  // 当前登陆这是否为当前项目的成员
+  isCurrentProjectMember: (state, getters, rootState) =>
+    getters.currentProject.member?.find(item => item.id === rootState.user.userInfo.id) ? true : false,
 };
 
 const mutations = {

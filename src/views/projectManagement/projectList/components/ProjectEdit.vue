@@ -6,7 +6,14 @@
           <el-tab-pane>
             <span slot="label"><i class="el-icon-s-data"></i> 概览</span>
             <div class="wrap-pane">
-              <el-form ref="form" label-position="top" label-width="80px" :model="form" size="mini">
+              <el-form
+                ref="form"
+                label-position="top"
+                label-width="80px"
+                :model="form"
+                :disabled="!isManager"
+                size="mini"
+              >
                 <el-form-item label="项目封面">
                   <CoverImage :cover="form.cover" @uploaded="CoverUploaded"></CoverImage>
                 </el-form-item>
@@ -74,7 +81,9 @@
               <div class="tip color-light">您可以执行以下操作</div>
               <div class="wrap-btn">
                 <el-button type="danger" plain :disabled="!isManager" @click="doPigeonhole">归档项目</el-button>
-                <el-button type="danger" plain :disabled="isManager" @click="doQuit">退出</el-button>
+                <el-button type="danger" plain :disabled="isManager || !isCurrentProjectMember" @click="doQuit"
+                  >退出</el-button
+                >
                 <el-button type="danger" :disabled="!isManager" @click="doRecycle">移至回收站</el-button>
               </div>
             </div>
@@ -86,11 +95,11 @@
 </template>
 
 <script>
-  import { doDelete, doEdit } from '@/api/projectManagement';
+  import { doEdit } from '@/api/projectManagement';
   import { doQuit } from '@/api/userProjectManagement';
   import CoverImage from '@/components/Cover-image';
   import BImage from '@/components/B-image';
-  import { mapState } from 'vuex';
+  import { mapGetters, mapState } from 'vuex';
 
   export default {
     name: 'ProjectEdit',
@@ -133,6 +142,7 @@
     },
     computed: {
       ...mapState('user', ['userInfo']),
+      ...mapGetters('project', ['isCurrentProjectMember']),
       isManager() {
         return this.userInfo.id === this.form.manager_id;
       },
