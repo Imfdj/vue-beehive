@@ -1,6 +1,12 @@
 <template>
   <div class="task-list">
-    <draggable class="list-group" :list="listData" group="task_lists" @change="taskListDraggableChange">
+    <draggable
+      class="list-group"
+      :list="listData"
+      :disabled="!isCurrentProjectMember"
+      group="task_lists"
+      @change="taskListDraggableChange"
+    >
       <div v-for="(itemList, indexList) in listData" :key="indexList" class="wrap-item">
         <div class="task-list-info">
           <div class="name"
@@ -9,6 +15,7 @@
           <div class="more">
             <Dropdown
               :selectList="selectListMore"
+              :disabled="!isCurrentProjectMember"
               @command="
                 selector => {
                   commandMore(selector, itemList);
@@ -20,7 +27,13 @@
           </div>
         </div>
         <div v-loading="itemList.loading" class="wrap-draggable">
-          <draggable class="list-group" :list="itemList.tasks" group="tasks" @change="taskDraggableChange">
+          <draggable
+            class="list-group"
+            :list="itemList.tasks"
+            :disabled="!isCurrentProjectMember"
+            group="tasks"
+            @change="taskDraggableChange"
+          >
             <div
               v-for="element in itemList.tasks"
               v-show="element.is_recycle === 0"
@@ -38,10 +51,9 @@
                 </el-tooltip>
               </div>
               <div class="wrap-done">
-                <i
-                  :class="`iconfont ${element.is_done === 1 ? 'icon-xuanzhong2' : 'icon-fangxing1'}`"
-                  @click.stop="changeDoneState(element)"
-                ></i>
+                <el-button type="text" :disabled="!isCurrentProjectMember" @click.stop="changeDoneState(element)">
+                  <i :class="`iconfont ${element.is_done === 1 ? 'icon-xuanzhong2' : 'icon-fangxing1'}`"></i>
+                </el-button>
               </div>
               <div class="content" :class="[{ 'task-state-success': (element.state && element.state.is_done) === 1 }]">
                 <div class="name">{{ element.name }}</div>
@@ -71,13 +83,15 @@
               ></div>
             </div>
           </draggable>
-          <div
+          <el-button
             v-if="indexListCreate !== indexList"
+            :disabled="!isCurrentProjectMember"
+            type="text"
             class="btn-createTask"
             @click="CreateTaskClick(itemList, indexList)"
           >
             <i class="el-icon-plus color-light"></i>
-          </div>
+          </el-button>
           <div v-else class="wrap-create-task">
             <CreateTask
               :itemListCreate="itemListCreate"
@@ -111,7 +125,7 @@
     permissions as taskPermissions,
   } from '@/api/taskManagement';
   import { doEditSort as doTaskListEditSort } from '@/api/taskListManagement';
-  import { mapState } from 'vuex';
+  import { mapGetters, mapState } from 'vuex';
   import mixin from '@/mixins';
 
   export default {
@@ -157,6 +171,7 @@
     },
     computed: {
       ...mapState('project', ['taskStates', 'taskPrioritys', 'taskTypes', 'projectMembers', 'currentProjectId']),
+      ...mapGetters('project', ['isCurrentProjectMember']),
     },
     watch: {
       $route(newValue, oldValue) {
@@ -291,6 +306,8 @@
           }
           return true;
         });
+        // 业务权限，非项目成员不可操作任务列表
+        this.selectListMore.forEach(item => (item.disabled = !this.isCurrentProjectMember));
       },
       commandMore(selector, itemList) {
         switch (selector.id) {
@@ -507,6 +524,11 @@
               .iconfont:hover {
                 color: #414141;
               }
+              ::v-deep {
+                .el-button--small {
+                  padding: 0px;
+                }
+              }
             }
 
             .content {
@@ -576,7 +598,6 @@
           background-color: #fff;
           border-radius: 4px;
           margin-bottom: 20px;
-          cursor: pointer;
           box-shadow: 0 1px 2px 0 rgb(0 0 0 / 10%);
 
           .el-icon-plus {

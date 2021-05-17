@@ -13,7 +13,7 @@ import {
   tokenName,
   debounce,
 } from '@/config/settings';
-import { Loading, Message } from 'element-ui';
+import { Loading, Message, Notification } from 'element-ui';
 import store from '@/store';
 import qs from 'qs';
 import router from '@/router';
@@ -82,6 +82,22 @@ const errorMsg = message => {
   });
 };
 
+const notification = (
+  title = null,
+  message = null,
+  type = 'error',
+  position = 'bottom-left',
+  duration = messageDuration
+) => {
+  Notification({
+    title,
+    message,
+    type,
+    position,
+    duration,
+  });
+};
+
 service.interceptors.response.use(
   async response => {
     if (loadingInstance) {
@@ -145,6 +161,9 @@ service.interceptors.response.use(
       case noAuthenticationCode:
         // await store.dispatch('user/resetAccessToken');
         // router.push(`/login?redirect=${router.app.$route.fullPath}`);
+        if (error.response.data?.msg) {
+          notification('无权限', error.response.data.msg);
+        }
         router.push(`/401`);
         break;
       case noPermissionCode:

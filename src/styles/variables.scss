@@ -99,6 +99,10 @@ $colorDanger: #f56c6c;
   white-space: nowrap;
 }
 
+.disabled-custom {
+  cursor: not-allowed !important;
+}
+
 .wrap-el-table-100width {
   width: 100%;
 }

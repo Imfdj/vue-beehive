@@ -7,13 +7,13 @@
           >{{ selector.name }}
         </span>
       </slot>
-      <el-dropdown-menu slot="dropdown" style="width: 200px;">
-        <el-dropdown-item v-for="item in selectList" :key="item.id" :command="item">
-          <div style="display: flex; align-items: center; justify-content: space-between; padding: 5px 0;">
-            <div style="display: flex; align-items: center;">
+      <el-dropdown-menu slot="dropdown" style="width: 200px">
+        <el-dropdown-item v-for="item in selectList" :key="item.id" :disabled="item.disabled" :command="item">
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 5px 0">
+            <div style="display: flex; align-items: center">
               <i :class="item.icon" :style="`color: ${item.color};font-size: 16px;`"></i>{{ item.name }}
             </div>
-            <i v-if="selector.id === item.id" class="el-icon-check" style="font-size: 16px;"></i>
+            <i v-if="selector.id === item.id" class="el-icon-check" style="font-size: 16px"></i>
           </div>
         </el-dropdown-item>
       </el-dropdown-menu>

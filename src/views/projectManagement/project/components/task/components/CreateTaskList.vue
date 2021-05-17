@@ -1,7 +1,7 @@
 <template>
   <div class="create-task-list color-light">
     <div>
-      <el-popover v-model="visible" placement="bottom" width="200" trigger="click">
+      <el-popover v-model="visible" :disabled="!isCurrentProjectMember" placement="bottom" width="200" trigger="click">
         <div class="create-task-list-wrap-form">
           <div class="title">新建任务列表</div>
           <el-input v-model="name" placeholder="列表名称" style="width: 100%; margin: 15px 0"></el-input>
@@ -13,7 +13,9 @@
             >创建
           </el-button>
         </div>
-        <span slot="reference"><i class="el-icon-plus"></i>新建任务列表</span>
+        <span slot="reference"
+          ><span :class="[{ disabled: !isCurrentProjectMember }]"><i class="el-icon-plus"></i>新建任务列表</span></span
+        >
       </el-popover>
     </div>
   </div>
@@ -21,7 +23,7 @@
 
 <script>
   import { doCreate } from '@/api/taskListManagement';
-  import { mapState } from 'vuex';
+  import { mapGetters, mapState } from 'vuex';
 
   export default {
     name: 'CreateTaskList',
@@ -33,6 +35,7 @@
     },
     computed: {
       ...mapState('project', ['currentProjectId']),
+      ...mapGetters('project', ['isCurrentProjectMember']),
     },
     methods: {
       async createClick() {
@@ -74,6 +77,12 @@
         &:hover {
           color: $colorBlue;
         }
+      }
+    }
+    .disabled {
+      cursor: not-allowed !important;
+      &:hover {
+        color: #ccc;
       }
     }
   }
