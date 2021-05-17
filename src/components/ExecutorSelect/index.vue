@@ -37,10 +37,10 @@
           <el-button type="primary" style="width: 100%" @click="handleAddUser">邀请新成员</el-button>
         </div>
       </div>
-      <div slot="reference" class="btn">
+      <el-button type="text" size="medium" slot="reference" :disabled="!isCurrentProjectMember" class="btn">
         <BImage class="user-avatar" :src="executor.avatar || ''" :width="32" :height="32" :borderRadius="32"></BImage>
         {{ executor.username }} <i class="el-icon-question"></i>
-      </div>
+      </el-button>
     </el-popover>
     <AddMemberToProjectDialog ref="AddMemberToProjectDialog" @doCreateSuccess="getList"></AddMemberToProjectDialog>
   </div>
@@ -92,7 +92,7 @@
     computed: {
       ...mapState('user', ['userInfo']),
       ...mapState('project', ['currentProjectId']),
-      ...mapGetters('project', ['currentProject']),
+      ...mapGetters('project', ['currentProject', 'isCurrentProjectMember']),
       isManager() {
         return this.userInfo.id === this.currentProject.manager_id;
       },
@@ -196,11 +196,12 @@
 
   .executor-select {
     .btn {
-      display: inline-flex;
-      align-items: center;
       padding: 5px 0px;
-      cursor: pointer;
-
+      ::v-deep span {
+        display: inline-flex;
+        align-items: center;
+        color: $colorLight;
+      }
       .user-avatar {
         margin-right: 5px;
       }

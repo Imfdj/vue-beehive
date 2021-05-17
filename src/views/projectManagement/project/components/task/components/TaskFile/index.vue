@@ -1,7 +1,15 @@
 <template>
   <div class="task-file">
     <div class="title"><i class="iconfont icon-fujian1"></i>关联文件</div>
-    <div class="btn-create-task-file" @click="uploadClick"><i class="el-icon-plus"></i>上传文件</div>
+    <el-button
+      type="text"
+      size="medium"
+      :disabled="!isCurrentProjectMember"
+      class="btn-create-task-file"
+      @click="uploadClick"
+    >
+      <i class="el-icon-plus"></i>上传文件
+    </el-button>
     <div v-if="fileListFilter.length" class="wrap-file-list">
       <div class="title-list">关联文件列表</div>
       <div class="file-list">
@@ -24,7 +32,7 @@
                 <i class="btn-item-icon" :class="itemOperation.icon"></i>{{ itemOperation.name }}
               </div>
             </div>
-            <i slot="reference" class="el-icon-arrow-down"></i>
+            <el-button type="text" size="medium" slot="reference" class="el-icon-arrow-down"></el-button>
           </el-popover>
         </div>
       </div>
@@ -38,7 +46,7 @@
   import Upload from '@/components/Upload';
   import mixin from '@/mixins';
   import { getList, doCreate, doDelete } from '@/api/projectFileManagement';
-  import { mapState } from 'vuex';
+  import { mapGetters, mapState } from 'vuex';
   import { isExternal } from '@/utils/validate';
 
   export default {
@@ -67,6 +75,7 @@
     computed: {
       ...mapState('user', ['userInfo']),
       ...mapState('project', ['projectList']),
+      ...mapGetters('project', ['isCurrentProjectMember']),
       fileListFilter() {
         return this.fileList.map(file => {
           this.projectList.forEach(project => {
@@ -178,12 +187,13 @@
       line-height: 28px;
     }
     .btn-create-task-file {
-      padding: 10px;
+      width: 100%;
+      padding: 13px 15px;
       color: #1890ff;
       border: 1px solid $colorE5;
       border-radius: 6px;
-      cursor: pointer;
       margin-bottom: 10px;
+      text-align: left;
       .el-icon-plus {
         margin-right: 10px;
       }
@@ -232,6 +242,7 @@
           .el-icon-arrow-down {
             padding: 4px;
             cursor: pointer;
+            color: $colorLight;
           }
           .el-icon-arrow-down:hover {
             color: #1b9aee;

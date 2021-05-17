@@ -9,7 +9,7 @@
   >
     <template slot="title">
       <div v-if="taskInfo.is_recycle === 0" class="on-normal">
-        <Dropdown :selector="taskTypeSelect" :selectList="taskTypes" @command="commandTaskType">
+        <Dropdown :selector="taskTypeSelect" :selectList="taskTypesSelectList" @command="commandTaskType">
           <span class="el-dropdown-link-type">
             <i :class="taskTypeSelect.icon" :style="`color: ${taskTypeSelect.color};margin-right: 5px;`"></i
             >{{ taskTypeSelect.name }}
@@ -21,8 +21,8 @@
         <div class="tip"><i class="el-icon-delete"></i>任务已在回收站中，不可修改</div>
         <div class="ctrl">
           <el-button type="text" size="medium" icon="el-icon-refresh-left" @click="recoverTaskHandler"
-            >恢复内容</el-button
-          >
+            >恢复内容
+          </el-button>
           <el-button type="text" size="medium" icon="el-icon-delete" @click="deleteTaskHandler">彻底删除</el-button>
         </div>
       </div>
@@ -31,14 +31,20 @@
       <el-col :span="14">
         <div class="wrap-task">
           <div class="wrap-name" :class="[{ 'wrap-name-done': taskInfo.is_done === 1 }]">
-            <el-input v-model="taskInfo.name" type="textarea" autosize @blur="doEditExec"></el-input>
+            <el-input
+              v-model="taskInfo.name"
+              :disabled="!isCurrentProjectMember"
+              type="textarea"
+              autosize
+              @blur="doEditExec"
+            ></el-input>
           </div>
           <div class="wrap-item wrap-state">
             <div class="label"><i class="iconfont icon-xuanzhong2"></i> 完成状态</div>
             <div class="content">
               <Dropdown
                 :selector="taskDoneStateSelect"
-                :selectList="taskDoneStates"
+                :selectList="taskDoneStatesSelectList"
                 @command="commandTaskDoneState"
               ></Dropdown>
             </div>
@@ -46,7 +52,11 @@
           <div class="wrap-item wrap-state">
             <div class="label"><i class="el-icon-pie-chart"></i> 执行状态</div>
             <div class="content">
-              <Dropdown :selector="taskStateSelect" :selectList="taskStates" @command="commandTaskState"></Dropdown>
+              <Dropdown
+                :selector="taskStateSelect"
+                :selectList="taskStatesSelectList"
+                @command="commandTaskState"
+              ></Dropdown>
             </div>
           </div>
           <div class="wrap-item">
@@ -69,6 +79,7 @@
                 placeholder="设置开始时间"
                 style="width: 183px"
                 size="mini"
+                :disabled="!isCurrentProjectMember"
                 value-format="yyyy-MM-dd HH:mm:ss"
                 @change="startDatePickerChange"
               >
@@ -80,6 +91,7 @@
                 placeholder="设置截止时间"
                 style="width: 183px"
                 size="mini"
+                :disabled="!isCurrentProjectMember"
                 value-format="yyyy-MM-dd HH:mm:ss"
                 @change="endDatePickerChange"
               >
@@ -97,13 +109,24 @@
                   >{{ taskPrioritySelect.name }}
                 </el-tag>
                 <el-dropdown-menu slot="dropdown" style="width: 200px">
-                  <el-dropdown-item v-for="item in taskPrioritys" :key="item.id" :command="item">
-                    <div style="padding: 5px 0px; display: flex; justify-content: space-between; align-items: center">
-                      <el-tag effect="plain" size="medium" :style="`color: ${item.color};border-color: ${item.color};`">
-                        {{ item.name }}
-                      </el-tag>
-                      <i v-if="taskPrioritySelect.id === item.id" class="el-icon-check" style="font-size: 16px"></i>
-                    </div>
+                  <el-dropdown-item
+                    v-for="item in taskPrioritysSelectList"
+                    :key="item.id"
+                    :disabled="item.disabled"
+                    :command="item"
+                  >
+                    <span>
+                      <div style="padding: 5px 0px; display: flex; justify-content: space-between; align-items: center">
+                        <el-tag
+                          effect="plain"
+                          size="medium"
+                          :style="`color: ${item.color};border-color: ${item.color};`"
+                        >
+                          {{ item.name }}
+                        </el-tag>
+                        <i v-if="taskPrioritySelect.id === item.id" class="el-icon-check" style="font-size: 16px"></i>
+                      </div>
+                    </span>
                   </el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
@@ -112,10 +135,20 @@
           <div class="wrap-item wrap-remark">
             <div class="label"><i class="el-icon-document"></i> 备注</div>
             <div class="content">
-              <div v-show="!showRichText" class="btn-remark" @click="showRichTextClick">
+              <div
+                v-show="!showRichText"
+                class="btn-remark"
+                :class="[{ 'disabled-custom': !isCurrentProjectMember }]"
+                @click="showRichTextClick"
+              >
                 <div v-if="taskInfo.remark" class="wrap-remark-html" v-html="taskInfo.remark"></div>
                 <div v-else class="btn">添加备注</div>
               </div>
+              <!--              <div v-show="!showRichText" class="btn-remark" @click="showRichTextClick">-->
+              <!--                <div v-if="taskInfo.remark" class="wrap-remark-html" v-html="taskInfo.remark"></div>-->
+              <!--                <div v-else class="btn">添加备注</div>-->
+              <!--&lt;!&ndash;                <el-button v-else class="btn" type="text">添加备注</el-button>&ndash;&gt;-->
+              <!--              </div>-->
               <div v-if="showRichText" class="wrap-rich-text">
                 <RichText ref="RichText" :value="taskInfo.remark" @changeValue="richTextChangeValue"></RichText>
                 <div class="wrap-btn-remark">
@@ -131,9 +164,9 @@
               <el-tag
                 v-for="tag in task_tags_selected"
                 :key="tag.id"
-                closable
                 effect="plain"
                 :style="`color: ${tag.color};border-color: ${tag.color};`"
+                :closable="isCurrentProjectMember"
                 @close="closeTaskTag(tag)"
               >
                 {{ tag.name }}
@@ -142,10 +175,16 @@
                 <div class="wrap-task-tags">
                   <TaskTag ref="TaskTag" :taskInfo="taskInfo" @change="taskTagChange"></TaskTag>
                 </div>
-                <div slot="reference" class="btn-add-tag">
+                <el-button
+                  type="text"
+                  slot="reference"
+                  :disabled="!isCurrentProjectMember"
+                  size="medium"
+                  class="btn-add-tag"
+                >
                   <span v-if="!task_tags_selected.length">添加标签</span>
                   <i v-else class="el-icon-circle-plus"></i>
-                </div>
+                </el-button>
               </el-popover>
             </div>
           </div>
@@ -179,7 +218,7 @@
   import Participator from '../Participator';
   import TaskLog from '../TaskLog/index';
   import WorkingHour from '../WorkingHour/index';
-  import { mapState } from 'vuex';
+  import { mapGetters, mapState } from 'vuex';
   import ExecutorSelect from '@/components/ExecutorSelect';
   import RichText from '../RichText';
   import TaskTag from '../TaskTag';
@@ -239,6 +278,31 @@
     },
     computed: {
       ...mapState('project', ['taskStates', 'taskPrioritys', 'taskTypes']),
+      ...mapGetters('project', ['isCurrentProjectMember']),
+      taskTypesSelectList() {
+        return this.taskTypes.map(item => {
+          item.disabled = !this.isCurrentProjectMember;
+          return item;
+        });
+      },
+      taskDoneStatesSelectList() {
+        return this.taskDoneStates.map(item => {
+          item.disabled = !this.isCurrentProjectMember;
+          return item;
+        });
+      },
+      taskStatesSelectList() {
+        return this.taskStates.map(item => {
+          item.disabled = !this.isCurrentProjectMember;
+          return item;
+        });
+      },
+      taskPrioritysSelectList() {
+        return this.taskPrioritys.map(item => {
+          item.disabled = !this.isCurrentProjectMember;
+          return item;
+        });
+      },
     },
     watch: {
       'taskInfo.is_done'(newValue, oldValue) {
@@ -378,6 +442,7 @@
         }
       },
       showRichTextClick() {
+        if (!this.isCurrentProjectMember) return;
         this.showRichText = true;
       },
       richTextChangeValue(value) {
@@ -555,7 +620,6 @@
 
           .btn-add-tag {
             display: inline-block;
-            cursor: pointer;
 
             .el-icon-circle-plus {
               font-size: 18px;

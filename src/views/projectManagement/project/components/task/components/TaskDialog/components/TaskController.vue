@@ -9,7 +9,7 @@
     <span>
       <BtnTooltip icon="iconfont icon-zan" tooltipContent="点个赞" type="text" @click="handleDoLike"></BtnTooltip>
     </span>
-    <Dropdown :selectList="selectList" @command="command">
+    <Dropdown :selectList="SelectListAuth" @command="command">
       <BtnTooltip icon="el-icon-more" tooltipContent="打开菜单" type="text"></BtnTooltip>
     </Dropdown>
   </div>
@@ -20,6 +20,7 @@
   import Dropdown from '@/components/Dropdown';
   import { doEdit } from '@/api/taskManagement';
   import mixin from '@/mixins';
+  import { mapGetters } from 'vuex';
 
   export default {
     name: 'TaskController',
@@ -59,6 +60,17 @@
           },
         ],
       };
+    },
+    computed: {
+      ...mapGetters('project', ['isCurrentProjectMember']),
+      SelectListAuth() {
+        return this.selectList.map(item => {
+          if (item.id !== 3) {
+            item.disabled = !this.isCurrentProjectMember;
+          }
+          return item;
+        });
+      },
     },
     methods: {
       handleCopyTaskLink() {

@@ -5,6 +5,7 @@
       :size="size"
       :class="btnClass"
       :circle="circle"
+      :disabled="disabled"
       :type="type"
       @click="$emit('click')"
     ></el-button>
@@ -38,6 +39,10 @@
       circle: {
         type: Boolean,
         default: true,
+      },
+      disabled: {
+        type: Boolean,
+        default: false,
       },
     },
   };

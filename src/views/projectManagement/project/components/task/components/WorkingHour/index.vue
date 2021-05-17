@@ -4,13 +4,27 @@
       <i class="el-icon-time"></i> 工时<span v-if="task.plan_work_hours"
         >· 预估工时 {{ task.plan_work_hours }} 小时</span
       >
-      <i class="el-icon-edit-outline" @click="setWorkingHour"></i>
+      <el-button
+        type="text"
+        size="medium"
+        class="el-icon-edit-outline"
+        :disabled="!isCurrentProjectMember"
+        @click="setWorkingHour"
+      ></el-button>
     </div>
     <div class="content">
-      <div class="btn-add-working-hour" @click="createWorkingHour"><i class="el-icon-plus"></i>添加实际工时</div>
+      <el-button
+        type="text"
+        size="medium"
+        :disabled="!isCurrentProjectMember"
+        class="btn-add-working-hour"
+        @click="createWorkingHour"
+      >
+        <i class="el-icon-plus"></i>添加实际工时
+      </el-button>
       <div class="wrap-working-hour-list">
         <div v-for="item in workingHourList" :key="item.id" class="item">
-          <div class="wrap-working-hour-content" @click="editClick(item)">
+          <div class="wrap-working-hour-content" :class="[{ 'disabled-custom': true }]" @click="editClick(item)">
             <BImage
               class="user-avatar"
               :src="(item.executor && item.executor.avatar) || ''"
@@ -32,8 +46,20 @@
             </div>
           </div>
           <div class="ctrl">
-            <i class="el-icon-edit" @click="editClick(item)"></i>
-            <i class="el-icon-delete" @click="deleteClick(item)"></i>
+            <el-button
+              type="text"
+              size="medium"
+              class="el-icon-edit"
+              :disabled="!isCurrentProjectMember"
+              @click="editClick(item)"
+            ></el-button>
+            <el-button
+              type="text"
+              size="medium"
+              class="el-icon-delete"
+              :disabled="!isCurrentProjectMember"
+              @click="deleteClick(item)"
+            ></el-button>
           </div>
         </div>
       </div>
@@ -66,7 +92,7 @@
   import { getList, doDelete } from '@/api/taskWorkingHourManagement';
   import EditorWorkingHourDialog from './components/EditorWorkingHourDialog';
   import BImage from '@/components/B-image';
-  import { mapState } from 'vuex';
+  import { mapGetters, mapState } from 'vuex';
 
   export default {
     name: 'WorkingHour',
@@ -92,6 +118,7 @@
     },
     computed: {
       ...mapState('project', ['projectMembers']),
+      ...mapGetters('project', ['isCurrentProjectMember']),
     },
     watch: {
       'task.id'(newValue, oldValue) {
@@ -168,6 +195,7 @@
         return this.$baseDayjs(work_time).format('YYYY年M月D日');
       },
       editClick(row) {
+        if (!this.isCurrentProjectMember) return;
         this.$refs.EditorWorkingHourDialog.show(row);
       },
       deleteClick(row) {
@@ -192,22 +220,22 @@
       padding: 5px 0;
 
       .el-icon-edit-outline {
-        margin-left: 10px;
+        margin-left: 5px;
         color: #3da8f5;
-        cursor: pointer;
       }
     }
 
     .content {
-      padding: 5px 10px;
-      border: 1px solid #e5e5e5;
-      border-radius: 6px;
       margin-top: 15px;
 
       .btn-add-working-hour {
-        padding: 10px 0 10px 10px;
-        cursor: pointer;
-        color: #409eff;
+        width: 100%;
+        padding: 13px 15px;
+        color: #1890ff;
+        border: 1px solid $colorE5;
+        border-radius: 6px;
+        margin-bottom: 5px;
+        text-align: left;
 
         .el-icon-plus {
           margin-right: 5px;
@@ -256,11 +284,15 @@
             display: flex;
             align-items: center;
             justify-content: space-around;
-            width: 60px;
+            width: 50px;
             padding: 0px 5px;
 
             & i {
               cursor: pointer;
+            }
+
+            ::v-deep .el-button--text {
+              color: #262626;
             }
           }
         }

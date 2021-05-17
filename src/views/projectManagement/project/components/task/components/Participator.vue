@@ -58,9 +58,9 @@
             <el-button type="primary" style="width: 100%" @click="handleAddUser">邀请新成员</el-button>
           </div>
         </div>
-        <div slot="reference" class="btn">
+        <el-button type="text" :disabled="!isCurrentProjectMember" slot="reference" class="btn">
           <i class="el-icon-circle-plus"></i>
-        </div>
+        </el-button>
       </el-popover>
     </div>
     <AddMemberToProjectDialog ref="AddMemberToProjectDialog"></AddMemberToProjectDialog>
@@ -105,7 +105,7 @@
     computed: {
       ...mapState('user', ['userInfo']),
       ...mapState('project', ['currentProjectId']),
-      ...mapGetters('project', ['currentProject']),
+      ...mapGetters('project', ['currentProject', 'isCurrentProjectMember']),
       isManager() {
         return this.userInfo.id === this.currentProject.manager_id;
       },
@@ -246,11 +246,12 @@
         margin-right: 8px;
         cursor: pointer;
       }
-
-      .el-icon-circle-plus {
-        font-size: 28px;
-        color: #1890ff;
-        cursor: pointer;
+      .btn {
+        padding: 0px;
+        .el-icon-circle-plus {
+          font-size: 28px;
+          color: #1890ff;
+        }
       }
     }
   }
