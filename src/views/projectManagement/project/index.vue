@@ -140,6 +140,10 @@
               }
             });
             break;
+          case 'create:user_project':
+          case 'delete:user_project':
+            this.getUserList();
+            break;
           default:
             break;
         }
