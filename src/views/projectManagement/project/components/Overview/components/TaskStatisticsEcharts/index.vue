@@ -1,6 +1,11 @@
 <template>
   <div class="task-statistics-echarts">
-    <v-chart class="chart" :option="option" />
+    <div>
+      <v-chart class="chart" :option="optionTaskState" />
+    </div>
+    <div>
+      <v-chart class="chart" :option="optionTaskPriority" />
+    </div>
   </div>
 </template>
 
@@ -18,20 +23,56 @@
     },
     data() {
       return {
-        option: {
+        optionTaskState: {
           title: {
-            text: '任务状态',
+            text: '任务执行状态',
             left: 'center',
           },
           legend: {
             orient: 'vertical',
             left: 'left',
           },
+          tooltip: {
+            trigger: 'item',
+            showDelay: 10,
+          },
           series: [
             {
-              name: '面积模式',
+              name: '任务执行状态',
               type: 'pie',
               radius: '60%',
+              itemStyle: {
+                borderRadius: 3,
+                borderColor: '#fff',
+                borderWidth: 1,
+              },
+              data: [],
+            },
+          ],
+        },
+        optionTaskPriority: {
+          title: {
+            text: '任务优先级',
+            left: 'center',
+          },
+          legend: {
+            orient: 'vertical',
+            left: 'left',
+          },
+          tooltip: {
+            trigger: 'item',
+            showDelay: 10,
+          },
+          series: [
+            {
+              name: '任务优先级',
+              type: 'pie',
+              radius: ['30%', '60%'],
+              itemStyle: {
+                borderRadius: 3,
+                borderColor: '#fff',
+                borderWidth: 2,
+              },
               data: [],
             },
           ],
@@ -39,15 +80,15 @@
       };
     },
     computed: {
-      ...mapState('project', ['taskStates']),
+      ...mapState('project', ['taskStates', 'taskPrioritys']),
     },
     watch: {
       statisticsData(newValue, oldValue) {
-        const data = [];
-        const { taskState } = newValue;
+        const optionTaskStateData = [];
+        const { taskState, taskPriority } = newValue;
         const taskStatesList = this.$baseLodash.groupBy(this.taskStates, 'id');
         for (const taskStateKey in taskState) {
-          data.push({
+          optionTaskStateData.push({
             value: taskState[taskStateKey],
             name: taskStatesList[taskStateKey][0]?.name,
             itemStyle: {
@@ -55,7 +96,20 @@
             },
           });
         }
-        this.option.series[0].data = data;
+        this.optionTaskState.series[0].data = optionTaskStateData;
+
+        const optionTaskPriorityData = [];
+        const taskPrioritysList = this.$baseLodash.groupBy(this.taskPrioritys, 'id');
+        for (const taskPriorityKey in taskPriority) {
+          optionTaskPriorityData.push({
+            value: taskPriority[taskPriorityKey],
+            name: taskPrioritysList[taskPriorityKey][0]?.name,
+            itemStyle: {
+              color: taskPrioritysList[taskPriorityKey][0]?.color,
+            },
+          });
+        }
+        this.optionTaskPriority.series[0].data = optionTaskPriorityData;
       },
     },
     created() {},
@@ -71,5 +125,9 @@
     margin-bottom: 20px;
     border-radius: 8px;
     padding: 10px;
+    display: flex;
+    & div {
+      flex: 1;
+    }
   }
 </style>
