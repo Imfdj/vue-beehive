@@ -4,13 +4,24 @@
       icon="iconfont icon-lianjie"
       tooltipContent="复制任务链接"
       type="text"
+      btnClass="normal-btn"
       @click="handleCopyTaskLink"
     ></BtnTooltip>
     <span>
-      <BtnTooltip icon="iconfont icon-zan" tooltipContent="点个赞" type="text" @click="handleDoLike"></BtnTooltip>
+      <BtnTooltip
+        icon="iconfont icon-zan"
+        tooltipContent="点个赞"
+        type="text"
+        :btnClass="btnClassLike"
+        @click="handleDoLike"
+      >
+        <span v-if="task.likers && task.likers.length" style="padding: 0px 5px; font-size: 14px">
+          {{ task.likers && task.likers.length }}
+        </span>
+      </BtnTooltip>
     </span>
     <Dropdown :selectList="SelectListAuth" @command="command">
-      <BtnTooltip icon="el-icon-more" tooltipContent="打开菜单" type="text"></BtnTooltip>
+      <BtnTooltip icon="el-icon-more" tooltipContent="打开菜单" btnClass="normal-btn" type="text"></BtnTooltip>
     </Dropdown>
   </div>
 </template>
@@ -19,8 +30,9 @@
   import BtnTooltip from '@/components/Btn-tooltip';
   import Dropdown from '@/components/Dropdown';
   import { doEdit } from '@/api/taskManagement';
+  import { doChange } from '@/api/userTaskLikeManagement';
   import mixin from '@/mixins';
-  import { mapGetters } from 'vuex';
+  import { mapGetters, mapState } from 'vuex';
 
   export default {
     name: 'TaskController',
@@ -63,6 +75,7 @@
     },
     computed: {
       ...mapGetters('project', ['isCurrentProjectMember']),
+      ...mapState('user', ['userInfo']),
       SelectListAuth() {
         return this.selectList.map(item => {
           if (item.id !== 3) {
@@ -71,6 +84,36 @@
           return item;
         });
       },
+      btnClassLike() {
+        const self = this.task.likers.find(item => item.id === this.userInfo.id);
+        return self ? '' : 'normal-btn';
+      },
+    },
+    sockets: {
+      sync: function (data) {
+        const { params, action } = data;
+        switch (action) {
+          case 'create:user_task_like':
+            if (this.task.id === params.task_id) {
+              if (!this.task.likers) {
+                this.task.likers = [];
+              }
+              const taskExisting = this.task.likers?.find(item => item.id === params.user_id);
+              // 如果不存在，则添加
+              if (!taskExisting) {
+                this.task.likers?.push({
+                  id: params.user_id,
+                });
+              }
+            }
+            break;
+          case 'delete:user_task_like':
+            this.task.likers = this.task.likers?.filter(item => item.id !== params.user_id);
+            break;
+          default:
+            break;
+        }
+      },
     },
     methods: {
       handleCopyTaskLink() {
@@ -78,7 +121,12 @@
         this.doCopy(`${window.location.origin}${this.$configSettings.project_path}/${project_id}?taskId=${id}`);
         this.$baseNotify('可粘贴到地址栏中，快速打开此任务', '复制链接成功');
       },
-      handleDoLike() {},
+      handleDoLike() {
+        doChange({
+          project_id: this.task.project_id,
+          task_id: this.task.id,
+        });
+      },
       async command(item) {
         switch (item.id) {
           case 0:
@@ -125,6 +173,9 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    width: 108px;
+    min-width: 108px;
+    .normal-btn {
+      color: #757575;
+    }
   }
 </style>

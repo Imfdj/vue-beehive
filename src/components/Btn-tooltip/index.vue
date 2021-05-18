@@ -7,8 +7,11 @@
       :circle="circle"
       :disabled="disabled"
       :type="type"
+      :style="style"
       @click="$emit('click')"
-    ></el-button>
+    >
+      <slot></slot>
+    </el-button>
   </el-tooltip>
 </template>
 
@@ -43,6 +46,10 @@
       disabled: {
         type: Boolean,
         default: false,
+      },
+      style: {
+        type: String,
+        default: '',
       },
     },
   };
