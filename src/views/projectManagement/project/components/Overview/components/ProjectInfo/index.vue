@@ -10,8 +10,20 @@
       </div>
     </div>
     <div class="wrap-intro">
-      <el-tooltip class="item" effect="dark" content="点击即可编辑" :open-delay="200" placement="top">
-        <div v-show="!enableEditIntro" class="text-intro" @click="editIntro">
+      <el-tooltip
+        class="item"
+        effect="dark"
+        content="点击即可编辑"
+        :disabled="!isManager"
+        :open-delay="200"
+        placement="top"
+      >
+        <div
+          v-show="!enableEditIntro"
+          class="text-intro"
+          :class="[{ 'disabled-custom': !isManager }]"
+          @click="editIntro"
+        >
           {{ project.intro || '点击添加项目简介' }}
         </div>
       </el-tooltip>
@@ -110,7 +122,11 @@
       };
     },
     computed: {
+      ...mapState('user', ['userInfo']),
       ...mapState('project', ['projectList', 'currentProjectId']),
+      isManager() {
+        return this.userInfo.id === this.project.manager_id;
+      },
       createdAt() {
         return this.$baseDayjs(this.project.created_at).format('YYYY年M月D日');
       },
@@ -131,17 +147,17 @@
     },
     methods: {
       editIntro() {
+        if (!this.isManager) return;
         this.enableEditIntro = true;
       },
       cancelEditIntro() {
         this.enableEditIntro = false;
-        this.project.introBase = this.project.intro;
+        this.project.intro = this.project.introBase;
       },
       async doEdit() {
         await doEdit(this.project);
       },
       saveEdit() {
-        this.project.intro = this.project.introBase;
         this.doEdit();
         this.enableEditIntro = false;
       },
