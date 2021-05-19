@@ -85,7 +85,7 @@
         });
       },
       btnClassLike() {
-        const self = this.task.likers.find(item => item.id === this.userInfo.id);
+        const self = this.task.likers?.find(item => item.id === this.userInfo.id);
         return self ? '' : 'normal-btn';
       },
     },

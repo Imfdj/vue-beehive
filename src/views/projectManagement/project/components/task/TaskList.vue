@@ -14,8 +14,7 @@
           </div>
           <div class="more">
             <Dropdown
-              :selectList="selectListMore"
-              :disabled="!isCurrentProjectMember"
+              :selectList="selectListMoreFilter"
               @command="
                 selector => {
                   commandMore(selector, itemList);
@@ -172,6 +171,23 @@
     computed: {
       ...mapState('project', ['taskStates', 'taskPrioritys', 'taskTypes', 'projectMembers', 'currentProjectId']),
       ...mapGetters('project', ['isCurrentProjectMember']),
+      selectListMoreFilter() {
+        const selectListMore = this.selectListMore.filter((item, index) => {
+          if (index === 0) {
+            return this.checkPermission(this.taskListPermissions.doEdit);
+          }
+          if (index === 1) {
+            return this.checkPermission(this.taskPermissions.doRecycleAllTaskOfTaskList);
+          }
+          if (index === 2) {
+            return this.checkPermission(this.taskListPermissions.doDelete);
+          }
+          return true;
+        });
+        // 业务权限，非项目成员不可操作任务列表
+        selectListMore.forEach(item => (item.disabled = !this.isCurrentProjectMember));
+        return selectListMore;
+      },
     },
     watch: {
       $route(newValue, oldValue) {
@@ -290,24 +306,7 @@
     },
     methods: {
       init() {
-        this.initPermissions();
         this.getList();
-      },
-      initPermissions() {
-        this.selectListMore = this.selectListMore.filter((item, index) => {
-          if (index === 0) {
-            return this.checkPermission(this.taskListPermissions.doEdit);
-          }
-          if (index === 1) {
-            return this.checkPermission(this.taskPermissions.doRecycleAllTaskOfTaskList);
-          }
-          if (index === 2) {
-            return this.checkPermission(this.taskListPermissions.doDelete);
-          }
-          return true;
-        });
-        // 业务权限，非项目成员不可操作任务列表
-        this.selectListMore.forEach(item => (item.disabled = !this.isCurrentProjectMember));
       },
       commandMore(selector, itemList) {
         switch (selector.id) {
