@@ -43,6 +43,12 @@ service.interceptors.request.use(
     if (config.method.toLowerCase() === 'get') {
       //这里会过滤所有为null的key，如果不需要请自行注释
       config.params = _.pickBy(config.params, item => !_.isNull(item));
+      // 对所有字符串参数做反斜杠处理，解决反斜杠参数搜索有误问题
+      for (const paramsKey in config.params) {
+        if (_.isString(config.params[paramsKey])) {
+          config.params[paramsKey] = config.params[paramsKey].replace(/\\/g, '\\\\');
+        }
+      }
       config.paramsSerializer = function (params) {
         return qs.stringify(params, { arrayFormat: 'repeat' });
       };
