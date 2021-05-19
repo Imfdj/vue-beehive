@@ -19,6 +19,11 @@
         </div>
       </div>
       <div class="wrap-ctrl">
+        <div class="wrap-online-user">
+          <el-badge :hidden="!onlineUserIds.length" :value="onlineUserIds.length" type="primary" class="item">
+            <i class="iconfont icon-duoren1"></i>
+          </el-badge>
+        </div>
         <MessageBox @getCount="getMessageCount">
           <div class="wrap-message-icon">
             <el-badge :hidden="!messageCount" :value="messageCount" class="item">
@@ -64,6 +69,7 @@
     },
     computed: {
       ...mapState('user', ['userInfo']),
+      ...mapGetters('user', ['onlineUserIds']),
       ...mapGetters('routes', ['accessRoutesTreeNoHidden', 'navIndex']),
       logoTitle() {
         return title.charAt(0).toUpperCase() + title.slice(1);
@@ -188,6 +194,9 @@
           &:hover {
             background-color: #f9f9f9;
           }
+        }
+        .wrap-online-user {
+          @extend .wrap-message-icon;
         }
       }
     }

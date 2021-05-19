@@ -18,6 +18,7 @@ const state = {
   username: '',
   avatar: '',
   userInfo: {},
+  onlineUserSocketIds: [], // 在线用户socketIds
 };
 const getters = {
   accessToken: state => state.accessToken,
@@ -27,6 +28,10 @@ const getters = {
   avatar: state => state.avatar,
   userInfo: state => state.userInfo,
   permissions: state => state.userInfo?.permissions || [],
+  onlineUserIds: state => {
+    const onlineUserIds = state.onlineUserSocketIds.map(item => item.split('_')[0]);
+    return Array.from(new Set(onlineUserIds));
+  },
 };
 const mutations = {
   setAccessToken(state, accessToken) {
@@ -44,10 +49,34 @@ const mutations = {
   setUserInfo(state, userInfo) {
     state.userInfo = userInfo;
   },
+  setOnlineUserSocketIds(state, onlineUserSocketIds) {
+    state.onlineUserSocketIds = onlineUserSocketIds;
+  },
 };
 const actions = {
-  // socket 全局 Ack确认
-  SOCKET_sync({ commit }, data) {
+  SOCKET_sync({ commit, state }, data) {
+    const { params, action } = data;
+    switch (action) {
+      case 'online': {
+        commit('setOnlineUserSocketIds', params);
+        break;
+      }
+      case 'join': {
+        const data = new Set(state.onlineUserSocketIds);
+        commit('setOnlineUserSocketIds', Array.from(data.add(params.socketId)));
+        break;
+      }
+      case 'leave': {
+        const data = new Set(state.onlineUserSocketIds);
+        data.delete(params.socketId);
+        commit('setOnlineUserSocketIds', Array.from(data));
+        break;
+      }
+      default:
+        break;
+    }
+
+    // socket 全局 Ack确认
     Vue.prototype.$socket.emit('ack', {
       id: data.id,
       result: 'OK',

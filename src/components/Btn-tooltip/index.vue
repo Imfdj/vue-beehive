@@ -7,7 +7,7 @@
       :circle="circle"
       :disabled="disabled"
       :type="type"
-      :style="style"
+      :style="btnStyle"
       @click="$emit('click')"
     >
       <slot></slot>
@@ -47,7 +47,7 @@
         type: Boolean,
         default: false,
       },
-      style: {
+      btnStyle: {
         type: String,
         default: '',
       },
