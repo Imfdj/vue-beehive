@@ -5,20 +5,6 @@ import weekOfYear from 'dayjs/plugin/weekOfYear';
 dayjs.extend(weekOfYear);
 
 /**
- * @description 获取随机id
- * @param length
- * @returns {string}
- */
-export function uuid(length = 32) {
-  const num = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
-  let str = '';
-  for (let i = 0; i < length; i++) {
-    str += num.charAt(Math.floor(Math.random() * num.length));
-  }
-  return str;
-}
-
-/**
  * @description addEventListener
  * @type {function(...[*]=)}
  */
@@ -61,9 +47,12 @@ export const waitTimeout = function (time, callback) {
  * 时间人性化转换，几秒前，X分钟起，X小时前提供下次更新时间
  * @copyright Imfdj imfdjjj@gmail.com
  */
-export const dateHumanizeFormat = function (date) {
+export const dateHumanizeFormat = function (date, options) {
+  const opts = {};
+  Object.assign(opts, { coarsness: false }, options);
   const nowDate = new Date();
   const targetDate = new Date(date);
+  const isSameYear = nowDate.getFullYear() === targetDate.getFullYear();
   const isSameYearMonth =
     nowDate.getFullYear() === targetDate.getFullYear() && nowDate.getMonth() === targetDate.getMonth();
   const currentDay = dayjs(date).day();
@@ -82,15 +71,15 @@ export const dateHumanizeFormat = function (date) {
     case isSameYearMonth && limitDays === -1:
       data.value = `明天 ${dayjs(date).format('HH:mm')}`;
       break;
-    case limit > 0 && limit < 60 * 1000:
+    case limit > 0 && limit < 60 * 1000 && !opts.coarsness:
       data.value = '几秒前';
       data.refreshTime = 60 * 1000 - limit;
       break;
-    case limit > 0 && limit < 60 * 60 * 1000:
+    case limit > 0 && limit < 60 * 60 * 1000 && !opts.coarsness:
       data.value = `${Math.floor(limit / 1000 / 60)} 分钟前`;
       data.refreshTime = 60 * 1000 - (limit % (60 * 1000));
       break;
-    case limit > 0 && limit < 4 * 60 * 60 * 1000:
+    case limit > 0 && limit < 4 * 60 * 60 * 1000 && !opts.coarsness:
       data.value = `${Math.floor(limit / 1000 / 60 / 60)} 小时前`;
       data.refreshTime = 60 * 60 * 1000 - (limit % (60 * 60 * 1000));
       break;
@@ -105,6 +94,9 @@ export const dateHumanizeFormat = function (date) {
       break;
     case (limitWeeks === 1 && currentDay !== 0) || (limitWeeks === 0 && currentDay === 0):
       data.value = `上${weekLocalNames[currentDay]} ${dayjs(date).format('HH:mm')}`;
+      break;
+    case !isSameYear:
+      data.value = dayjs(date).format('YYYY年M月D日 HH:mm');
       break;
     default:
       data.value = dayjs(date).format('M月D日 HH:mm');

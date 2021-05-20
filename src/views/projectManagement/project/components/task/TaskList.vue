@@ -57,23 +57,34 @@
               <div class="content" :class="[{ 'task-state-success': (element.state && element.state.is_done) === 1 }]">
                 <div class="name">{{ element.name }}</div>
                 <div class="info">
-                  <el-tooltip :content="element.type && element.type.name" :open-delay="600" placement="top">
-                    <i
-                      :class="element.type && element.type.icon"
-                      :style="`color: ${element.type && element.type.color};font-size: 18px;`"
-                    ></i>
+                  <span v-if="element.date_tip" class="info-item task-date" :class="element.date_tip_class">
+                    {{ element.date_tip }}
+                  </span>
+                  <el-tooltip v-if="element.type" :content="element.type.name" :open-delay="600" placement="top">
+                    <i class="info-item" :class="element.type.icon" :style="`color: ${element.type.color};`"></i>
                   </el-tooltip>
+                  <i v-if="element.remark" class="info-item el-icon-document color-light"></i>
+                  <span v-if="element.likers && element.likers.length" class="info-item color-light">
+                    <i class="iconfont icon-zan" style="font-size: 14px"></i>
+                    <span style="padding-left: 5px; font-size: 12px">{{ element.likers.length }}</span>
+                  </span>
                 </div>
               </div>
               <div class="executor">
-                <BImage
+                <el-tooltip
                   v-if="element.executor"
-                  class="user-avatar"
-                  :src="(element.executor && element.executor.avatar) || ''"
-                  :width="32"
-                  :height="32"
-                  :borderRadius="32"
-                ></BImage>
+                  :content="element.executor.username"
+                  :open-delay="600"
+                  placement="top"
+                >
+                  <BImage
+                    class="user-avatar"
+                    :src="element.executor.avatar || ''"
+                    :width="26"
+                    :height="26"
+                    :borderRadius="26"
+                  ></BImage>
+                </el-tooltip>
               </div>
               <div
                 v-if="(element.state && element.state.is_done) !== 1"
@@ -126,6 +137,7 @@
   import { doEditSort as doTaskListEditSort } from '@/api/taskListManagement';
   import { mapGetters, mapState } from 'vuex';
   import mixin from '@/mixins';
+  import { dateHumanizeFormat } from '@/utils';
 
   export default {
     name: 'TaskList',
@@ -211,7 +223,7 @@
                 const taskExisting = itemList.tasks?.find(task => task.id === params.id);
                 // 如果不存在，则添加
                 if (!taskExisting) {
-                  this.getItem(params);
+                  this.taskItemInit(params);
                   itemList.tasks?.push(params);
                   itemList.tasks = this.$baseLodash.sortBy(itemList.tasks, task => task.sort);
                 }
@@ -236,7 +248,7 @@
               currrentItemList.tasks = this.$baseLodash.sortBy(currrentItemList.tasks, function (o) {
                 return o.sort;
               });
-              this.getItem(oldTask);
+              this.taskItemInit(oldTask);
             } else {
               // 删除
               const oldTaskList = this.listData.find(itemList => itemList.id === oldTask.task_list_id);
@@ -250,10 +262,10 @@
               // 如果不存在，则添加，存在则更新
               if (!taskExisting) {
                 newTaskList.tasks?.push(params);
-                this.getItem(params);
+                this.taskItemInit(params);
               } else {
                 Object.assign(taskExisting, params);
-                this.getItem(taskExisting);
+                this.taskItemInit(taskExisting);
               }
               newTaskList.tasks = this.$baseLodash.sortBy(newTaskList.tasks, function (o) {
                 return o.sort;
@@ -333,6 +345,10 @@
             break;
         }
       },
+      taskItemInit(task) {
+        this.getItem(task);
+        this.setTaskDateTip(task);
+      },
       // 根据id获取相关项
       getItem(task) {
         task.type = this.taskTypes?.find(item => {
@@ -348,6 +364,51 @@
           return item.id === task.executor_id;
         });
       },
+      // 根据任务的开始时间和结束时间，增加任务的处理时间状态提示
+      setTaskDateTip(task) {
+        // 如果存在结束时间，则需要根据结束时间相对当前时间做不同提示状态
+        if (task.end_date) {
+          switch (true) {
+            case this.$baseDayjs().isAfter(task.end_date):
+              // 如果结束时间小于当前时间，则为逾期状态
+              task.date_tip_class = 'task-date-overdue';
+              break;
+            case this.$baseDayjs().isSame(task.end_date, 'day') && this.$baseDayjs().isBefore(task.end_date):
+              // 如果结束时间是当天，则为当天状态
+              task.date_tip_class = 'task-date-intraday';
+              break;
+            case this.$baseDayjs().isBefore(task.end_date, 'day') &&
+              this.$baseDayjs().add(8, 'day').isAfter(this.$baseDayjs(task.end_date), 'day'):
+              // 如果结束时间大于今天，且在往后的7天内则为近期状态
+              task.date_tip_class = 'task-date-recently';
+              break;
+            default:
+              // 如果结束时间超过往后7天，则为安全状态
+              task.date_tip_class = 'task-date-safety';
+              break;
+          }
+        }
+        // 提示时间文本处理
+        if (task.start_date && !task.end_date) {
+          task.date_tip = `${
+            dateHumanizeFormat(task.start_date, {
+              coarsness: true,
+            }).value
+          } 开始`;
+        }
+        if (!task.start_date && task.end_date) {
+          task.date_tip = `${dateHumanizeFormat(task.end_date, { coarsness: true }).value} 截止`;
+        }
+        if (task.start_date && task.end_date) {
+          const start_date = dateHumanizeFormat(task.start_date, { coarsness: true }).value;
+          const end_date = dateHumanizeFormat(task.end_date, { coarsness: true }).value;
+          if (this.$baseDayjs(task.start_date).isSame(task.end_date, 'day')) {
+            task.date_tip = `${start_date} - ${end_date.split(' ')[1]}`;
+          } else {
+            task.date_tip = `${start_date} - ${end_date}`;
+          }
+        }
+      },
       searchTask(params = {}) {
         this.listData.forEach(taskListItem => {
           taskListItem.loading = true;
@@ -360,7 +421,7 @@
             taskListItem.loading = false;
             taskListItem.tasks = res.data?.rows;
             taskListItem.tasks?.forEach(task => {
-              this.getItem(task);
+              this.taskItemInit(task);
             });
           });
         });
@@ -531,22 +592,54 @@
             }
 
             .content {
-              width: calc(259px - 88px);
+              width: calc(259px - 77px);
               white-space: normal;
               word-break: break-all;
               padding-left: 5px;
-              padding-right: 15px;
+              padding-right: 10px;
 
               .name {
               }
 
               .info {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
                 padding: 5px 0px;
+                .info-item {
+                  font-size: 16px;
+                  margin-right: 6px;
+                  margin-bottom: 3px;
+                }
+                .task-date {
+                  line-height: 20px;
+                  font-size: 12px;
+                  background-color: #f7f7f7;
+                  padding: 0 6px;
+                  border-radius: 2px;
+                  white-space: nowrap;
+                }
+                .task-date-overdue {
+                  background-color: #e62412;
+                  color: #fff;
+                }
+                .task-date-intraday {
+                  background-color: #fa8c15;
+                  color: #fff;
+                }
+                .task-date-recently {
+                  background-color: #1b9aee;
+                  color: #fff;
+                }
+                .task-date-safety {
+                  background-color: #f7f7f7;
+                  color: #000;
+                }
               }
             }
 
             .executor {
-              width: 32px;
+              width: 26px;
             }
 
             .task-priority {
