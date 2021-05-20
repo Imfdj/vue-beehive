@@ -7,6 +7,7 @@
     trigger="click"
     popper-class="message-box-popover"
     :open-delay="200"
+    @show="onShow"
   >
     <div class="message-box">
       <el-tabs v-model="activeName" @tab-click="handleClick">
@@ -84,7 +85,7 @@
     data() {
       return {
         notify: null,
-        activeName: 'inform',
+        activeName: '',
         dataList: [],
         count: 0,
         messageTypes: {
@@ -145,7 +146,13 @@
       this.initNotify();
       this.getList();
     },
+    mounted() {},
     methods: {
+      onShow() {
+        if (this.activeName === '0') {
+          this.activeName = 'inform';
+        }
+      },
       initNotify() {
         this.notify = new Notify({
           // effect: 'flash',
