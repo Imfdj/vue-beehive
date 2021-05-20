@@ -80,7 +80,9 @@
                 style="width: 183px"
                 size="mini"
                 :disabled="!isCurrentProjectMember"
+                :picker-options="startDatePickerOptions"
                 value-format="yyyy-MM-dd HH:mm:ss"
+                default-time="09:00:00"
                 @change="startDatePickerChange"
               >
               </el-date-picker>
@@ -92,7 +94,9 @@
                 style="width: 183px"
                 size="mini"
                 :disabled="!isCurrentProjectMember"
+                :picker-options="endDatePickerOptions"
                 value-format="yyyy-MM-dd HH:mm:ss"
+                default-time="18:00:00"
                 @change="endDatePickerChange"
               >
               </el-date-picker>
@@ -302,6 +306,40 @@
           item.disabled = !this.isCurrentProjectMember;
           return item;
         });
+      },
+      startDatePickerOptions() {
+        let selectableRange = '00:00:00 - 23:59:59';
+        if (this.taskInfo.end_date) {
+          const endTime = this.$baseDayjs(this.taskInfo.end_date).subtract(1, 'second').format('HH:mm:ss');
+          selectableRange = `00:00:00 - ${endTime}`;
+        }
+        return {
+          disabledDate: time => {
+            if (this.taskInfo.end_date) {
+              return time.getTime() > new Date(this.taskInfo.end_date).getTime();
+            } else {
+              return false;
+            }
+          },
+          selectableRange,
+        };
+      },
+      endDatePickerOptions() {
+        let selectableRange = '00:00:00 - 23:59:59';
+        if (this.taskInfo.start_date) {
+          const startTime = this.$baseDayjs(this.taskInfo.start_date).add(1, 'second').format('HH:mm:ss');
+          selectableRange = `${startTime} - 23:59:59`;
+        }
+        return {
+          disabledDate: time => {
+            if (this.taskInfo.start_date) {
+              return time.getTime() < new Date(this.taskInfo.start_date).getTime() - 24 * 60 * 60 * 1000;
+            } else {
+              return false;
+            }
+          },
+          selectableRange,
+        };
       },
     },
     watch: {
