@@ -43,16 +43,16 @@
       <el-table-column show-overflow-tooltip prop="always_show" label="总是显示" :sortable="'custom'">
         <template slot-scope="scope">
           <i
-            :class="scope.row.hidden === 1 ? 'el-icon-check' : 'el-icon-close'"
-            :style="`color: ${scope.row.hidden === 1 ? '#67C23A' : '#F56C6C'};font-size: 24px;`"
+            :class="scope.row.always_show === 1 ? 'el-icon-check' : 'el-icon-close'"
+            :style="`color: ${scope.row.always_show === 1 ? '#67C23A' : '#F56C6C'};font-size: 24px;`"
           ></i>
         </template>
       </el-table-column>
       <el-table-column show-overflow-tooltip prop="keep_alive" label="缓存此路由" :sortable="'custom'">
         <template slot-scope="scope">
           <i
-            :class="scope.row.hidden === 1 ? 'el-icon-check' : 'el-icon-close'"
-            :style="`color: ${scope.row.hidden === 1 ? '#67C23A' : '#F56C6C'};font-size: 24px;`"
+            :class="scope.row.keep_alive === 1 ? 'el-icon-check' : 'el-icon-close'"
+            :style="`color: ${scope.row.keep_alive === 1 ? '#67C23A' : '#F56C6C'};font-size: 24px;`"
           ></i>
         </template>
       </el-table-column>

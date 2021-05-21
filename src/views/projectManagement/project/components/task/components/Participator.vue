@@ -3,7 +3,16 @@
     <div class="title">参与者 <span class="point"></span>{{ users.length }}</div>
     <div class="user-list">
       <div v-for="user in users" :key="user.id" class="item">
-        <BImage class="user-avatar" :src="user.avatar || ''" :width="24" :height="24" :borderRadius="24"></BImage>
+        <el-tooltip class="item" effect="dark" :content="userToolTipContent(user)" placement="top" :open-delay="500">
+          <BImage
+            class="user-avatar"
+            :src="user.avatar || ''"
+            :width="24"
+            :height="24"
+            :borderRadius="24"
+            @click.native="userClick(user)"
+          ></BImage>
+        </el-tooltip>
       </div>
       <el-popover v-model="visible" placement="bottom" width="240" trigger="click" @show="show">
         <div class="popover-content-executor-selector">
@@ -20,7 +29,7 @@
               v-for="user in users"
               :key="user.id"
               class="current-executor"
-              :class="[{ disabled: user.id === creatorId }]"
+              :class="[{ disabled: user.id === taskInfo.creator_id }]"
               @click="selectHandler(user)"
             >
               <div class="wrap-info">
@@ -64,6 +73,7 @@
       </el-popover>
     </div>
     <AddMemberToProjectDialog ref="AddMemberToProjectDialog"></AddMemberToProjectDialog>
+    <UserInfoDialog ref="UserInfoDialog"></UserInfoDialog>
   </div>
 </template>
 
@@ -74,24 +84,22 @@
   import { waitTimeout } from '@/utils';
   import { mapState, mapGetters } from 'vuex';
   import AddMemberToProjectDialog from '@/views/projectManagement/projectList/components/AddMemberToProjectDialog';
+  import UserInfoDialog from '@/components/UserInfoDialog';
 
   export default {
     name: 'Participator',
     components: {
       BImage,
       AddMemberToProjectDialog,
+      UserInfoDialog,
     },
     props: {
-      users: {
-        type: Array,
-        required: true,
-      },
       taskId: {
         type: Number,
         required: true,
       },
-      creatorId: {
-        type: Number,
+      taskInfo: {
+        type: Object,
         required: true,
       },
     },
@@ -118,6 +126,9 @@
           return !one;
         });
       },
+      users() {
+        return this.taskInfo.participators;
+      },
     },
     created() {
       this.getList();
@@ -142,7 +153,7 @@
       },
       async selectHandler(user, isAdd) {
         // 不可删除创建者
-        if (!isAdd && user.id === this.creatorId) {
+        if (!isAdd && user.id === this.taskInfo.creator_id) {
           return;
         }
         await doChange({
@@ -164,6 +175,21 @@
       },
       handleAddUser() {
         this.$refs.AddMemberToProjectDialog.show(this.currentProject);
+      },
+      userToolTipContent(user) {
+        let text = user.username;
+        // 如果此user是任务的执行者
+        if (this.taskInfo.executor_id === user.id) {
+          text += ' , 执行者';
+        }
+        // 如果此user是任务的创建者
+        if (this.taskInfo.creator_id === user.id) {
+          text += ' , 创建者';
+        }
+        return text;
+      },
+      userClick(user) {
+        this.$refs.UserInfoDialog.show(user.id);
       },
     },
   };

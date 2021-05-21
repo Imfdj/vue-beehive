@@ -40,10 +40,10 @@
         <span class="github-btn-text"><i class="iconfont icon-github-fill"></i> github授权登录</span>
       </el-button>
     </div>
-    <div class="router-link-box">
+    <div v-show="!loading" class="router-link-box">
       <span @click="changeStatus('register')">注册</span>
     </div>
-    <div class="router-link-box">
+    <div v-show="!loading" class="router-link-box">
       <span @click="changeStatus('retrievePassword')">找回密码</span>
     </div>
   </el-form>

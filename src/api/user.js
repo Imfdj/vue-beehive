@@ -44,6 +44,10 @@ const methodUrl = {
     url: '/v1/users/github/login',
     method: 'post',
   },
+  getOne: {
+    url: '/v1/users',
+    method: 'get',
+  },
 };
 
 export const permissions = getPermissionStr(methodUrl);
@@ -120,5 +124,12 @@ export function githubLogin(data) {
   return request({
     ...methodUrl.githubLogin,
     data,
+  });
+}
+
+export function getOne(params) {
+  return request({
+    ...methodUrl.getOne,
+    params,
   });
 }

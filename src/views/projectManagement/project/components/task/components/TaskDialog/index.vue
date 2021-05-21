@@ -3,7 +3,7 @@
     class="task-dialog"
     :visible.sync="dialogTableVisible"
     :destroy-on-close="false"
-    top="50px"
+    top="43px"
     width="1300px"
     @close="close"
   >
@@ -200,9 +200,8 @@
         <div class="wrap-dynamic">
           <Participator
             v-if="taskInfo.participators"
-            :users="taskInfo.participators"
             :taskId="taskId"
-            :creatorId="taskInfo.creator_id"
+            :taskInfo="taskInfo"
             @change="participatorChange"
           ></Participator>
           <TaskLog
