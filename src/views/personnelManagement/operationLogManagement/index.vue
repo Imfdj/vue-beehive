@@ -148,7 +148,13 @@
         const { pageSize, pageNo } = this.queryForm;
         const {
           data: { rows, count },
-        } = await getList({ ...this.queryForm, limit: pageSize, offset: (pageNo - 1) * pageSize });
+        } = await getList({
+          ...this.queryForm,
+          prop_order: 'id',
+          order: 'desc',
+          limit: pageSize,
+          offset: (pageNo - 1) * pageSize,
+        });
         this.list = rows;
         this.total = count;
         this.listLoading = false;

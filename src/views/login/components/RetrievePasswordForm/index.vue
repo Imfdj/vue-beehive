@@ -98,7 +98,7 @@
         this.$refs['registerForm'].validateField('email', async errorMessage => {
           if (!errorMessage) {
             this.isGetphone = true;
-            let n = 3;
+            let n = 30;
             this.getPhoneIntval = setInterval(() => {
               if (n > 0) {
                 n--;
