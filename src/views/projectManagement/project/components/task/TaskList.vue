@@ -28,69 +28,34 @@
         <div v-loading="itemList.loading" class="wrap-draggable">
           <draggable
             class="list-group"
-            :list="itemList.tasks"
+            :list="itemList.undoneTasks"
             :disabled="!isCurrentProjectMember"
-            group="tasks"
-            @change="taskDraggableChange"
+            group="undoneTasks"
+            @change="(...arg) => taskDraggableChange(...arg, 'undoneTasks')"
           >
             <div
-              v-for="element in itemList.tasks"
+              v-for="element in itemList.undoneTasks"
               v-show="element.is_recycle === 0"
               :key="element.id"
-              class="list-group-item"
-              :class="[{ 'list-group-item-done': element.is_done === 1 }]"
               @click="taskOpen(element)"
             >
-              <div class="state">
-                <el-tooltip :content="element.state && element.state.name" :open-delay="600" placement="top">
-                  <i
-                    :class="element.state && element.state.icon"
-                    :style="`color: ${element.state && element.state.color};font-size: 18px;`"
-                  ></i>
-                </el-tooltip>
-              </div>
-              <div class="wrap-done">
-                <el-button type="text" :disabled="!isCurrentProjectMember" @click.stop="changeDoneState(element)">
-                  <i :class="`iconfont ${element.is_done === 1 ? 'icon-xuanzhong2' : 'icon-fangxing1'}`"></i>
-                </el-button>
-              </div>
-              <div class="content" :class="[{ 'task-state-success': (element.state && element.state.is_done) === 1 }]">
-                <div class="name">{{ element.name }}</div>
-                <div class="info">
-                  <span v-if="element.date_tip" class="info-item task-date" :class="element.date_tip_class">
-                    {{ element.date_tip }}
-                  </span>
-                  <el-tooltip v-if="element.type" :content="element.type.name" :open-delay="600" placement="top">
-                    <i class="info-item" :class="element.type.icon" :style="`color: ${element.type.color};`"></i>
-                  </el-tooltip>
-                  <i v-if="element.remark" class="info-item el-icon-document color-light"></i>
-                  <span v-if="element.likers && element.likers.length" class="info-item color-light">
-                    <i class="iconfont icon-zan" style="font-size: 14px"></i>
-                    <span style="padding-left: 5px; font-size: 12px">{{ element.likers.length }}</span>
-                  </span>
-                </div>
-              </div>
-              <div class="executor">
-                <el-tooltip
-                  v-if="element.executor"
-                  :content="element.executor.username"
-                  :open-delay="600"
-                  placement="top"
-                >
-                  <BImage
-                    class="user-avatar"
-                    :src="element.executor.avatar || ''"
-                    :width="26"
-                    :height="26"
-                    :borderRadius="26"
-                  ></BImage>
-                </el-tooltip>
-              </div>
-              <div
-                v-if="(element.state && element.state.is_done) !== 1"
-                class="task-priority"
-                :style="`background-color: ${element.priority && element.priority.color};`"
-              ></div>
+              <TaskDraggableItem :element="element"></TaskDraggableItem>
+            </div>
+          </draggable>
+          <draggable
+            class="list-group"
+            :list="itemList.doneTasks"
+            :disabled="!isCurrentProjectMember"
+            group="doneTasks"
+            @change="(...arg) => taskDraggableChange(...arg, 'doneTasks')"
+          >
+            <div
+              v-for="element in itemList.doneTasks"
+              v-show="element.is_recycle === 0"
+              :key="element.id"
+              @click="taskOpen(element)"
+            >
+              <TaskDraggableItem :element="element"></TaskDraggableItem>
             </div>
           </draggable>
           <el-button
@@ -120,16 +85,15 @@
 
 <script>
   import draggable from 'vuedraggable';
-  import BImage from '@/components/B-image';
   import Dropdown from '@/components/Dropdown';
   import TaskDialog from './components/TaskDialog/index';
   import EditorTaskListDialog from './components/EditorTaskListDialog';
   import CreateTask from './components/CreateTask';
   import CreateTaskList from './components/CreateTaskList';
+  import TaskDraggableItem from './components/TaskDraggableItem';
   import { getList, doDelete, permissions as taskListPermissions } from '@/api/taskListManagement';
   import {
     doEditSort,
-    doEdit,
     getList as getTaskList,
     doRecycleAllTaskOfTaskList,
     permissions as taskPermissions,
@@ -143,12 +107,12 @@
     name: 'TaskList',
     components: {
       draggable,
-      BImage,
       Dropdown,
       TaskDialog,
       CreateTask,
       EditorTaskListDialog,
       CreateTaskList,
+      TaskDraggableItem,
     },
     mixins: [mixin],
     data() {
@@ -226,6 +190,7 @@
                   this.taskItemInit(params);
                   itemList.tasks?.push(params);
                   itemList.tasks = this.$baseLodash.sortBy(itemList.tasks, task => task.sort);
+                  this.groupTaskByDone(itemList);
                 }
               }
             });
@@ -245,9 +210,8 @@
             // 如果新params的任务列表id和原先id相同，则为同列表 更新，否则为新列表中添加，久列表中删除
             if (oldTask.task_list_id === params.task_list_id) {
               Object.assign(oldTask, params);
-              currrentItemList.tasks = this.$baseLodash.sortBy(currrentItemList.tasks, function (o) {
-                return o.sort;
-              });
+              currrentItemList.tasks = this.$baseLodash.sortBy(currrentItemList.tasks, task => task.sort);
+              this.groupTaskByDone(currrentItemList);
               this.taskItemInit(oldTask);
             } else {
               // 删除
@@ -255,6 +219,7 @@
               const oldTaskListIndex = oldTaskList.tasks?.findIndex(task => task.id === oldTask.id);
               if (oldTaskListIndex !== -1) {
                 oldTaskList.tasks?.splice(oldTaskListIndex, 1);
+                this.groupTaskByDone(oldTaskList);
               }
               // 添加
               const newTaskList = this.listData.find(itemList => itemList.id === params.task_list_id);
@@ -267,9 +232,8 @@
                 Object.assign(taskExisting, params);
                 this.taskItemInit(taskExisting);
               }
-              newTaskList.tasks = this.$baseLodash.sortBy(newTaskList.tasks, function (o) {
-                return o.sort;
-              });
+              newTaskList.tasks = this.$baseLodash.sortBy(newTaskList.tasks, task => task.sort);
+              this.groupTaskByDone(newTaskList);
             }
             break;
           }
@@ -277,6 +241,7 @@
             this.listData.forEach(itemList => {
               if (itemList.id === params.task_list_id) {
                 itemList.tasks = itemList.tasks?.filter(task => task.id !== params.id);
+                this.groupTaskByDone(itemList);
               }
             });
             break;
@@ -409,6 +374,12 @@
           }
         }
       },
+      // 对任务关于是否完成做分组处理
+      groupTaskByDone(taskListItem) {
+        const taskDoneGroup = this.$baseLodash.groupBy(taskListItem.tasks, 'is_done');
+        taskListItem.undoneTasks = taskDoneGroup['0'] || [];
+        taskListItem.doneTasks = taskDoneGroup['1'] || [];
+      },
       searchTask(params = {}) {
         this.listData.forEach(taskListItem => {
           taskListItem.loading = true;
@@ -423,6 +394,7 @@
             taskListItem.tasks?.forEach(task => {
               this.taskItemInit(task);
             });
+            this.groupTaskByDone(taskListItem);
           });
         });
       },
@@ -432,26 +404,28 @@
         } = await getList({ project_id: this.currentProjectId, prop_order: 'sort', order: 'asc' });
         this.listData = rows.map(item => {
           item.tasks = [];
+          item.undoneTasks = [];
+          item.doneTasks = [];
           return item;
         });
         this.searchTask();
       },
-      async taskDraggableChange(evt) {
+      async taskDraggableChange(evt, propName) {
         if (evt.removed) return;
         const id = (evt.moved && evt.moved.element.id) || (evt.added && evt.added.element.id);
         const newIndex = evt.moved ? evt.moved.newIndex : evt.added && evt.added.newIndex;
         let listItem = null;
         for (let i = 0; i < this.listData.length; i++) {
           if (listItem) break;
-          for (let j = 0; j < this.listData[i].tasks.length; j++) {
-            if (this.listData[i].tasks[j].id === id) {
+          for (let j = 0; j < this.listData[i][propName].length; j++) {
+            if (this.listData[i][propName][j].id === id) {
               listItem = this.listData[i];
               break;
             }
           }
         }
         if (!listItem) return;
-        const { id: task_list_id, tasks } = listItem;
+        const { id: task_list_id, [propName]: tasks } = listItem;
         const preId = tasks && tasks[newIndex - 1] && tasks[newIndex - 1].id;
         const nextId = tasks && tasks[newIndex + 1] && tasks[newIndex + 1].id;
         await doEditSort({
@@ -492,10 +466,6 @@
           // this.getList();
         }
       },
-      async changeDoneState(task) {
-        task.is_done = task.is_done === 1 ? 0 : 1;
-        await doEdit(task);
-      },
       async doDelete(id) {
         await doDelete({ ids: [id] });
       },
@@ -510,9 +480,6 @@
   .task-list {
     display: flex;
     height: 100%;
-    .task-state-success {
-      filter: opacity(0.5);
-    }
 
     .wrap-item {
       display: inline-block;
@@ -555,130 +522,7 @@
         padding-right: 15px;
 
         .list-group {
-          .list-group-item {
-            position: relative;
-            display: flex;
-            width: 249px;
-            min-height: 48px;
-            box-shadow: 0 1px 2px 0 rgb(0 0 0 / 10%);
-            border-radius: 4px;
-            background-color: #fff;
-            margin-bottom: 8px;
-            overflow: hidden;
-            cursor: pointer;
-            padding: 10px;
-
-            .state {
-              position: absolute;
-              bottom: 5px;
-              right: 5px;
-            }
-
-            .wrap-done {
-              width: 18px;
-              padding: 0 4px;
-              .iconfont {
-                font-size: 18px;
-                color: #969696;
-              }
-              .iconfont:hover {
-                color: #414141;
-              }
-              ::v-deep {
-                .el-button--small {
-                  padding: 0px;
-                }
-              }
-            }
-
-            .content {
-              width: calc(259px - 77px);
-              white-space: normal;
-              word-break: break-all;
-              padding-left: 5px;
-              padding-right: 10px;
-
-              .name {
-              }
-
-              .info {
-                display: flex;
-                flex-wrap: wrap;
-                align-items: center;
-                padding: 5px 0px;
-                .info-item {
-                  font-size: 16px;
-                  margin-right: 6px;
-                  margin-bottom: 3px;
-                }
-                .task-date {
-                  line-height: 20px;
-                  font-size: 12px;
-                  background-color: #f7f7f7;
-                  padding: 0 6px;
-                  border-radius: 2px;
-                  white-space: nowrap;
-                }
-                .task-date-overdue {
-                  background-color: #e62412;
-                  color: #fff;
-                }
-                .task-date-intraday {
-                  background-color: #fa8c15;
-                  color: #fff;
-                }
-                .task-date-recently {
-                  background-color: #1b9aee;
-                  color: #fff;
-                }
-                .task-date-safety {
-                  background-color: #f7f7f7;
-                  color: #000;
-                }
-              }
-            }
-
-            .executor {
-              width: 26px;
-            }
-
-            .task-priority {
-              position: absolute;
-              top: 0;
-              left: 0;
-              width: 4px;
-              height: 100%;
-              background-color: #2cc642;
-              transition: width 200ms;
-            }
-          }
-
-          .list-group-item:hover {
-            .task-priority {
-              width: 8px;
-            }
-          }
-          .list-group-item-done {
-            .content,
-            .executor,
-            .task-priority,
-            .state {
-              filter: opacity(0.6);
-            }
-            .wrap-done {
-              .iconfont {
-                color: #ccc;
-              }
-              .iconfont:hover {
-                color: #000000 !important;
-              }
-            }
-          }
-          .list-group-item-done:hover {
-            .task-priority {
-              width: 4px;
-            }
-          }
+          min-height: 5px;
         }
 
         .btn-createTask {
