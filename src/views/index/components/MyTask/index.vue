@@ -61,6 +61,7 @@
   import { getList } from '@/api/taskManagement';
   import { getList as getTaskPriorityList } from '@/api/taskPriorityManagement';
   import EmptyImage from '@/components/EmptyImage';
+  import { mapState } from 'vuex';
 
   export default {
     name: 'MyTask',
@@ -94,6 +95,9 @@
         pageSize: 10,
       };
     },
+    computed: {
+      ...mapState('user', ['userInfo']),
+    },
     created() {
       this.init();
     },
@@ -124,13 +128,13 @@
         const body = {};
         switch (this.navActiveName) {
           case 'execute':
-            body.executor_ids = 1;
+            body.executor_ids = this.userInfo.id;
             break;
           case 'participation':
-            body.participator_id = 1;
+            body.participator_id = this.userInfo.id;
             break;
           case 'created':
-            body.creator_id = 1;
+            body.creator_id = this.userInfo.id;
             break;
           default:
             break;
