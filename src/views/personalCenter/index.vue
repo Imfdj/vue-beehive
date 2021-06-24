@@ -27,7 +27,6 @@
     beforeRouteEnter(to, from, next) {
       next(vm => {
         vm.setNoNav(true);
-        vm.setNavIndex(-1);
       });
     },
     beforeRouteLeave(to, from, next) {

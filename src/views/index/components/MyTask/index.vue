@@ -157,7 +157,7 @@
         this.$router.push(`${this.$configSettings.project_path}/${project.id}`);
       },
       goToTask(task) {
-        this.$router.replace(`${this.$configSettings.project_path}/${task.project_id}?taskId=${task.id}`);
+        this.$router.push(`${this.$configSettings.project_path}/${task.project_id}?taskId=${task.id}`);
       },
     },
   };

@@ -48,6 +48,7 @@
   import UserOperation from './UserOperation';
   import MessageBox from './MessageBox';
   import { title } from '@/config/settings';
+  import router from '@/router';
 
   export default {
     name: 'Header',
@@ -76,8 +77,16 @@
       },
     },
     created() {
+      // 监听路由变动，设置顶部导航栏选中状态
+      router.afterEach((to, from) => {
+        this.accessRoutesTreeNoHidden?.forEach((item, index) => {
+          if (item.path === to.matched[0].path || (item.path === '/' && to.matched[0].path === '')) {
+            this.setNavIndex(index);
+          }
+        });
+      });
       this.accessRoutesTreeNoHidden?.forEach((item, index) => {
-        if (item.path === this.$route.matched[0].path) {
+        if (item.path === this.$route.matched[0].path || (item.path === '/' && this.$route.matched[0].path === '')) {
           this.setNavIndex(index);
         }
       });
@@ -86,7 +95,6 @@
       ...mapMutations('routes', ['setNavIndex']),
       navClick(index) {
         this.$router.push(this.accessRoutesTreeNoHidden[index].path);
-        this.setNavIndex(index);
       },
       logoClick() {
         if (this.navIndex !== 0) {
