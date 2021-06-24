@@ -73,6 +73,7 @@
           data: { rows, count },
         } = await getList({});
         this.total = count;
+        this.$emit('getProjectCount', count);
         this.projectList = rows.map(item => {
           item.created_at = this.$baseDayjs(item.created_at).format('YYYY-MM-DD HH:mm:ss');
           item.created_at_humanize = dateHumanizeFormat(item.created_at).value;
