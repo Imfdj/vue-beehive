@@ -36,7 +36,14 @@
             >
               <i class="iconfont icon-jiaren"></i> {{ item.invited ? '已邀请' : '邀请' }}
             </el-button>
-            <span v-else><i class="iconfont icon-ren" style="margin-right: 5px"></i>已加入</span>
+            <span v-else>
+              <i
+                class="iconfont"
+                :class="item.id === project.manager_id ? 'icon-role' : 'icon-ren'"
+                style="margin-right: 5px"
+              ></i
+              >{{ item.id === project.manager_id ? '拥有者' : '已加入' }}
+            </span>
           </div>
         </div>
       </div>
