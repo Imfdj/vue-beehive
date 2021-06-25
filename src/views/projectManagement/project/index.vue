@@ -44,8 +44,8 @@
         </div>
       </div>
       <div class="wrap-controller">
-        <el-button type="text" icon="el-icon-notebook-2">看板视图</el-button>
-        <TaskFilter @search="taskSearch">
+        <el-button v-if="indexTab === 0" type="text" icon="el-icon-notebook-2">看板视图</el-button>
+        <TaskFilter v-if="indexTab === 0" @search="taskSearch">
           <el-button type="text" icon="el-icon-search">筛选</el-button>
         </TaskFilter>
         <span
@@ -298,10 +298,11 @@
       .wrap-controller {
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        width: 223px;
+        justify-content: flex-end;
+        width: 264px;
         ::v-deep .el-button--small {
           font-size: 14px;
+          margin-left: 15px;
         }
       }
     }

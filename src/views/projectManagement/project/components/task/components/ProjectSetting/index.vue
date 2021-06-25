@@ -44,11 +44,11 @@
           },
           {
             icon: 'el-icon-document-checked',
-            title: '导出任务 *',
+            title: '复制项目链接 *',
           },
           {
             icon: 'el-icon-document-copy',
-            title: '复制任务 *',
+            title: '复制项目 *',
           },
           {
             icon: 'el-icon-folder-add',
