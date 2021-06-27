@@ -103,6 +103,7 @@
     },
     beforeRouteEnter(to, from, next) {
       next(vm => {
+        vm.setIndexTab(0);
         vm.setNoNav(true);
       });
     },

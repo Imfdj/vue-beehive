@@ -19,6 +19,7 @@
 <script>
   import ProjectEdit from '@/views/projectManagement/projectList/components/ProjectEdit';
   import RecycleDialog from './components/RecycleDialog';
+  import mixin from '@/mixins';
   import { mapGetters } from 'vuex';
 
   export default {
@@ -27,6 +28,7 @@
       ProjectEdit,
       RecycleDialog,
     },
+    mixins: [mixin],
     data() {
       return {
         settings: [
@@ -44,7 +46,7 @@
           },
           {
             icon: 'el-icon-document-checked',
-            title: '复制项目链接 *',
+            title: '复制项目链接',
           },
           {
             icon: 'el-icon-document-copy',
@@ -72,6 +74,8 @@
             this.$refs.RecycleDialog.show();
             break;
           case 3:
+            this.doCopy(`${window.location.origin}${this.$route.path}`);
+            this.$baseNotify('可粘贴到地址栏中，快速打开此项目', '复制项目链接成功');
             break;
           case 4:
             break;

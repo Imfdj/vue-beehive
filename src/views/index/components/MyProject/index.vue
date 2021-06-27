@@ -6,6 +6,7 @@
     </div>
     <div v-loading="loading" class="list-project">
       <div v-for="item in projectListShow" :key="item.id" class="item-project" @click="goToProject(item)">
+        <div v-if="item.is_private === 0" class="public-tip">公开</div>
         <div class="wrap-cover">
           <img v-if="item.cover" :src="item.cover" class="cover" alt="" />
         </div>
@@ -58,7 +59,11 @@
     },
     computed: {
       projectListShow() {
-        return this.projectList.filter((item, index) => {
+        let data = this.$baseLodash.sortBy(this.projectList, 'collector');
+        data = this.$baseLodash.sortBy(data.reverse(), o => {
+          return o.is_private;
+        });
+        return data.filter((item, index) => {
           return index >= this.pageSize * (this.currentPage - 1) && index < this.pageSize * this.currentPage;
         });
       },
@@ -118,6 +123,7 @@
       min-height: 750px;
 
       .item-project {
+        position: relative;
         width: calc(25% - 1px - 20px);
         height: 100%;
         line-height: 24px;
@@ -125,10 +131,25 @@
         border-right: 1px solid $colorE8;
         border-bottom: 1px solid $colorE8;
         color: $colorLight;
+        overflow: hidden;
 
         &:hover {
           box-shadow: 0px 0px 6px #ccc;
           cursor: pointer;
+        }
+
+        .public-tip {
+          position: absolute;
+          top: 0;
+          right: 0;
+          width: 70px;
+          background-color: rgba(19, 210, 173, 0.6);
+          color: #fff;
+          padding-top: 10px;
+          transform: translateX(50%) rotateZ(45deg);
+          transform-origin: top center;
+          text-align: center;
+          font-size: 12px;
         }
 
         .wrap-cover {

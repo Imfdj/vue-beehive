@@ -53,7 +53,7 @@
     mixins: [mixin],
     data() {
       return {
-        dialogVisible: true,
+        dialogVisible: false,
         loading: false,
         data: [],
         activeName: 'task',
