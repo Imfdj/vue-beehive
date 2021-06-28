@@ -3,9 +3,14 @@
     <vab-query-form>
       <vab-query-form-left-panel :span="12">
         <el-button v-if="false" icon="el-icon-plus" type="primary" @click="handleEdit">添加</el-button>
-        <el-button v-permission="userPermissions.doDelete" icon="el-icon-delete" type="danger" @click="handleDelete"
-          >批量删除</el-button
+        <el-button
+          :disabled="!this.$checkPermission(userPermissions.doDelete)"
+          icon="el-icon-delete"
+          type="danger"
+          @click="handleDelete"
         >
+          批量删除
+        </el-button>
       </vab-query-form-left-panel>
       <vab-query-form-right-panel :span="12">
         <el-form :inline="true" :model="queryForm" @submit.native.prevent>

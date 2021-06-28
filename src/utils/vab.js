@@ -158,6 +158,15 @@ const install = (Vue, opts = {}) => {
     return height;
   };
 
+  /* 全局验证资源权限
+   * @param string
+   * @return Boolean
+   */
+  Vue.prototype.$checkPermission = permission => {
+    const permissions = (store.getters['user/userInfo'] && store.getters['user/userInfo'].permissions) || [];
+    return permissions.includes(permission);
+  };
+
   /* 全局lodash */
   Vue.prototype.$baseLodash = lodash;
   /* 全局dayjs */

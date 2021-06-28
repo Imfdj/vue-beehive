@@ -1,10 +1,10 @@
 <template>
   <div class="my-task">
     <div class="head">
-      <div class="title"> 我的任务 - {{ taskData.count }} </div>
+      <div class="title"> 我的任务 - {{ taskData.count }}</div>
       <div class="wrap-ctrl">
         <el-select v-model="form.is_done" placeholder="请选择" style="width: 100px" @change="taskDoneStatesChange">
-          <el-option v-for="item in taskDoneStates" :key="item.id" :label="item.name" :value="item.id"> </el-option>
+          <el-option v-for="item in taskDoneStates" :key="item.id" :label="item.name" :value="item.id"></el-option>
         </el-select>
       </div>
     </div>
@@ -31,9 +31,9 @@
           {{ item.priority.name }}
         </el-tag>
         <div class="task-name ellipsis" @click="goToTask(item)">{{ item.name }}</div>
-        <div class="project-name ellipsis" @click="goToProject(item.project)">{{
-          item.project && item.project.name
-        }}</div>
+        <div class="project-name ellipsis" @click="goToProject(item.project)"
+          >{{ item.project && item.project.name }}
+        </div>
       </div>
       <EmptyImage
         v-if="!(taskData.rows && taskData.rows.length) && !loading"
@@ -58,8 +58,8 @@
 </template>
 
 <script>
-  import { getList } from '@/api/taskManagement';
-  import { getList as getTaskPriorityList } from '@/api/taskPriorityManagement';
+  import { getList, permissions as taskPermissions } from '@/api/taskManagement';
+  import { getList as getTaskPriorityList, permissions as taskPriorityPermissions } from '@/api/taskPriorityManagement';
   import EmptyImage from '@/components/EmptyImage';
   import { mapState } from 'vuex';
 
@@ -70,6 +70,8 @@
     },
     data() {
       return {
+        taskPermissions,
+        taskPriorityPermissions,
         loading: false,
         taskData: {},
         form: {
@@ -107,6 +109,15 @@
         this.init();
       },
       init() {
+        // 检查资源权限
+        if (
+          !(
+            this.$checkPermission(this.taskPermissions.getList) &&
+            this.$checkPermission(this.taskPriorityPermissions.getList)
+          )
+        ) {
+          return;
+        }
         this.loading = true;
         Promise.all([this.getTaskPriorityList(), this.getList()]).then(
           ([

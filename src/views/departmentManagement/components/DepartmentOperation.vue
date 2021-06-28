@@ -10,7 +10,15 @@
             <el-input v-model="form.sort"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="submitForm('form')">{{ buttonName }}</el-button>
+            <el-button
+              type="primary"
+              :disabled="
+                !this.$checkPermission(departmentPermissions.doCreate) ||
+                !this.$checkPermission(departmentPermissions.doEdit)
+              "
+              @click="submitForm('form')"
+              >{{ buttonName }}
+            </el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -19,7 +27,7 @@
 </template>
 
 <script>
-  import { doCreate, doEdit } from '@/api/departmentManagement';
+  import { doCreate, doEdit, permissions as departmentPermissions } from '@/api/departmentManagement';
 
   export default {
     name: 'DepartmentOperation',
@@ -39,6 +47,7 @@
     },
     data() {
       return {
+        departmentPermissions,
         dialogVisible: false,
         form: {
           name: '',

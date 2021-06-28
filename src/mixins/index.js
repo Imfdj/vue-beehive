@@ -70,16 +70,6 @@ export default {
     },
 
     /**
-     * 验证资源权限
-     * @param string
-     * @return Boolean
-     */
-    checkPermission(permission) {
-      const permissions = (store.getters['user/userInfo'] && store.getters['user/userInfo'].permissions) || [];
-      return permissions.includes(permission);
-    },
-
-    /**
      * 获取picsum随机图片路径
      * @param string
      * @return string

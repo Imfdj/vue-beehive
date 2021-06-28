@@ -7,18 +7,21 @@
     </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button @click="close">取 消 </el-button>
-      <el-button type="primary" @click="save">确 定</el-button>
+      <el-button type="primary" :disabled="!this.$checkPermission(departmentPermissions.doEdit)" @click="save"
+        >确 定</el-button
+      >
     </div>
   </el-dialog>
 </template>
 
 <script>
-  import { doEdit } from '@/api/departmentManagement';
+  import { doEdit, permissions as departmentPermissions } from '@/api/departmentManagement';
 
   export default {
     name: 'DepartmentManagementEdit',
     data() {
       return {
+        departmentPermissions,
         form: {
           id: '',
         },

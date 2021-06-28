@@ -2,7 +2,12 @@
   <div class="file">
     <div class="header">
       <div class="title">我的文件</div>
-      <el-button icon="el-icon-upload" @click="uploadHandler">上传</el-button>
+      <el-button
+        icon="el-icon-upload"
+        :disabled="!this.$checkPermission(projectFilePermissions.doCreate)"
+        @click="uploadHandler"
+        >上传
+      </el-button>
     </div>
     <div class="warp-table color-light">
       <div class="head-table">
@@ -17,7 +22,7 @@
             <div class="created_at">创建日期</div>
           </el-col>
           <el-col :span="2">
-            <div class="creator"> 创建人 </div>
+            <div class="creator"> 创建人</div>
           </el-col>
           <el-col :span="2">
             <div class="operator"></div>
@@ -86,7 +91,7 @@
   import mixin from '@/mixins';
   import BImage from '@/components/B-image';
   import Dropdown from '@/components/Dropdown';
-  import { getList, doEdit, doDelete, doCreate } from '@/api/projectFileManagement';
+  import { getList, doEdit, doCreate, permissions as projectFilePermissions } from '@/api/projectFileManagement';
   import { mapState } from 'vuex';
   import { dateHumanizeFormat } from '@/utils';
   import Upload from '@/components/Upload';
@@ -102,6 +107,7 @@
     mixins: [mixin],
     data() {
       return {
+        projectFilePermissions,
         dataList: [],
         selectList: [
           {
@@ -113,6 +119,7 @@
             id: 1,
             name: '移到回收站',
             icon: 'el-icon-delete',
+            disabled: !this.$checkPermission(projectFilePermissions.doEdit),
           },
         ],
       };
@@ -162,6 +169,9 @@
         return item;
       },
       async getList() {
+        if (!this.$checkPermission(this.projectFilePermissions.getList)) {
+          return;
+        }
         const {
           data: { rows },
         } = await getList({ project_id: this.currentProjectId, prop_order: 'id', order: 'desc' });

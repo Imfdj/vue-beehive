@@ -8,7 +8,7 @@ const methodUrl = {
   },
 };
 
-export const permissions = getPermissionStr(methodUrl);
+export const permissions = Object.assign({}, methodUrl, { ...getPermissionStr(methodUrl) });
 
 export function getRouterList(params) {
   return request({

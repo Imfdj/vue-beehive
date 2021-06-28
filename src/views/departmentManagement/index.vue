@@ -24,14 +24,14 @@
       </div>
       <span class="title-box"
         >部门
-        <btn-icon
-          style="margin-left: 120px"
-          iconClass="iconfont icon-jia"
-          @click.native="addDepartmentOperationBtnClick"
-        >
-          创建部门
-        </btn-icon></span
-      >
+        <el-button
+          type="text"
+          :disabled="!this.$checkPermission(departmentPermissions.doCreate)"
+          style="margin-left: 120px; font-size: 14px"
+          @click="addDepartmentOperationBtnClick"
+          ><i class="iconfont icon-jia"></i> 创建部门
+        </el-button>
+      </span>
       <div class="warp-menu">
         <div class="warp-member">
           <div
@@ -60,18 +60,17 @@
 </template>
 
 <script>
-  import { getList, doDelete } from '@/api/departmentManagement';
-  import BtnIcon from '@/components/Btn-icon';
+  import { getList, permissions as departmentPermissions } from '@/api/departmentManagement';
   import UserContent from './components/UserContent';
 
   export default {
     name: 'DepartmentManagement',
     components: {
       UserContent,
-      BtnIcon,
     },
     data() {
       return {
+        departmentPermissions,
         memberKeyword: '',
         departmentList: [],
         memberBtns: [
@@ -90,6 +89,10 @@
 
     methods: {
       async fetchData() {
+        // 检查资源权限
+        if (!this.$checkPermission(this.departmentPermissions.getList)) {
+          return;
+        }
         const {
           data: { rows },
           totalCount,

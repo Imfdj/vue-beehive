@@ -39,7 +39,7 @@
 </template>
 
 <script>
-  import { getList } from '@/api/projectManagement';
+  import { getList, permissions as projectPermissions } from '@/api/projectManagement';
   import { dateHumanizeFormat } from '@/utils';
   import EmptyImage from '@/components/EmptyImage';
 
@@ -50,6 +50,7 @@
     },
     data() {
       return {
+        projectPermissions,
         loading: false,
         projectList: [],
         currentPage: 1,
@@ -73,6 +74,10 @@
     },
     methods: {
       async getList() {
+        // 检查资源权限
+        if (!this.$checkPermission(this.projectPermissions.getList)) {
+          return;
+        }
         this.loading = true;
         const {
           data: { rows, count },

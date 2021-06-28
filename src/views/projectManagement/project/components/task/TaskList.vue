@@ -77,7 +77,7 @@
         </div>
       </div>
     </draggable>
-    <CreateTaskList v-permission="taskListPermissions.doCreate"></CreateTaskList>
+    <CreateTaskList></CreateTaskList>
     <TaskDialog ref="TaskDialog" @close="taskDialogClose"></TaskDialog>
     <EditorTaskListDialog ref="EditorTaskListDialog"></EditorTaskListDialog>
   </div>
@@ -148,21 +148,25 @@
       ...mapState('project', ['taskStates', 'taskPrioritys', 'taskTypes', 'projectMembers', 'currentProjectId']),
       ...mapGetters('project', ['isCurrentProjectMember']),
       selectListMoreFilter() {
-        const selectListMore = this.selectListMore.filter((item, index) => {
-          if (index === 0) {
-            return this.checkPermission(this.taskListPermissions.doEdit);
-          }
-          if (index === 1) {
-            return this.checkPermission(this.taskPermissions.doRecycleAllTaskOfTaskList);
-          }
-          if (index === 2) {
-            return this.checkPermission(this.taskListPermissions.doDelete);
-          }
-          return true;
-        });
+        // 资源权限 checkPermission 检查
         // 业务权限，非项目成员不可操作任务列表
-        selectListMore.forEach(item => (item.disabled = !this.isCurrentProjectMember));
-        return selectListMore;
+        this.selectListMore.forEach(item => {
+          switch (item.id) {
+            case 0:
+              item.disabled = !this.$checkPermission(taskListPermissions.doEdit) || !this.isCurrentProjectMember;
+              break;
+            case 1:
+              item.disabled =
+                !this.$checkPermission(taskListPermissions.doRecycleAllTaskOfTaskList) || !this.isCurrentProjectMember;
+              break;
+            case 2:
+              item.disabled = !this.$checkPermission(taskListPermissions.doDelete) || !this.isCurrentProjectMember;
+              break;
+            default:
+              break;
+          }
+        });
+        return this.selectListMore;
       },
     },
     watch: {

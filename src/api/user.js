@@ -48,9 +48,13 @@ const methodUrl = {
     url: '/v1/users',
     method: 'get',
   },
+  updateUserDepartment: {
+    url: '/v1/users/department',
+    method: 'put',
+  },
 };
 
-export const permissions = getPermissionStr(methodUrl);
+export const permissions = Object.assign({}, methodUrl, { ...getPermissionStr(methodUrl) });
 
 export function getList(params) {
   return request({
@@ -131,5 +135,12 @@ export function getOne(params) {
   return request({
     ...methodUrl.getOne,
     params,
+  });
+}
+
+export function updateUserDepartment(data) {
+  return request({
+    ...methodUrl.updateUserDepartment,
+    data,
   });
 }

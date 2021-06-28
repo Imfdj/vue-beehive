@@ -18,13 +18,9 @@ const methodUrl = {
     url: '/v1/departments',
     method: 'delete',
   },
-  updateUserDepartment: {
-    url: '/v1/users/department',
-    method: 'put',
-  },
 };
 
-export const permissions = getPermissionStr(methodUrl);
+export const permissions = Object.assign({}, methodUrl, { ...getPermissionStr(methodUrl) });
 
 export function getList(params) {
   return request({
@@ -50,13 +46,6 @@ export function doEdit(data) {
 export function doDelete(data) {
   return request({
     ...methodUrl.doDelete,
-    data,
-  });
-}
-
-export function updateUserDepartment(data) {
-  return request({
-    ...methodUrl.updateUserDepartment,
     data,
   });
 }

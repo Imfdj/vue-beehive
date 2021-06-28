@@ -24,7 +24,7 @@ const methodUrl = {
   },
 };
 
-export const permissions = getPermissionStr(methodUrl);
+export const permissions = Object.assign({}, methodUrl, { ...getPermissionStr(methodUrl) });
 
 export function getList(params) {
   return request({

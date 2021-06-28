@@ -1,7 +1,13 @@
 <template>
   <div class="create-task-list color-light">
     <div>
-      <el-popover v-model="visible" :disabled="!isCurrentProjectMember" placement="bottom" width="200" trigger="click">
+      <el-popover
+        v-model="visible"
+        :disabled="!isCurrentProjectMember || !this.$checkPermission(taskListPermissions.doCreate)"
+        placement="bottom"
+        width="200"
+        trigger="click"
+      >
         <div class="create-task-list-wrap-form">
           <div class="title">新建任务列表</div>
           <el-input v-model="name" placeholder="列表名称" style="width: 100%; margin: 15px 0"></el-input>
@@ -14,7 +20,10 @@
           </el-button>
         </div>
         <span slot="reference"
-          ><span :class="[{ disabled: !isCurrentProjectMember }]"><i class="el-icon-plus"></i>新建任务列表</span></span
+          ><span
+            :class="[{ disabled: !isCurrentProjectMember || !this.$checkPermission(taskListPermissions.doCreate) }]"
+            ><i class="el-icon-plus"></i>新建任务列表</span
+          ></span
         >
       </el-popover>
     </div>
@@ -22,13 +31,14 @@
 </template>
 
 <script>
-  import { doCreate } from '@/api/taskListManagement';
+  import { doCreate, permissions as taskListPermissions } from '@/api/taskListManagement';
   import { mapGetters, mapState } from 'vuex';
 
   export default {
     name: 'CreateTaskList',
     data() {
       return {
+        taskListPermissions,
         visible: false,
         name: '',
       };
