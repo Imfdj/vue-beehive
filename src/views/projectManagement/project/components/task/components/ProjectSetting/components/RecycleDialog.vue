@@ -23,9 +23,25 @@
             </div>
           </div>
           <div class="ctrl">
-            <i class="el-icon-refresh-left" @click="recoverHandler(item)"></i>
+            <el-button
+              :disabled="
+                (activeName === 'file' && !$checkPermission(projectFilePermissions.doEdit)) ||
+                (activeName === 'task' && !$checkPermission(taskPermissions.doEdit))
+              "
+              type="text"
+              @click="recoverHandler(item)"
+              ><i class="el-icon-refresh-left"></i
+            ></el-button>
             <div class="line"></div>
-            <i class="el-icon-delete" @click="deleteHandler(item)"></i>
+            <el-button
+              :disabled="
+                (activeName === 'file' && !$checkPermission(projectFilePermissions.doDelete)) ||
+                (activeName === 'task' && !$checkPermission(taskPermissions.doDelete))
+              "
+              type="text"
+              @click="deleteHandler(item)"
+              ><i class="el-icon-delete"></i
+            ></el-button>
           </div>
         </div>
         <div v-if="data.length === 0 && !loading" class="no-data">
@@ -43,8 +59,9 @@
     getList as projectFileList,
     doEdit as doProjectFileListEdit,
     doDelete as doProjectFileListDelete,
-    doEdit,
+    permissions as projectFilePermissions,
   } from '@/api/projectFileManagement';
+  import { permissions as taskPermissions } from '@/api/taskManagement';
   import { mapState } from 'vuex';
   import mixin from '@/mixins';
 
@@ -53,6 +70,8 @@
     mixins: [mixin],
     data() {
       return {
+        projectFilePermissions,
+        taskPermissions,
         dialogVisible: false,
         loading: false,
         data: [],
@@ -135,7 +154,6 @@
               cancelButtonText: '取消',
               type: 'warning',
             }).then(async () => {
-              await this.doProjectFileListEdit(item);
               await this.doProjectFileListDelete(item);
               this.$baseNotify('', '成功删除文件');
             });
@@ -223,6 +241,12 @@
             & i {
               font-size: 16px;
               cursor: pointer;
+              color: $colorLight2;
+            }
+            ::v-deep {
+              .el-button--small {
+                margin-left: 0px;
+              }
             }
           }
         }

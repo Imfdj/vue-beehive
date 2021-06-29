@@ -151,10 +151,6 @@
     },
     methods: {
       async getUserList() {
-        // 检查资源权限
-        if (!this.$checkPermission(this.userPermissions.getList)) {
-          return;
-        }
         this.onLoading = true;
         const params = {
           keyword: this.memberKeyword,

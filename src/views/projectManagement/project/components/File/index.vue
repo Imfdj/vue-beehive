@@ -66,8 +66,13 @@
           </el-col>
           <el-col :span="2">
             <div class="operator">
-              <i class="el-icon-download" @click="downloadHandler(item)"></i>
-              <i class="el-icon-edit" @click="editHandler(item)"></i>
+              <el-button icon="el-icon-download" type="text" @click="downloadHandler(item)"></el-button>
+              <el-button
+                :disabled="!$checkPermission(projectFilePermissions.doEdit)"
+                icon="el-icon-edit"
+                type="text"
+                @click="editHandler(item)"
+              ></el-button>
               <Dropdown
                 :selectList="selectList"
                 @command="
@@ -300,9 +305,21 @@
           display: flex;
           align-items: center;
           justify-content: space-between;
-          font-size: 16px;
           & i {
+            font-size: 16px;
             cursor: pointer;
+            color: $colorLight;
+          }
+          ::v-deep {
+            .el-button--small {
+              margin-left: 0px;
+            }
+            .el-button {
+              & i {
+                color: $colorLight;
+                font-size: 16px;
+              }
+            }
           }
         }
         ::v-deep {

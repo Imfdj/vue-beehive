@@ -27,6 +27,7 @@
             <div class="item-control">
               <BtnTooltip
                 v-if="is_recycle === 0 && is_archived === null"
+                :disabled="!$checkPermission(userPermissions.getList)"
                 :icon="getMemberIcon(project)"
                 :tooltipContent="getMemberTooltipContent(project)"
                 @click="handleAddUser(project)"
@@ -39,6 +40,7 @@
               ></BtnTooltip>
               <BtnTooltip
                 v-if="is_recycle === 0 && is_archived === null"
+                :disabled="!$checkPermission(userProjectCollectPermissions.doChange)"
                 :icon="project.collector.length ? 'el-icon-star-on' : 'el-icon-star-off'"
                 :tooltipContent="project.collector.length ? '取消收藏' : '加入收藏'"
                 :btnClass="project.collector.length ? 'el-icon-star-on-color' : ''"
@@ -46,18 +48,21 @@
               ></BtnTooltip>
               <BtnTooltip
                 v-if="is_archived === 1"
+                :disabled="!$checkPermission(projectPermissions.doEdit)"
                 icon="el-icon-refresh-left"
-                tooltipContent="恢复项目"
+                tooltipContent="从归档中恢复项目"
                 @click="handleUnarchive(project)"
               ></BtnTooltip>
               <BtnTooltip
                 v-if="is_recycle === 1"
+                :disabled="!$checkPermission(projectPermissions.doEdit)"
                 icon="el-icon-refresh-left"
-                tooltipContent="恢复项目"
+                tooltipContent="从回收站中恢复项目"
                 @click="handleRestore(project)"
               ></BtnTooltip>
               <BtnTooltip
                 v-if="is_recycle !== 1"
+                :disabled="!$checkPermission(projectPermissions.doEdit)"
                 icon="el-icon-delete"
                 tooltipContent="移至回收站"
                 @click="handleRecycle(project)"
@@ -68,7 +73,14 @@
         <EmptyImage v-if="!listData.length && !loading" :height="400" :heightImg="230" text=""></EmptyImage>
       </el-tab-pane>
     </el-tabs>
-    <el-button class="create-project" type="primary" icon="el-icon-plus" @click="handleCreate">创建新项目</el-button>
+    <el-button
+      :disabled="!$checkPermission(projectPermissions.doCreate)"
+      class="create-project"
+      type="primary"
+      icon="el-icon-plus"
+      @click="handleCreate"
+      >创建新项目</el-button
+    >
     <ProjectCreate ref="create"></ProjectCreate>
     <ProjectEdit ref="edit" @fetchData="getList"></ProjectEdit>
     <AddMemberToProjectDialog ref="AddMemberToProjectDialog"></AddMemberToProjectDialog>
@@ -93,8 +105,12 @@
   import BImage from '@/components/B-image';
   import EmptyImage from '@/components/EmptyImage';
   import BtnTooltip from '@/components/Btn-tooltip';
-  import { getList, doEdit } from '@/api/projectManagement';
-  import { doChange as doChangeCollect } from '@/api/userProjectCollectManagement';
+  import { getList, doEdit, permissions as projectPermissions } from '@/api/projectManagement';
+  import {
+    doChange as doChangeCollect,
+    permissions as userProjectCollectPermissions,
+  } from '@/api/userProjectCollectManagement';
+  import { permissions as userPermissions } from '@/api/user';
   import ProjectCreate from './components/ProjectCreate';
   import ProjectEdit from './components/ProjectEdit';
   import AddMemberToProjectDialog from './components/AddMemberToProjectDialog';
@@ -114,6 +130,9 @@
     mixins: [mixin],
     data() {
       return {
+        projectPermissions,
+        userPermissions,
+        userProjectCollectPermissions,
         loading: false,
         activeName: '',
         titles: [],
@@ -232,7 +251,7 @@
         this.$baseMessage(msg, 'success');
       },
       handleUnarchive(item) {
-        this.$baseConfirm('你确定要还原当前项吗', null, async () => {
+        this.$baseConfirm('你确定要从归档中还原当前项目吗', null, async () => {
           item.is_archived = 0;
           const { msg } = await doEdit(item);
           this.$baseMessage(msg, 'success');
@@ -240,7 +259,7 @@
         });
       },
       handleRestore(item) {
-        this.$baseConfirm('你确定要还原当前项吗', null, async () => {
+        this.$baseConfirm('你确定要从回收站中还原当前项目吗', null, async () => {
           item.is_recycle = 0;
           const { msg } = await doEdit(item);
           this.$baseMessage(msg, 'success');

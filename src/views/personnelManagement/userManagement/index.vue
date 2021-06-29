@@ -2,7 +2,6 @@
   <div class="userManagement-container wrap-content-main">
     <vab-query-form>
       <vab-query-form-left-panel :span="12">
-        <el-button v-if="false" icon="el-icon-plus" type="primary" @click="handleEdit">添加</el-button>
         <el-button
           :disabled="!this.$checkPermission(userPermissions.doDelete)"
           icon="el-icon-delete"
@@ -37,7 +36,14 @@
       <el-table-column show-overflow-tooltip prop="nickname" label="昵称" :sortable="'custom'"></el-table-column>
       <el-table-column show-overflow-tooltip prop="avatar" label="头像" :sortable="'custom'">
         <template slot-scope="scope">
-          <img v-if="scope.row.avatar" width="60" height="60" :src="scope.row.avatar" alt="" />
+          <BImage
+            v-if="scope.row.avatar"
+            class="user-avatar"
+            :src="scope.row.avatar || ''"
+            :width="40"
+            :height="40"
+            :borderRadius="6"
+          ></BImage>
         </template>
       </el-table-column>
       <el-table-column show-overflow-tooltip prop="email" label="邮箱"></el-table-column>
@@ -52,9 +58,24 @@
       <el-table-column show-overflow-tooltip prop="last_login" label="最近登录时间"></el-table-column>
       <el-table-column show-overflow-tooltip fixed="right" label="操作" width="200">
         <template v-slot="scope">
-          <el-button type="text" @click="handleRoleEdit(scope.row)">角色管理</el-button>
-          <el-button type="text" @click="handleEdit(scope.row)">编辑</el-button>
-          <el-button v-if="scope.row.id !== userInfo.id" type="text" @click="handleDelete(scope.row)">删除</el-button>
+          <el-button
+            :disabled="
+              !$checkPermission(userRolePermissions.doBulkRoleCreate) || !$checkPermission(userRolePermissions.doDelete)
+            "
+            type="text"
+            @click="handleRoleEdit(scope.row)"
+            >角色管理</el-button
+          >
+          <el-button :disabled="!$checkPermission(userPermissions.doEdit)" type="text" @click="handleEdit(scope.row)"
+            >编辑</el-button
+          >
+          <el-button
+            v-if="scope.row.id !== userInfo.id"
+            :disabled="!$checkPermission(userPermissions.doDelete)"
+            type="text"
+            @click="handleDelete(scope.row)"
+            >删除</el-button
+          >
         </template>
       </el-table-column>
     </el-table>
@@ -73,17 +94,20 @@
 </template>
 
 <script>
+  import BImage from '@/components/B-image';
   import { getList, doDelete, permissions as userPermissions } from '@/api/user';
+  import { permissions as userRolePermissions } from '@/api/userRoleManagement';
   import Edit from './components/UserManagementEdit';
   import UserRoleManagementEdit from './components/UserRoleManagementEdit';
   import { mapState } from 'vuex';
 
   export default {
     name: 'UserManagement',
-    components: { Edit, UserRoleManagementEdit },
+    components: { Edit, UserRoleManagementEdit, BImage },
     data() {
       return {
         userPermissions,
+        userRolePermissions,
         list: null,
         listLoading: true,
         layout: 'total, sizes, prev, pager, next, jumper',
@@ -123,11 +147,7 @@
         }
       },
       handleEdit(row) {
-        if (row.id) {
-          this.$refs['edit'].showEdit(row);
-        } else {
-          this.$refs['edit'].showEdit();
-        }
+        this.$refs['edit'].showEdit(row);
       },
       handleDelete(row) {
         if (row.id) {

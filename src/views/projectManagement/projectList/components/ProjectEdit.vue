@@ -53,7 +53,12 @@
                 </el-form-item>
               </el-form>
               <div class="foot">
-                <el-button type="primary" :disabled="!isManager" @click="save">确 定</el-button>
+                <el-button
+                  :disabled="!isManager || !$checkPermission(projectPermissions.doEdit)"
+                  type="primary"
+                  @click="save"
+                  >确 定
+                </el-button>
               </div>
             </div>
           </el-tab-pane>
@@ -66,7 +71,7 @@
                   v-model="switchValue"
                   active-color="#409EFF"
                   inactive-color="#909399"
-                  :disabled="!isManager"
+                  :disabled="!isManager || !$checkPermission(projectPermissions.doEdit)"
                   @change="switchChange"
                 >
                 </el-switch>
@@ -80,11 +85,26 @@
               <div class="title">项目操作</div>
               <div class="tip color-light">您可以执行以下操作</div>
               <div class="wrap-btn">
-                <el-button type="danger" plain :disabled="!isManager" @click="doPigeonhole">归档项目</el-button>
-                <el-button type="danger" plain :disabled="isManager || !isCurrentProjectMember" @click="doQuit"
-                  >退出</el-button
-                >
-                <el-button type="danger" :disabled="!isManager" @click="doRecycle">移至回收站</el-button>
+                <el-button
+                  :disabled="!isManager || !$checkPermission(projectPermissions.doEdit)"
+                  type="danger"
+                  plain
+                  @click="doPigeonhole"
+                  >归档项目
+                </el-button>
+                <el-button
+                  :disabled="isManager || !isCurrentProjectMember || !$checkPermission(userProjectPermissions.doQuit)"
+                  type="danger"
+                  plain
+                  @click="doQuit"
+                  >退出
+                </el-button>
+                <el-button
+                  :disabled="!isManager || !$checkPermission(projectPermissions.doEdit)"
+                  type="danger"
+                  @click="doRecycle"
+                  >移至回收站
+                </el-button>
               </div>
             </div>
           </el-tab-pane>
@@ -95,8 +115,8 @@
 </template>
 
 <script>
-  import { doEdit } from '@/api/projectManagement';
-  import { doQuit } from '@/api/userProjectManagement';
+  import { doEdit, permissions as projectPermissions } from '@/api/projectManagement';
+  import { doQuit, permissions as userProjectPermissions } from '@/api/userProjectManagement';
   import CoverImage from '@/components/Cover-image';
   import BImage from '@/components/B-image';
   import { mapGetters, mapState } from 'vuex';
@@ -115,6 +135,8 @@
     },
     data() {
       return {
+        projectPermissions,
+        userProjectPermissions,
         activeName: '0',
         switchValue: false,
         dialogVisible: false,

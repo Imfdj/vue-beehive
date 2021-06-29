@@ -30,7 +30,7 @@
             <el-button
               v-if="!item.projectIds.includes(project.id)"
               size="mini"
-              :disabled="item.invited"
+              :disabled="item.invited || !$checkPermission(invitePermissions.doCreate)"
               plain
               @click="add(item)"
             >
@@ -63,7 +63,7 @@
 
 <script>
   import { getList } from '@/api/user';
-  import { doCreate as doCreateInvite } from '@/api/inviteManagement';
+  import { doCreate as doCreateInvite, permissions as invitePermissions } from '@/api/inviteManagement';
   import BImage from '@/components/B-image';
   import { waitTimeout } from '@/utils';
   import { mapState } from 'vuex';
@@ -75,6 +75,7 @@
     },
     data() {
       return {
+        invitePermissions,
         dialogVisible: false,
         loading: false,
         keyword: '',
@@ -98,6 +99,7 @@
     watch: {
       dialogVisible(newValue, oldValue) {
         if (newValue) {
+          this.pageNo = 1;
           this.getUserList();
         }
       },

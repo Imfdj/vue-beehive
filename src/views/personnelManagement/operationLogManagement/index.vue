@@ -2,7 +2,13 @@
   <div class="operation-log-management-container wrap-content-main">
     <vab-query-form>
       <vab-query-form-left-panel :span="12">
-        <el-button icon="el-icon-delete" type="danger" @click="handleDelete">批量删除</el-button>
+        <el-button
+          :disabled="!$checkPermission(operationLogPermissions.doDelete)"
+          icon="el-icon-delete"
+          type="danger"
+          @click="handleDelete"
+          >批量删除</el-button
+        >
       </vab-query-form-left-panel>
       <vab-query-form-right-panel :span="12">
         <el-form :inline="true" :model="queryForm" @submit.native.prevent>
@@ -59,7 +65,12 @@
       </el-table-column>
       <el-table-column show-overflow-tooltip fixed="right" label="操作" width="200">
         <template v-slot="scope">
-          <el-button type="text" @click="handleDelete(scope.row)">删除</el-button>
+          <el-button
+            :disabled="!$checkPermission(operationLogPermissions.doDelete)"
+            type="text"
+            @click="handleDelete(scope.row)"
+            >删除</el-button
+          >
         </template>
       </el-table-column>
     </el-table>
@@ -76,12 +87,13 @@
 </template>
 
 <script>
-  import { getList, doDelete } from '@/api/operationLogManagement';
+  import { getList, doDelete, permissions as operationLogPermissions } from '@/api/operationLogManagement';
 
   export default {
     name: 'OperationLogManagement',
     data() {
       return {
+        operationLogPermissions,
         list: null,
         listLoading: true,
         layout: 'total, sizes, prev, pager, next, jumper',

@@ -26,7 +26,13 @@
       </div>
       <div class="foot">
         <div class="foot-left">
-          <el-button type="primary" icon="el-icon-upload2" @click="selectImg">选择图片</el-button>
+          <el-button
+            :disabled="!$checkPermission(uploadPermissions.upload)"
+            type="primary"
+            icon="el-icon-upload2"
+            @click="selectImg"
+            >选择图片
+          </el-button>
           <el-button type="primary" icon="el-icon-plus" @click="cropper.changeScale(1)"></el-button>
           <el-button type="primary" icon="el-icon-minus" @click="cropper.changeScale(-1)"></el-button>
           <el-button type="primary" icon="el-icon-refresh-left" @click="cropper.rotateLeft()"></el-button>
@@ -42,6 +48,8 @@
 </template>
 
 <script>
+  import { permissions as uploadPermissions } from '@/api/upload';
+
   export default {
     name: 'Cropper',
     props: {
@@ -68,6 +76,7 @@
     },
     data() {
       return {
+        uploadPermissions,
         dialogVisible: false,
         cropperOption: {
           img: '',

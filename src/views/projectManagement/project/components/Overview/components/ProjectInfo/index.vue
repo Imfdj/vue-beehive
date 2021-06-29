@@ -31,7 +31,9 @@
         <el-input v-model="project.intro" type="textarea" autosize placeholder="点击添加项目简介"></el-input>
         <div class="ctrl">
           <el-button @click="cancelEditIntro">取消</el-button>
-          <el-button type="primary" @click="saveEdit">保存</el-button>
+          <el-button :disabled="!$checkPermission(projectPermissions.doEdit)" type="primary" @click="saveEdit"
+            >保存</el-button
+          >
         </div>
       </div>
     </div>
@@ -58,7 +60,7 @@
 <script>
   import BImage from '@/components/B-image';
   import { mapState } from 'vuex';
-  import { doEdit } from '@/api/projectManagement';
+  import { doEdit, permissions as projectPermissions } from '@/api/projectManagement';
 
   export default {
     name: 'index',
@@ -73,6 +75,7 @@
     },
     data() {
       return {
+        projectPermissions,
         enableEditIntro: false,
         statusList: [
           {

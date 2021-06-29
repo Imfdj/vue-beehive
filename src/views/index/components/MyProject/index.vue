@@ -74,10 +74,6 @@
     },
     methods: {
       async getList() {
-        // 检查资源权限
-        if (!this.$checkPermission(this.projectPermissions.getList)) {
-          return;
-        }
         this.loading = true;
         const {
           data: { rows, count },

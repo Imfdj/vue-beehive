@@ -2,8 +2,20 @@
   <div class="roleManagement-container wrap-content-main">
     <vab-query-form>
       <vab-query-form-left-panel :span="12">
-        <el-button icon="el-icon-plus" type="primary" @click="handleEdit">添加</el-button>
-        <el-button icon="el-icon-delete" type="danger" @click="handleDelete">批量删除</el-button>
+        <el-button
+          :disabled="!$checkPermission(menuPermissions.doCreate)"
+          icon="el-icon-plus"
+          type="primary"
+          @click="handleEdit"
+          >添加</el-button
+        >
+        <el-button
+          :disabled="!$checkPermission(menuPermissions.doDelete)"
+          icon="el-icon-delete"
+          type="danger"
+          @click="handleDelete"
+          >批量删除</el-button
+        >
       </vab-query-form-left-panel>
       <vab-query-form-right-panel :span="12">
         <el-form :inline="true" :model="queryForm" @submit.native.prevent>
@@ -73,9 +85,21 @@
       <el-table-column show-overflow-tooltip prop="sort" label="排序" :sortable="'sort'"></el-table-column>
       <el-table-column show-overflow-tooltip fixed="right" label="操作" width="200">
         <template v-slot="scope">
-          <el-button type="text" @click="handleEdit(scope.row, true)">添加下级菜单</el-button>
-          <el-button type="text" @click="handleEdit(scope.row)">编辑</el-button>
-          <el-button type="text" @click="handleDelete(scope.row)">删除</el-button>
+          <el-button
+            :disabled="!$checkPermission(menuPermissions.doCreate)"
+            type="text"
+            @click="handleEdit(scope.row, true)"
+            >添加下级菜单</el-button
+          >
+          <el-button :disabled="!$checkPermission(menuPermissions.doEdit)" type="text" @click="handleEdit(scope.row)"
+            >编辑</el-button
+          >
+          <el-button
+            :disabled="!$checkPermission(menuPermissions.doDelete)"
+            type="text"
+            @click="handleDelete(scope.row)"
+            >删除</el-button
+          >
         </template>
       </el-table-column>
     </el-table>
@@ -85,7 +109,7 @@
 </template>
 
 <script>
-  import { getList, doDelete } from '@/api/menuManagement';
+  import { getList, doDelete, permissions as menuPermissions } from '@/api/menuManagement';
   import Edit from './components/MenuManagementEdit';
 
   export default {
@@ -93,6 +117,7 @@
     components: { Edit },
     data() {
       return {
+        menuPermissions,
         list: [],
         listLoading: true,
         selectRows: '',

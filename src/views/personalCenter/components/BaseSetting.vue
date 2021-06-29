@@ -15,7 +15,12 @@
           <el-input v-model="ruleForm.phone"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="submitForm('ruleForm')">保存</el-button>
+          <el-button
+            :disabled="!$checkPermission(userPermissions.doEdit)"
+            type="primary"
+            @click="submitForm('ruleForm')"
+            >保存
+          </el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -31,7 +36,7 @@
   import Cropper from '@/components/Cropper';
   import { mapState } from 'vuex';
   import { upload } from '@/api/upload';
-  import { doEdit } from '@/api/user';
+  import { doEdit, permissions as userPermissions } from '@/api/user';
 
   export default {
     name: 'BaseSetting',
@@ -40,6 +45,7 @@
     },
     data() {
       return {
+        userPermissions,
         ruleForm: {},
         rules: {
           name: [

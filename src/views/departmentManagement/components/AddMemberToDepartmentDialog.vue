@@ -100,10 +100,6 @@
         this.getUserList();
       },
       async getUserList() {
-        // 检查资源权限
-        if (!this.$checkPermission(this.userPermissions.getList)) {
-          return;
-        }
         const { data } = await getList({
           keyword: this.keyword,
           limit: this.pageSize,

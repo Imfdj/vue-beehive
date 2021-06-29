@@ -29,7 +29,7 @@
 
 <script>
   import { getList as getPermissionList } from '@/api/permissionManagement';
-  import { getList as getRoleMenuList, doBulkMenuCreate, doDelete } from '@/api/rolePermissionManagement';
+  import { getList as getRoleMenuList, doBulkPermissionCreate, doDelete } from '@/api/rolePermissionManagement';
 
   export default {
     name: 'RolePermissionManagementEdit',
@@ -172,7 +172,7 @@
         const diff_create = this.$baseLodash.difference(menuIdsCurrent, this.menuIdsOrigin);
         console.log(diff_create);
         if (diff_create.length) {
-          const { msg } = await doBulkMenuCreate({
+          const { msg } = await doBulkPermissionCreate({
             role_id: this.rowEdit.id,
             permission_ids: diff_create,
           });

@@ -109,15 +109,6 @@
         this.init();
       },
       init() {
-        // 检查资源权限
-        if (
-          !(
-            this.$checkPermission(this.taskPermissions.getList) &&
-            this.$checkPermission(this.taskPriorityPermissions.getList)
-          )
-        ) {
-          return;
-        }
         this.loading = true;
         Promise.all([this.getTaskPriorityList(), this.getList()]).then(
           ([

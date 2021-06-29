@@ -26,7 +26,7 @@
 </template>
 
 <script>
-  import { doEdit, register } from '@/api/user';
+  import { doEdit } from '@/api/user';
 
   export default {
     name: 'UserManagementEdit',
@@ -52,12 +52,8 @@
     created() {},
     methods: {
       showEdit(row) {
-        if (!row) {
-          this.title = '添加';
-        } else {
-          this.title = '编辑';
-          this.form = Object.assign({}, row);
-        }
+        this.title = '编辑';
+        this.form = Object.assign({}, row);
         this.dialogFormVisible = true;
       },
       close() {
@@ -68,13 +64,8 @@
       save() {
         this.$refs['form'].validate(async valid => {
           if (valid) {
-            if (this.title === '添加') {
-              const { msg } = await register(this.form);
-              this.$baseMessage(msg, 'success');
-            } else {
-              const { msg } = await doEdit(this.form);
-              this.$baseMessage(msg, 'success');
-            }
+            const { msg } = await doEdit(this.form);
+            this.$baseMessage(msg, 'success');
             this.$emit('fetchData');
             this.close();
           } else {

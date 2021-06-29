@@ -3,7 +3,7 @@
     <draggable
       class="list-group"
       :list="listData"
-      :disabled="!isCurrentProjectMember"
+      :disabled="!isCurrentProjectMember || !$checkPermission(taskListPermissions.doEditSort)"
       group="task_lists"
       @change="taskListDraggableChange"
     >
@@ -29,7 +29,7 @@
           <draggable
             class="list-group"
             :list="itemList.undoneTasks"
-            :disabled="!isCurrentProjectMember"
+            :disabled="!isCurrentProjectMember || !$checkPermission(taskPermissions.doEditSort)"
             group="undoneTasks"
             @change="(...arg) => taskDraggableChange(...arg, 'undoneTasks')"
           >
@@ -45,7 +45,7 @@
           <draggable
             class="list-group"
             :list="itemList.doneTasks"
-            :disabled="!isCurrentProjectMember"
+            :disabled="!isCurrentProjectMember || !$checkPermission(taskPermissions.doEditSort)"
             group="doneTasks"
             @change="(...arg) => taskDraggableChange(...arg, 'doneTasks')"
           >
@@ -60,7 +60,7 @@
           </draggable>
           <el-button
             v-if="indexListCreate !== indexList"
-            :disabled="!isCurrentProjectMember"
+            :disabled="!isCurrentProjectMember || !$checkPermission(taskPermissions.doCreate)"
             type="text"
             class="btn-createTask"
             @click="CreateTaskClick(itemList, indexList)"
@@ -91,14 +91,18 @@
   import CreateTask from './components/CreateTask';
   import CreateTaskList from './components/CreateTaskList';
   import TaskDraggableItem from './components/TaskDraggableItem';
-  import { getList, doDelete, permissions as taskListPermissions } from '@/api/taskListManagement';
+  import {
+    getList,
+    doDelete,
+    doEditSort as doTaskListEditSort,
+    permissions as taskListPermissions,
+  } from '@/api/taskListManagement';
   import {
     doEditSort,
     getList as getTaskList,
     doRecycleAllTaskOfTaskList,
     permissions as taskPermissions,
   } from '@/api/taskManagement';
-  import { doEditSort as doTaskListEditSort } from '@/api/taskListManagement';
   import { mapGetters, mapState } from 'vuex';
   import mixin from '@/mixins';
   import { dateHumanizeFormat } from '@/utils';
@@ -157,7 +161,7 @@
               break;
             case 1:
               item.disabled =
-                !this.$checkPermission(taskListPermissions.doRecycleAllTaskOfTaskList) || !this.isCurrentProjectMember;
+                !this.$checkPermission(taskPermissions.doRecycleAllTaskOfTaskList) || !this.isCurrentProjectMember;
               break;
             case 2:
               item.disabled = !this.$checkPermission(taskListPermissions.doDelete) || !this.isCurrentProjectMember;

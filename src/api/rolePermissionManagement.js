@@ -18,7 +18,7 @@ const methodUrl = {
     url: '/v1/role_permissions',
     method: 'delete',
   },
-  doBulkMenuCreate: {
+  doBulkPermissionCreate: {
     url: '/v1/role_permissions/bulk_permission',
     method: 'post',
   },
@@ -54,9 +54,9 @@ export function doDelete(data) {
   });
 }
 
-export function doBulkMenuCreate(data) {
+export function doBulkPermissionCreate(data) {
   return request({
-    ...methodUrl.doBulkMenuCreate,
+    ...methodUrl.doBulkPermissionCreate,
     data,
   });
 }

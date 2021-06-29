@@ -89,10 +89,6 @@
 
     methods: {
       async fetchData() {
-        // 检查资源权限
-        if (!this.$checkPermission(this.departmentPermissions.getList)) {
-          return;
-        }
         const {
           data: { rows },
           totalCount,

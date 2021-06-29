@@ -44,13 +44,17 @@
         </div>
       </div>
       <div class="wrap-controller">
-        <el-button v-if="indexTab === 0" type="text" icon="el-icon-notebook-2">看板视图</el-button>
+        <el-button v-if="indexTab === 0" disabled type="text" icon="el-icon-notebook-2">看板视图</el-button>
         <TaskFilter v-if="indexTab === 0" @search="taskSearch">
           <el-button type="text" icon="el-icon-search">筛选</el-button>
         </TaskFilter>
-        <span
-          ><el-button type="text" icon="el-icon-user" @click="handleAddUser">{{ userProjectCount }}</el-button>
-        </span>
+        <el-button
+          :disabled="!$checkPermission(userPermissions.getList)"
+          type="text"
+          icon="el-icon-user"
+          @click="handleAddUser"
+          >{{ userProjectCount }}</el-button
+        >
         <ProjectSetting>
           <el-button type="text" icon="el-icon-s-unfold">菜单</el-button>
         </ProjectSetting>
@@ -74,7 +78,7 @@
   import { mapState, mapMutations, mapGetters } from 'vuex';
   import BImage from '@/components/B-image';
   import AddMemberToProjectDialog from '@/views/projectManagement/projectList/components/AddMemberToProjectDialog';
-  import { getList as getUserList } from '@/api/user';
+  import { getList as getUserList, permissions as userPermissions } from '@/api/user';
 
   export default {
     name: 'ProjectTask',
@@ -89,6 +93,7 @@
     },
     data() {
       return {
+        userPermissions,
         tabs: ['任务', '文件', '概览', '版本', '日程'],
         keywordProjectName: '',
         userProjectCount: 0,
