@@ -50,13 +50,20 @@
           v-model="content"
           type="textarea"
           :autosize="{ minRows: 1, maxRows: 1 }"
+          :disabled="!$checkPermission(taskLogPermissions.doCreate)"
           placeholder="@ 提及他人，按Ctrl + Enter快速发布"
           @keyup.ctrl.enter.native="doCreate"
         ></el-input>
       </div>
       <div class="ctrl">
         <i class="iconfont icon-emoji btn-emoji"></i>
-        <el-button type="text" :disabled="isOnCreate" size="medium" @click="doCreate">发布</el-button>
+        <el-button
+          :disabled="isOnCreate || !$checkPermission(taskLogPermissions.doCreate)"
+          type="text"
+          size="medium"
+          @click="doCreate"
+          >发布
+        </el-button>
       </div>
     </div>
   </div>
@@ -65,7 +72,7 @@
 <script>
   import BImage from '@/components/B-image';
   import LogComment from './components/LogComment';
-  import { getList, doCreate } from '@/api/taskLogManagement';
+  import { getList, doCreate, permissions as taskLogPermissions } from '@/api/taskLogManagement';
   import { doCreate as doCreateMessage } from '@/api/messageManagement';
   import { dateHumanizeFormat } from '@/utils';
   import { mapState } from 'vuex';
@@ -92,6 +99,7 @@
     },
     data() {
       return {
+        taskLogPermissions,
         dataList: [],
         showCount: 5,
         showAll: false,
@@ -283,9 +291,11 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+
             .info-header {
               display: flex;
               align-items: center;
+
               .icon {
                 width: 24px;
                 margin-right: 10px;

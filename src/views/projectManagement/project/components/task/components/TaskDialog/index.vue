@@ -33,7 +33,7 @@
           <div class="wrap-name" :class="[{ 'wrap-name-done': taskInfo.is_done === 1 }]">
             <el-input
               v-model="taskInfo.name"
-              :disabled="!isCurrentProjectMember"
+              :disabled="!isCurrentProjectMember || !$checkPermission(taskPermissions.doEdit)"
               type="textarea"
               autosize
               @blur="doEditExec"
@@ -79,7 +79,7 @@
                 placeholder="设置开始时间"
                 style="width: 183px"
                 size="mini"
-                :disabled="!isCurrentProjectMember"
+                :disabled="!isCurrentProjectMember || !$checkPermission(taskPermissions.doEdit)"
                 :picker-options="startDatePickerOptions"
                 value-format="yyyy-MM-dd HH:mm:ss"
                 default-time="09:00:00"
@@ -93,7 +93,7 @@
                 placeholder="设置截止时间"
                 style="width: 183px"
                 size="mini"
-                :disabled="!isCurrentProjectMember"
+                :disabled="!isCurrentProjectMember || !$checkPermission(taskPermissions.doEdit)"
                 :picker-options="endDatePickerOptions"
                 value-format="yyyy-MM-dd HH:mm:ss"
                 default-time="18:00:00"
@@ -142,7 +142,7 @@
               <div
                 v-show="!showRichText"
                 class="btn-remark"
-                :class="[{ 'disabled-custom': !isCurrentProjectMember }]"
+                :class="[{ 'disabled-custom': !isCurrentProjectMember || !$checkPermission(taskPermissions.doEdit) }]"
                 @click="showRichTextClick"
               >
                 <div v-if="taskInfo.remark" class="wrap-remark-html" v-html="taskInfo.remark"></div>
@@ -170,7 +170,7 @@
                 :key="tag.id"
                 effect="plain"
                 :style="`color: ${tag.color};border-color: ${tag.color};`"
-                :closable="isCurrentProjectMember"
+                :closable="isCurrentProjectMember || !$checkPermission(taskPermissions.doEdit)"
                 @close="closeTaskTag(tag)"
               >
                 {{ tag.name }}
@@ -182,7 +182,7 @@
                 <el-button
                   type="text"
                   slot="reference"
-                  :disabled="!isCurrentProjectMember"
+                  :disabled="!isCurrentProjectMember || !$checkPermission(taskPermissions.doEdit)"
                   size="medium"
                   class="btn-add-tag"
                 >
@@ -217,7 +217,7 @@
 </template>
 
 <script>
-  import { getInfo, doEdit } from '@/api/taskManagement';
+  import { getInfo, doEdit, permissions as taskPermissions } from '@/api/taskManagement';
   import Participator from '../Participator';
   import TaskLog from '../TaskLog/index';
   import WorkingHour from '../WorkingHour/index';
@@ -246,6 +246,7 @@
     mixins: [mixin],
     data() {
       return {
+        taskPermissions,
         dialogTableVisible: false,
         isEdited: false,
         loading: false,
@@ -284,25 +285,25 @@
       ...mapGetters('project', ['isCurrentProjectMember']),
       taskTypesSelectList() {
         return this.taskTypes.map(item => {
-          item.disabled = !this.isCurrentProjectMember;
+          item.disabled = !this.isCurrentProjectMember || !this.$checkPermission(taskPermissions.doEdit);
           return item;
         });
       },
       taskDoneStatesSelectList() {
         return this.taskDoneStates.map(item => {
-          item.disabled = !this.isCurrentProjectMember;
+          item.disabled = !this.isCurrentProjectMember || !this.$checkPermission(taskPermissions.doEdit);
           return item;
         });
       },
       taskStatesSelectList() {
         return this.taskStates.map(item => {
-          item.disabled = !this.isCurrentProjectMember;
+          item.disabled = !this.isCurrentProjectMember || !this.$checkPermission(taskPermissions.doEdit);
           return item;
         });
       },
       taskPrioritysSelectList() {
         return this.taskPrioritys.map(item => {
-          item.disabled = !this.isCurrentProjectMember;
+          item.disabled = !this.isCurrentProjectMember || !this.$checkPermission(taskPermissions.doEdit);
           return item;
         });
       },
@@ -479,7 +480,7 @@
         }
       },
       showRichTextClick() {
-        if (!this.isCurrentProjectMember) return;
+        if (!this.isCurrentProjectMember || !this.$checkPermission(taskPermissions.doEdit)) return;
         this.showRichText = true;
       },
       richTextChangeValue(value) {
