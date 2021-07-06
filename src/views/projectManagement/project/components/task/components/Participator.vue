@@ -49,6 +49,7 @@
               v-for="user in dataListFilter"
               :key="user.id"
               class="current-executor"
+              :class="[{ 'disabled-custom': !$checkPermission(userTaskPermissions.doChange) }]"
               @click="selectHandler(user, true)"
             >
               <div class="wrap-info">
@@ -80,7 +81,7 @@
 <script>
   import BImage from '@/components/B-image';
   import { getList } from '@/api/user';
-  import { doChange } from '@/api/userTaskManagement';
+  import { doChange, permissions as userTaskPermissions } from '@/api/userTaskManagement';
   import { waitTimeout } from '@/utils';
   import { mapState, mapGetters } from 'vuex';
   import AddMemberToProjectDialog from '@/views/projectManagement/projectList/components/AddMemberToProjectDialog';
@@ -105,6 +106,7 @@
     },
     data() {
       return {
+        userTaskPermissions,
         visible: false,
         name: '',
         dataList: {},
@@ -153,7 +155,7 @@
       },
       async selectHandler(user, isAdd) {
         // 不可删除创建者
-        if (!isAdd && user.id === this.taskInfo.creator_id) {
+        if ((!isAdd && user.id === this.taskInfo.creator_id) || !this.$checkPermission(userTaskPermissions.doChange)) {
           return;
         }
         await doChange({

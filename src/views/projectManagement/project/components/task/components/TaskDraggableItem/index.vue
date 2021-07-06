@@ -9,7 +9,11 @@
       </el-tooltip>
     </div>
     <div class="wrap-done">
-      <el-button type="text" :disabled="!isCurrentProjectMember" @click.stop="changeDoneState(element)">
+      <el-button
+        type="text"
+        :disabled="!isCurrentProjectMember || !$checkPermission(taskPermissions.doEdit)"
+        @click.stop="changeDoneState(element)"
+      >
         <i :class="`iconfont ${element.is_done === 1 ? 'icon-xuanzhong2' : 'icon-fangxing1'}`"></i>
       </el-button>
     </div>
@@ -49,7 +53,7 @@
 </template>
 
 <script>
-  import { doEdit } from '@/api/taskManagement';
+  import { doEdit, permissions as taskPermissions } from '@/api/taskManagement';
   import { mapGetters } from 'vuex';
   import BImage from '@/components/B-image';
 
@@ -65,7 +69,9 @@
       },
     },
     data() {
-      return {};
+      return {
+        taskPermissions,
+      };
     },
     computed: {
       ...mapGetters('project', ['isCurrentProjectMember']),
@@ -103,13 +109,16 @@
     .wrap-done {
       width: 18px;
       padding: 0 4px;
+
       .iconfont {
         font-size: 18px;
         color: #969696;
       }
+
       .iconfont:hover {
         color: #414141;
       }
+
       ::v-deep {
         .el-button--small {
           padding: 0px;
@@ -132,11 +141,13 @@
         flex-wrap: wrap;
         align-items: center;
         padding: 5px 0px;
+
         .info-item {
           font-size: 16px;
           margin-right: 6px;
           margin-bottom: 3px;
         }
+
         .task-date {
           line-height: 20px;
           font-size: 12px;
@@ -145,18 +156,22 @@
           border-radius: 2px;
           white-space: nowrap;
         }
+
         .task-date-overdue {
           background-color: #e62412;
           color: #fff;
         }
+
         .task-date-intraday {
           background-color: #fa8c15;
           color: #fff;
         }
+
         .task-date-recently {
           background-color: #1b9aee;
           color: #fff;
         }
+
         .task-date-safety {
           background-color: #f7f7f7;
           color: #000;
@@ -196,10 +211,12 @@
     .state {
       filter: opacity(0.6);
     }
+
     .wrap-done {
       .iconfont {
         color: #ccc;
       }
+
       .iconfont:hover {
         color: #000000 !important;
       }

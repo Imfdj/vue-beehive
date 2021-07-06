@@ -6,7 +6,13 @@
         <i class="el-icon-circle-plus-outline" @click="showEditClick"></i>
       </div>
       <div class="wrap-list">
-        <div v-for="tag in taskTagsFilter" :key="tag.id" class="item" @click="tagClick(tag)">
+        <div
+          v-for="tag in taskTagsFilter"
+          :key="tag.id"
+          :class="[{ 'disabled-custom': !$checkPermission(taskTaskTagPermissions.doChange) }]"
+          class="item"
+          @click="tagClick(tag)"
+        >
           <div class="wrap-name">
             <span class="color-point" :style="`background-color: ${tag.color};`"></span>
             {{ tag.name }}
@@ -37,11 +43,29 @@
         </div>
         <div v-if="form.id" class="wrap-btn">
           <el-popconfirm title="确定删除此标签吗？" @onConfirm="DeleteTaskTag">
-            <el-button slot="reference" type="danger" style="width: 110px" plain>删除</el-button>
+            <el-button
+              :disabled="!$checkPermission(taskTagPermissions.doDelete)"
+              slot="reference"
+              type="danger"
+              style="width: 110px"
+              plain
+              >删除
+            </el-button>
           </el-popconfirm>
-          <el-button type="primary" style="width: 110px" :disabled="!form.name" @click="EditTaskTag">完成 </el-button>
+          <el-button
+            type="primary"
+            style="width: 110px"
+            :disabled="!form.name || !$checkPermission(taskTagPermissions.doEdit)"
+            @click="EditTaskTag"
+            >完成
+          </el-button>
         </div>
-        <el-button v-else type="primary" style="width: 100%" :disabled="!form.name" @click="CreateTaskTag"
+        <el-button
+          v-else
+          type="primary"
+          style="width: 100%"
+          :disabled="!form.name || !$checkPermission(taskTagPermissions.doCreate)"
+          @click="CreateTaskTag"
           >创建
         </el-button>
       </div>
@@ -50,11 +74,12 @@
 </template>
 
 <script>
-  import { doChange } from '@/api/taskTaskTagManagement';
+  import { doChange, permissions as taskTaskTagPermissions } from '@/api/taskTaskTagManagement';
   import {
     doCreate as doCreateTaskTag,
     doDelete as doDeleteTaskTag,
     doEdit as doEditTaskTag,
+    permissions as taskTagPermissions,
   } from '@/api/taskTagManagement';
   import { mapState } from 'vuex';
 
@@ -68,6 +93,8 @@
     },
     data() {
       return {
+        taskTaskTagPermissions,
+        taskTagPermissions,
         showEdit: false,
         name: '',
         form: {
@@ -106,6 +133,9 @@
     },
     methods: {
       tagClick(tag) {
+        if (!this.$checkPermission(taskTaskTagPermissions.doChange)) {
+          return;
+        }
         this.doChangeExec({
           task_id: this.taskInfo.id,
           task_tag_id: tag.id,

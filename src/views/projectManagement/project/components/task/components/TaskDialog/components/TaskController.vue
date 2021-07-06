@@ -12,6 +12,7 @@
         icon="iconfont icon-zan"
         tooltipContent="点个赞"
         type="text"
+        :disabled="!$checkPermission(userTaskLikePermissions.doChange)"
         :btnClass="btnClassLike"
         @click="handleDoLike"
       >
@@ -29,8 +30,8 @@
 <script>
   import BtnTooltip from '@/components/Btn-tooltip';
   import Dropdown from '@/components/Dropdown';
-  import { doEdit } from '@/api/taskManagement';
-  import { doChange } from '@/api/userTaskLikeManagement';
+  import { doEdit, permissions as taskPermissions } from '@/api/taskManagement';
+  import { doChange, permissions as userTaskLikePermissions } from '@/api/userTaskLikeManagement';
   import mixin from '@/mixins';
   import { mapGetters, mapState } from 'vuex';
 
@@ -49,6 +50,8 @@
     },
     data() {
       return {
+        taskPermissions,
+        userTaskLikePermissions,
         selectList: [
           {
             id: 0,
@@ -79,7 +82,7 @@
       SelectListAuth() {
         return this.selectList.map(item => {
           if (item.id !== 3) {
-            item.disabled = !this.isCurrentProjectMember;
+            item.disabled = !this.isCurrentProjectMember || !this.$checkPermission(taskPermissions.doEdit);
           }
           return item;
         });

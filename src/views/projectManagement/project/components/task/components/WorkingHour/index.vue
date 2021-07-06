@@ -8,7 +8,7 @@
         type="text"
         size="medium"
         class="el-icon-edit-outline"
-        :disabled="!isCurrentProjectMember"
+        :disabled="!isCurrentProjectMember || !$checkPermission(taskPermissions.doEdit)"
         @click="setWorkingHour"
       ></el-button>
     </div>
@@ -16,7 +16,7 @@
       <el-button
         type="text"
         size="medium"
-        :disabled="!isCurrentProjectMember"
+        :disabled="!isCurrentProjectMember || !$checkPermission(taskWorkingHourPermissions.doCreate)"
         class="btn-add-working-hour"
         @click="createWorkingHour"
       >
@@ -50,14 +50,14 @@
               type="text"
               size="medium"
               class="el-icon-edit"
-              :disabled="!isCurrentProjectMember"
+              :disabled="!isCurrentProjectMember || !$checkPermission(taskWorkingHourPermissions.doEdit)"
               @click="editClick(item)"
             ></el-button>
             <el-button
               type="text"
               size="medium"
               class="el-icon-delete"
-              :disabled="!isCurrentProjectMember"
+              :disabled="!isCurrentProjectMember || !$checkPermission(taskWorkingHourPermissions.doDelete)"
               @click="deleteClick(item)"
             ></el-button>
           </div>
@@ -72,6 +72,7 @@
             controls-position="right"
             :min="0"
             :max="10000"
+            :disabled="!$checkPermission(taskPermissions.doEdit)"
             placeholder="请输入计划工时(小时)"
             style="width: 100%"
           ></el-input-number>
@@ -80,7 +81,9 @@
 
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="submitForm('form')">确 定</el-button>
+        <el-button :disabled="!$checkPermission(taskPermissions.doEdit)" type="primary" @click="submitForm('form')"
+          >确 定</el-button
+        >
       </span>
     </el-dialog>
     <EditorWorkingHourDialog ref="EditorWorkingHourDialog" :task="task"></EditorWorkingHourDialog>
@@ -88,8 +91,8 @@
 </template>
 
 <script>
-  import { doEdit } from '@/api/taskManagement';
-  import { getList, doDelete } from '@/api/taskWorkingHourManagement';
+  import { doEdit, permissions as taskPermissions } from '@/api/taskManagement';
+  import { getList, doDelete, permissions as taskWorkingHourPermissions } from '@/api/taskWorkingHourManagement';
   import EditorWorkingHourDialog from './components/EditorWorkingHourDialog';
   import BImage from '@/components/B-image';
   import { mapGetters, mapState } from 'vuex';
@@ -108,6 +111,8 @@
     },
     data() {
       return {
+        taskPermissions,
+        taskWorkingHourPermissions,
         dialogVisible: false,
         workingHourList: [],
         form: {},

@@ -4,7 +4,7 @@
     <el-button
       type="text"
       size="medium"
-      :disabled="!isCurrentProjectMember"
+      :disabled="!isCurrentProjectMember || !$checkPermission(projectFilePermissions.doCreate)"
       class="btn-create-task-file"
       @click="uploadClick"
     >
@@ -26,6 +26,7 @@
               <div
                 v-for="itemOperation in fileOperations"
                 :key="itemOperation.id"
+                :class="[{ 'disabled-custom': itemOperation.disabled }]"
                 class="btn-item"
                 @click="fileOperationClick(item, itemOperation)"
               >
@@ -45,7 +46,7 @@
   import BImage from '@/components/B-image';
   import Upload from '@/components/Upload';
   import mixin from '@/mixins';
-  import { getList, doCreate, doDelete } from '@/api/projectFileManagement';
+  import { getList, doCreate, doDelete, permissions as projectFilePermissions } from '@/api/projectFileManagement';
   import { mapGetters, mapState } from 'vuex';
   import { isExternal } from '@/utils/validate';
 
@@ -64,11 +65,17 @@
     },
     data() {
       return {
+        projectFilePermissions,
         fileList: [],
         fileOperations: [
           { id: 1, name: '复制链接', icon: 'iconfont icon-lianjie' },
           { id: 2, name: '下载', icon: 'iconfont icon-xiazai' },
-          { id: 3, name: '取消关联', icon: 'iconfont icon-quxiaolianjie' },
+          {
+            id: 3,
+            name: '取消关联',
+            icon: 'iconfont icon-quxiaolianjie',
+            disabled: !this.$checkPermission(projectFilePermissions.doDelete),
+          },
         ],
       };
     },
@@ -146,6 +153,9 @@
             this.multiDownload(item);
             break;
           case 3:
+            if (!this.$checkPermission(projectFilePermissions.doDelete)) {
+              return;
+            }
             this.$baseConfirm('你确定要删除吗', null, async () => {
               this.doDelete([item.id]);
               this.$baseNotify('', '删除成功');

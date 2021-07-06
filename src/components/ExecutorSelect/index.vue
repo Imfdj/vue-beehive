@@ -25,7 +25,13 @@
             <i class="el-icon-check"></i>
           </div>
           <div class="title color-light">其他成员</div>
-          <div v-for="user in dataListFilter" :key="user.id" class="current-executor" @click="selectHandler(user)">
+          <div
+            v-for="user in dataListFilter"
+            :key="user.id"
+            :class="[{ 'disabled-custom': !$checkPermission(taskPermissions.doEdit) }]"
+            class="current-executor"
+            @click="selectHandler(user)"
+          >
             <div class="wrap-info">
               <BImage class="user-avatar" :src="user.avatar || ''" :width="32" :height="32" :borderRadius="32"></BImage>
               <span class="name ellipsis">{{ user.username }}</span>
@@ -34,7 +40,13 @@
           </div>
         </div>
         <div v-if="showAddUser && isManager" class="wrap-footer">
-          <el-button type="primary" style="width: 100%" @click="handleAddUser">邀请新成员</el-button>
+          <el-button
+            :disabled="!$checkPermission(invitePermissions.doCreate)"
+            type="primary"
+            style="width: 100%"
+            @click="handleAddUser"
+            >邀请新成员
+          </el-button>
         </div>
       </div>
       <el-button type="text" size="medium" slot="reference" :disabled="!isCurrentProjectMember" class="btn">
@@ -52,6 +64,8 @@
   import { waitTimeout } from '@/utils';
   import AddMemberToProjectDialog from '@/views/projectManagement/projectList/components/AddMemberToProjectDialog';
   import { mapGetters, mapState } from 'vuex';
+  import { permissions as taskPermissions } from '@/api/taskManagement';
+  import { permissions as invitePermissions } from '@/api/inviteManagement';
 
   export default {
     name: 'ExecutorSelect',
@@ -76,6 +90,8 @@
     },
     data() {
       return {
+        taskPermissions,
+        invitePermissions,
         visible: false,
         name: '',
         dataList: {},
@@ -136,6 +152,9 @@
         }
       },
       selectHandler(user) {
+        if (!this.$checkPermission(taskPermissions.doEdit)) {
+          return;
+        }
         this.executor = user;
         this.$emit('select', user);
         this.setHide();
@@ -197,11 +216,13 @@
   .executor-select {
     .btn {
       padding: 5px 0px;
+
       ::v-deep span {
         display: inline-flex;
         align-items: center;
         color: $colorLight;
       }
+
       .user-avatar {
         margin-right: 5px;
       }
