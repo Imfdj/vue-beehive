@@ -34,6 +34,13 @@
       <el-table-column show-overflow-tooltip prop="id" label="id" :sortable="'custom'"></el-table-column>
       <el-table-column show-overflow-tooltip prop="username" label="用户名" :sortable="'custom'"></el-table-column>
       <el-table-column show-overflow-tooltip prop="nickname" label="昵称" :sortable="'custom'"></el-table-column>
+      <el-table-column label="角色">
+        <template slot-scope="scope">
+          <div v-for="item in scope.row.roles" :key="item.id">
+            <el-tag>{{ item.name }}</el-tag>
+          </div>
+        </template>
+      </el-table-column>
       <el-table-column show-overflow-tooltip prop="avatar" label="头像" :sortable="'custom'">
         <template slot-scope="scope">
           <BImage
@@ -89,7 +96,7 @@
       @current-change="handleCurrentChange"
     ></el-pagination>
     <edit ref="edit" @fetchData="fetchData"></edit>
-    <UserRoleManagementEdit ref="UserRoleManagementEdit"></UserRoleManagementEdit>
+    <UserRoleManagementEdit ref="UserRoleManagementEdit" @edited="fetchData"></UserRoleManagementEdit>
   </div>
 </template>
 
