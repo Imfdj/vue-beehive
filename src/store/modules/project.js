@@ -1,18 +1,33 @@
+import { getList as getProjectList } from '@/api/projectManagement';
 import { getList as getTaskTypeList } from '@/api/taskTypeManagement';
 import { getList as getTaskStateList } from '@/api/taskStateManagement';
 import { getList as getTaskPriorityList } from '@/api/taskPriorityManagement';
 import { getList as getTaskTagsList } from '@/api/taskTagManagement';
-import { getList as getParticipators } from '@/api/userManagement';
+import { getList as getProjectMembers } from '@/api/user';
 
 const state = {
+  projectList: [],
   taskTypes: [],
   taskStates: [],
   taskPrioritys: [],
   taskTags: [],
-  participators: [],
-  currentProjectId: null,
+  projectMembers: [], // 项目成员
+  currentProjectId: null, // 当前项目ID
+  indexTab: 0, // 项目导航栏的index
 };
+
+const getters = {
+  // 当前项目
+  currentProject: state => state.projectList.find(item => item.id === state.currentProjectId) || {},
+  // 当前登陆这是否为当前项目的成员
+  isCurrentProjectMember: (state, getters, rootState) =>
+    getters.currentProject.member?.find(item => item.id === rootState.user.userInfo.id) ? true : false,
+};
+
 const mutations = {
+  setProjectList(state, projectList) {
+    state.projectList = projectList;
+  },
   setTaskTypes(state, taskTypes) {
     state.taskTypes = taskTypes;
   },
@@ -28,11 +43,23 @@ const mutations = {
   setCurrentProjectId(state, currentProjectId) {
     state.currentProjectId = currentProjectId;
   },
-  setParticipators(state, participators) {
-    state.participators = participators;
+  setProjectMembers(state, projectMembers) {
+    state.projectMembers = projectMembers;
+  },
+  setIndexTab(state, indexTab) {
+    state.indexTab = indexTab;
   },
 };
 const actions = {
+  async setProjectList({ commit }) {
+    const {
+      data: { rows },
+    } = await getProjectList({
+      limit: 1000,
+      is_recycle: 0,
+    });
+    commit('setProjectList', rows);
+  },
   async setTaskTypes({ commit }) {
     const {
       data: { rows },
@@ -66,12 +93,12 @@ const actions = {
     } = await getTaskTagsList({ project_id: state.currentProjectId });
     commit('setTaskTags', rows);
   },
-  async setParticipators({ commit, state }) {
+  async setProjectMembers({ commit, state }) {
     const {
       data: { rows },
-    } = await getParticipators({ project_id: state.currentProjectId });
-    commit('setParticipators', rows);
+    } = await getProjectMembers({ project_id: state.currentProjectId });
+    commit('setProjectMembers', rows);
   },
 };
 
-export default { state, mutations, actions };
+export default { state, getters, mutations, actions };

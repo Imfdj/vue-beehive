@@ -1,15 +1,15 @@
 <template>
   <el-dialog
-    title="邀请新成员"
+    :title="dialogTitle"
     :visible.sync="dialogVisible"
     custom-class="add-member-to-project-dialog"
     width="530px"
     append-to-body
   >
     <div class="wrap-content">
-      <div class="wrap-intro">
+      <div v-if="isManager" class="wrap-intro">
         账号邀请
-        <el-button type="text" size="medium">通过链接邀请</el-button>
+        <el-button type="text" disabled size="medium">通过链接邀请</el-button>
       </div>
       <el-input
         v-model="keyword"
@@ -17,7 +17,7 @@
         prefix-icon="el-icon-search"
         @keyup.native="keywordChange"
       ></el-input>
-      <div class="user-list">
+      <div v-loading="loading" class="user-list">
         <div v-for="(item, index) in userList" :key="index" class="wrap-list-item">
           <BImage class="user-avatar" :src="item.avatar || ''" :width="32" :height="32" :borderRadius="32"></BImage>
           <div class="user-info">
@@ -27,10 +27,23 @@
             </div>
           </div>
           <div class="wrap-ctrl color-light">
-            <el-button v-if="!item.projectIds.includes(projectId)" size="mini" plain @click="add(item)">
-              <i class="iconfont icon-jiaren"></i> 邀请
+            <el-button
+              v-if="!item.projectIds.includes(project.id)"
+              size="mini"
+              :disabled="item.invited || !$checkPermission(invitePermissions.doCreate)"
+              plain
+              @click="add(item)"
+            >
+              <i class="iconfont icon-jiaren"></i> {{ item.invited ? '已邀请' : '邀请' }}
             </el-button>
-            <span v-else><i class="iconfont icon-ren" style="margin-right: 5px;"></i>已加入</span>
+            <span v-else>
+              <i
+                class="iconfont"
+                :class="item.id === project.manager_id ? 'icon-role' : 'icon-ren'"
+                style="margin-right: 5px"
+              ></i
+              >{{ item.id === project.manager_id ? '拥有者' : '已加入' }}
+            </span>
           </div>
         </div>
       </div>
@@ -49,10 +62,11 @@
 </template>
 
 <script>
-  import { getList } from '@/api/userManagement';
-  import { doCreate } from '@/api/userProjectManagement';
+  import { getList } from '@/api/user';
+  import { doCreate as doCreateInvite, permissions as invitePermissions } from '@/api/inviteManagement';
   import BImage from '@/components/B-image';
   import { waitTimeout } from '@/utils';
+  import { mapState } from 'vuex';
 
   export default {
     name: 'AddMemberToProjectDialog',
@@ -61,44 +75,44 @@
     },
     data() {
       return {
+        invitePermissions,
         dialogVisible: false,
+        loading: false,
         keyword: '',
         timer: 0,
-        projectId: null,
+        project: {},
         userData: [],
+        userList: [],
         pageNo: 1,
         pageSize: 6,
       };
     },
     computed: {
-      userList() {
-        return (
-          this.userData.rows &&
-          this.userData.rows.map(item => {
-            return {
-              ...item,
-              projectIds: item.projects && item.projects.map(project => project.id),
-            };
-          })
-        );
+      ...mapState('user', ['userInfo']),
+      isManager() {
+        return this.userInfo.id === this.project.manager_id;
+      },
+      dialogTitle() {
+        return this.isManager ? '邀请新成员' : '项目成员';
       },
     },
     watch: {
       dialogVisible(newValue, oldValue) {
         if (newValue) {
+          this.pageNo = 1;
           this.getUserList();
         }
       },
       userList(newValue, oldValue) {
-        this.$emit('getUserList', newValue);
+        this.$emit('userListChange', newValue);
       },
     },
     created() {
       this.getUserList();
     },
     methods: {
-      show(projectId) {
-        this.projectId = projectId;
+      show(project) {
+        this.project = project;
         this.dialogVisible = true;
       },
       keywordChange() {
@@ -110,25 +124,41 @@
         this.getUserList();
       },
       async getUserList() {
-        const { data } = await getList({
+        this.loading = true;
+        this.userList = [];
+        this.userData = [];
+        const params = {
           keyword: this.keyword,
           limit: this.pageSize,
           offset: (this.pageNo - 1) * this.pageSize,
-        });
+        };
+        if (!this.isManager) {
+          params.project_id = this.project.id;
+        }
+        const { data } = await getList(params);
         this.userData = data;
-        console.log(data);
+        this.userList = this.userData.rows.map(item => {
+          return {
+            ...item,
+            projectIds: item.projects && item.projects.map(project => project.id),
+            invited: false,
+          };
+        });
+        this.loading = false;
       },
-      async doCreateExec(body) {
-        const { data } = await doCreate(body);
-        this.$message.success('添加成功');
-        this.getUserList();
+      async doCreateInvite(body) {
+        await doCreateInvite(body);
+        this.$message.success('已成功发出邀请');
         this.$emit('doCreateSuccess');
       },
-      add(user) {
-        this.doCreateExec({
-          user_id: user.id,
-          project_id: this.projectId,
+      async add(user) {
+        await this.doCreateInvite({
+          group: 'Projects',
+          group_id: this.project.id,
+          receiver_id: user.id,
         });
+        // 设置此用户已邀请
+        user.invited = true;
       },
     },
   };

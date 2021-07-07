@@ -1,22 +1,41 @@
-<h1> vue-beehive </h1>
-<h5>蜂巢-项目管理系统</h5>
+# vue-admin-scaffold
 
-## 介绍
+## Project setup
 
-项目基于vue-admin-beautiful
-
-
-### 开发
-
-```bash
-$ yarn
-$ yarn dev
+```
+yarn install
 ```
 
-### 格式化
+### Compiles and hot-reloads for development
 
-```bash
-$ yarn lint:stylelint # 样式格式化
-
-$ yarn lint:prettier # js/ts代码格式化
 ```
+yarn serve
+```
+
+### Compiles and minifies for production
+
+```
+yarn build
+```
+
+### Run your unit tests
+
+```
+yarn test:unit
+```
+
+### Run your end-to-end tests
+
+```
+yarn test:e2e
+```
+
+### Lints and fixes files
+
+```
+yarn lint
+```
+
+### Customize configuration
+
+See [Configuration Reference](https://cli.vuejs.org/config/).

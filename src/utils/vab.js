@@ -1,5 +1,7 @@
 import { loadingText, messageDuration, title } from '@/config/settings';
+import configSettings from '@/config/settings';
 import * as lodash from 'lodash';
+import dayjs from 'dayjs';
 import { Loading, Message, MessageBox, Notification } from 'element-ui';
 import store from '@/store';
 import { getAccessToken } from '@/utils/accessToken';
@@ -127,13 +129,14 @@ const install = (Vue, opts = {}) => {
   };
 
   /* 全局Notification */
-  Vue.prototype.$baseNotify = (message, title, type, position) => {
+  Vue.prototype.$baseNotify = (message, title, type = 'success', position = 'bottom-left', offset) => {
     Notification({
-      title: title,
-      message: message,
-      position: position || 'top-right',
-      type: type || 'success',
+      title,
+      message,
+      position,
+      type,
       duration: messageDuration,
+      offset,
     });
   };
 
@@ -155,10 +158,23 @@ const install = (Vue, opts = {}) => {
     return height;
   };
 
+  /* 全局验证资源权限
+   * @param string
+   * @return Boolean
+   */
+  Vue.prototype.$checkPermission = permission => {
+    const permissions = (store.getters['user/userInfo'] && store.getters['user/userInfo'].permissions) || [];
+    return permissions.includes(permission);
+  };
+
   /* 全局lodash */
   Vue.prototype.$baseLodash = lodash;
+  /* 全局dayjs */
+  Vue.prototype.$baseDayjs = dayjs;
   /* 全局事件总线 */
   Vue.prototype.$baseEventBus = new Vue();
+  /* 全局settings配置 */
+  Vue.prototype.$configSettings = configSettings;
 };
 
 if (typeof window !== 'undefined' && window.Vue) {

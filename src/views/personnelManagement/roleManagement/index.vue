@@ -1,14 +1,26 @@
 <template>
-  <div class="roleManagement-container">
+  <div class="roleManagement-container wrap-content-main">
     <vab-query-form>
       <vab-query-form-left-panel :span="12">
-        <el-button icon="el-icon-plus" type="primary" @click="handleEdit">添加</el-button>
-        <el-button icon="el-icon-delete" type="danger" @click="handleDelete">批量删除</el-button>
+        <el-button
+          :disabled="!$checkPermission(rolePermissions.doCreate)"
+          icon="el-icon-plus"
+          type="primary"
+          @click="handleEdit"
+          >添加
+        </el-button>
+        <el-button
+          :disabled="!$checkPermission(rolePermissions.doDelete)"
+          icon="el-icon-delete"
+          type="danger"
+          @click="handleDelete"
+          >批量删除
+        </el-button>
       </vab-query-form-left-panel>
       <vab-query-form-right-panel :span="12">
         <el-form :inline="true" :model="queryForm" @submit.native.prevent>
           <el-form-item>
-            <el-input v-model.trim="queryForm.name" placeholder="请输入角色名" clearable />
+            <el-input v-model.trim="queryForm.keyword" placeholder="请输入角色名" clearable />
           </el-form-item>
           <el-form-item>
             <el-button icon="el-icon-search" type="primary" @click="queryData">查询</el-button>
@@ -37,13 +49,39 @@
       </el-table-column>
       <el-table-column show-overflow-tooltip fixed="right" label="操作" width="270">
         <template v-slot="scope">
-          <el-button type="text" @click="handlePermissionEdit(scope.row)">资源管理</el-button>
-          <el-button type="text" @click="handleMenuEdit(scope.row)">菜单管理</el-button>
-          <el-button type="text" @click="handleEdit(scope.row)">编辑</el-button>
-          <el-button type="text" @click="handleDelete(scope.row)">删除</el-button>
-          <el-button v-if="scope.row.is_default === 0" type="text" @click="handleSetDefault(scope.row)"
-            >设为默认</el-button
+          <el-button
+            :disabled="
+              !$checkPermission(rolePermissionPermissions.doBulkPermissionCreate) ||
+              !$checkPermission(rolePermissionPermissions.doDelete)
+            "
+            type="text"
+            @click="handlePermissionEdit(scope.row)"
+            >资源管理</el-button
           >
+          <el-button
+            :disabled="
+              !$checkPermission(roleMenuPermissions.doBulkMenuCreate) || !$checkPermission(roleMenuPermissions.doDelete)
+            "
+            type="text"
+            @click="handleMenuEdit(scope.row)"
+            >菜单管理</el-button
+          >
+          <el-button :disabled="!$checkPermission(rolePermissions.doEdit)" type="text" @click="handleEdit(scope.row)"
+            >编辑</el-button
+          >
+          <el-button
+            :disabled="!$checkPermission(rolePermissions.doDelete)"
+            type="text"
+            @click="handleDelete(scope.row)"
+            >删除
+          </el-button>
+          <el-button
+            v-if="scope.row.is_default === 0"
+            :disabled="!$checkPermission(rolePermissions.doSetDefault)"
+            type="text"
+            @click="handleSetDefault(scope.row)"
+            >设为默认
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -56,6 +94,7 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
     ></el-pagination>
+
     <edit ref="edit" @fetchData="fetchData"></edit>
     <RoleMenuManagementEdit ref="RoleMenuManagementEdit"></RoleMenuManagementEdit>
     <RolePermissionManagementEdit ref="RolePermissionManagementEdit"></RolePermissionManagementEdit>
@@ -63,7 +102,9 @@
 </template>
 
 <script>
-  import { getList, doDelete, doSetDefault } from '@/api/roleManagement';
+  import { getList, doDelete, doSetDefault, permissions as rolePermissions } from '@/api/roleManagement';
+  import { permissions as roleMenuPermissions } from '@/api/roleMenuManagement';
+  import { permissions as rolePermissionPermissions } from '@/api/rolePermissionManagement';
   import Edit from './components/RoleManagementEdit';
   import RoleMenuManagementEdit from './components/RoleMenuManagementEdit';
   import RolePermissionManagementEdit from './components/RolePermissionManagementEdit';
@@ -73,6 +114,9 @@
     components: { Edit, RoleMenuManagementEdit, RolePermissionManagementEdit },
     data() {
       return {
+        rolePermissions,
+        roleMenuPermissions,
+        rolePermissionPermissions,
         list: null,
         listLoading: true,
         layout: 'total, sizes, prev, pager, next, jumper',
@@ -84,7 +128,7 @@
           order: '',
           pageNo: 1,
           pageSize: 10,
-          name: '',
+          keyword: '',
         },
       };
     },

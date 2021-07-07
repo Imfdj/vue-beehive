@@ -37,6 +37,9 @@
       <el-form-item label="路由重定向路径" prop="redirect">
         <el-input v-model="form.redirect" autocomplete="off"></el-input>
       </el-form-item>
+      <el-form-item label="排序" prop="redirect">
+        <el-input v-model="form.sort" autocomplete="off"></el-input>
+      </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button @click="close">取 消</el-button>

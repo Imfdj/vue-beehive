@@ -1,9 +1,21 @@
 <template>
-  <div class="roleManagement-container">
+  <div class="roleManagement-container wrap-content-main">
     <vab-query-form>
       <vab-query-form-left-panel :span="12">
-        <el-button icon="el-icon-plus" type="primary" @click="handleEdit">添加</el-button>
-        <el-button icon="el-icon-delete" type="danger" @click="handleDelete">批量删除</el-button>
+        <el-button
+          :disabled="!$checkPermission(permissionPermissions.doCreate)"
+          icon="el-icon-plus"
+          type="primary"
+          @click="handleEdit"
+          >添加</el-button
+        >
+        <el-button
+          :disabled="!$checkPermission(permissionPermissions.doDelete)"
+          icon="el-icon-delete"
+          type="danger"
+          @click="handleDelete"
+          >批量删除</el-button
+        >
       </vab-query-form-left-panel>
       <vab-query-form-right-panel :span="12">
         <el-form :inline="true" :model="queryForm" @submit.native.prevent>
@@ -12,7 +24,7 @@
               v-model.trim="queryForm.keyword"
               placeholder="资源名/标识码/标识码名/路径/动作"
               clearable
-              style="width: 250px;"
+              style="width: 250px"
             />
           </el-form-item>
           <el-form-item>
@@ -62,8 +74,18 @@
       <el-table-column prop="description" label="描述" show-overflow-tooltip></el-table-column>
       <el-table-column show-overflow-tooltip fixed="right" label="操作" width="200">
         <template v-slot="scope">
-          <el-button type="text" @click="handleEdit(scope.row)">编辑</el-button>
-          <el-button type="text" @click="handleDelete(scope.row)">删除</el-button>
+          <el-button
+            :disabled="!$checkPermission(permissionPermissions.doEdit)"
+            type="text"
+            @click="handleEdit(scope.row)"
+            >编辑</el-button
+          >
+          <el-button
+            :disabled="!$checkPermission(permissionPermissions.doDelete)"
+            type="text"
+            @click="handleDelete(scope.row)"
+            >删除</el-button
+          >
         </template>
       </el-table-column>
     </el-table>
@@ -76,12 +98,13 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
     ></el-pagination>
+
     <edit ref="edit" @fetchData="fetchData"></edit>
   </div>
 </template>
 
 <script>
-  import { getList, doDelete } from '@/api/permissionManagement';
+  import { getList, doDelete, permissions as permissionPermissions } from '@/api/permissionManagement';
   import Edit from './components/PermissionManagementEdit';
 
   export default {
@@ -89,6 +112,7 @@
     components: { Edit },
     data() {
       return {
+        permissionPermissions,
         list: null,
         listLoading: true,
         layout: 'total, sizes, prev, pager, next, jumper',

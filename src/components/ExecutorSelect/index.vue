@@ -25,7 +25,13 @@
             <i class="el-icon-check"></i>
           </div>
           <div class="title color-light">其他成员</div>
-          <div v-for="user in dataListFilter" :key="user.id" class="current-executor" @click="selectHandler(user)">
+          <div
+            v-for="user in dataListFilter"
+            :key="user.id"
+            :class="[{ 'disabled-custom': !$checkPermission(taskPermissions.doEdit) }]"
+            class="current-executor"
+            @click="selectHandler(user)"
+          >
             <div class="wrap-info">
               <BImage class="user-avatar" :src="user.avatar || ''" :width="32" :height="32" :borderRadius="32"></BImage>
               <span class="name ellipsis">{{ user.username }}</span>
@@ -33,14 +39,20 @@
             <i v-if="executor.id === user.id" class="el-icon-check"></i>
           </div>
         </div>
-        <div v-if="showAddUser" class="wrap-footer">
-          <el-button type="primary" style="width: 100%;" @click="handleAddUser">邀请新成员</el-button>
+        <div v-if="showAddUser && isManager" class="wrap-footer">
+          <el-button
+            :disabled="!$checkPermission(invitePermissions.doCreate)"
+            type="primary"
+            style="width: 100%"
+            @click="handleAddUser"
+            >邀请新成员
+          </el-button>
         </div>
       </div>
-      <div slot="reference" class="btn">
+      <el-button type="text" size="medium" slot="reference" :disabled="!isCurrentProjectMember" class="btn">
         <BImage class="user-avatar" :src="executor.avatar || ''" :width="32" :height="32" :borderRadius="32"></BImage>
         {{ executor.username }} <i class="el-icon-question"></i>
-      </div>
+      </el-button>
     </el-popover>
     <AddMemberToProjectDialog ref="AddMemberToProjectDialog" @doCreateSuccess="getList"></AddMemberToProjectDialog>
   </div>
@@ -48,10 +60,12 @@
 
 <script>
   import BImage from '@/components/B-image';
-  import { getList } from '@/api/userManagement';
+  import { getList } from '@/api/user';
   import { waitTimeout } from '@/utils';
   import AddMemberToProjectDialog from '@/views/projectManagement/projectList/components/AddMemberToProjectDialog';
-  import { mapState } from 'vuex';
+  import { mapGetters, mapState } from 'vuex';
+  import { permissions as taskPermissions } from '@/api/taskManagement';
+  import { permissions as invitePermissions } from '@/api/inviteManagement';
 
   export default {
     name: 'ExecutorSelect',
@@ -68,12 +82,23 @@
         type: Boolean,
         default: true,
       },
+      // 是否显示待认领选项
+      showNoOne: {
+        type: Boolean,
+        default: false,
+      },
     },
     data() {
       return {
+        taskPermissions,
+        invitePermissions,
         visible: false,
         name: '',
         dataList: {},
+        noOne: {
+          id: 0,
+          username: '待认领',
+        },
         executor: {
           id: 0,
           username: '待认领',
@@ -81,22 +106,24 @@
       };
     },
     computed: {
+      ...mapState('user', ['userInfo']),
       ...mapState('project', ['currentProjectId']),
+      ...mapGetters('project', ['currentProject', 'isCurrentProjectMember']),
+      isManager() {
+        return this.userInfo.id === this.currentProject.manager_id;
+      },
       dataListFilter() {
         const data = this.$baseLodash.cloneDeep(this.dataList.rows) || [];
-        data.unshift({
-          id: 0,
-          username: '待认领',
-        });
+        // 如果需要增加待认领项
+        if (this.showNoOne) data.unshift(Object.assign({}, this.noOne));
         return data.filter(user => user.id !== this.executor.id);
       },
     },
     watch: {
       executorId(newValue) {
-        this.executor = (this.dataList.rows && this.dataList.rows.find(user => user.id === newValue)) || {
-          id: 0,
-          username: '待认领',
-        };
+        this.executor =
+          (this.dataList.rows && this.dataList.rows.find(user => user.id === newValue)) ||
+          Object.assign({}, this.noOne);
       },
     },
     created() {
@@ -119,20 +146,21 @@
           project_id: this.currentProjectId,
         });
         this.dataList = data;
+        // 如果当前传入的用户和选中的用户不一样，则对选中用户重新赋值
         if (this.executorId !== this.executor.id) {
-          this.executor = this.dataList.rows.find(user => user.id === this.executorId) || {
-            id: 0,
-            username: '待认领',
-          };
+          this.executor = this.dataList.rows.find(user => user.id === this.executorId) || Object.assign({}, this.noOne);
         }
       },
       selectHandler(user) {
+        if (!this.$checkPermission(taskPermissions.doEdit)) {
+          return;
+        }
         this.executor = user;
         this.$emit('select', user);
         this.setHide();
       },
       handleAddUser() {
-        this.$refs.AddMemberToProjectDialog.show(this.currentProjectId);
+        this.$refs.AddMemberToProjectDialog.show(this.currentProject);
       },
     },
   };
@@ -187,10 +215,13 @@
 
   .executor-select {
     .btn {
-      display: inline-flex;
-      align-items: center;
       padding: 5px 0px;
-      cursor: pointer;
+
+      ::v-deep span {
+        display: inline-flex;
+        align-items: center;
+        color: $colorLight;
+      }
 
       .user-avatar {
         margin-right: 5px;

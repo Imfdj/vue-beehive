@@ -1,9 +1,18 @@
 <template>
   <div class="participator">
-    <div class="title">参与者 <span class="point"></span>{{ 1 }}</div>
+    <div class="title">参与者 <span class="point"></span>{{ users.length }}</div>
     <div class="user-list">
       <div v-for="user in users" :key="user.id" class="item">
-        <BImage class="user-avatar" :src="user.avatar || ''" :width="24" :height="24" :borderRadius="24"></BImage>
+        <el-tooltip class="item" effect="dark" :content="userToolTipContent(user)" placement="top" :open-delay="500">
+          <BImage
+            class="user-avatar"
+            :src="user.avatar || ''"
+            :width="24"
+            :height="24"
+            :borderRadius="24"
+            @click.native="userClick(user)"
+          ></BImage>
+        </el-tooltip>
       </div>
       <el-popover v-model="visible" placement="bottom" width="240" trigger="click" @show="show">
         <div class="popover-content-executor-selector">
@@ -20,7 +29,7 @@
               v-for="user in users"
               :key="user.id"
               class="current-executor"
-              :class="[{ disabled: user.id === creatorId }]"
+              :class="[{ disabled: user.id === taskInfo.creator_id }]"
               @click="selectHandler(user)"
             >
               <div class="wrap-info">
@@ -40,6 +49,7 @@
               v-for="user in dataListFilter"
               :key="user.id"
               class="current-executor"
+              :class="[{ 'disabled-custom': !$checkPermission(userTaskPermissions.doChange) }]"
               @click="selectHandler(user, true)"
             >
               <div class="wrap-info">
@@ -54,56 +64,61 @@
               </div>
             </div>
           </div>
-          <div class="wrap-footer">
-            <el-button type="primary" style="width: 100%;" @click="handleAddUser">邀请新成员</el-button>
+          <div v-if="isManager" class="wrap-footer">
+            <el-button type="primary" style="width: 100%" @click="handleAddUser">邀请新成员</el-button>
           </div>
         </div>
-        <div slot="reference" class="btn">
+        <el-button type="text" :disabled="!isCurrentProjectMember" slot="reference" class="btn">
           <i class="el-icon-circle-plus"></i>
-        </div>
+        </el-button>
       </el-popover>
     </div>
     <AddMemberToProjectDialog ref="AddMemberToProjectDialog"></AddMemberToProjectDialog>
+    <UserInfoDialog ref="UserInfoDialog"></UserInfoDialog>
   </div>
 </template>
 
 <script>
   import BImage from '@/components/B-image';
-  import { getList } from '@/api/userManagement';
-  import { doChange } from '@/api/userTaskManagement';
+  import { getList } from '@/api/user';
+  import { doChange, permissions as userTaskPermissions } from '@/api/userTaskManagement';
   import { waitTimeout } from '@/utils';
-  import { mapState } from 'vuex';
+  import { mapState, mapGetters } from 'vuex';
   import AddMemberToProjectDialog from '@/views/projectManagement/projectList/components/AddMemberToProjectDialog';
+  import UserInfoDialog from '@/components/UserInfoDialog';
 
   export default {
     name: 'Participator',
     components: {
       BImage,
       AddMemberToProjectDialog,
+      UserInfoDialog,
     },
     props: {
-      users: {
-        type: Array,
-        required: true,
-      },
       taskId: {
         type: Number,
         required: true,
       },
-      creatorId: {
-        type: Number,
+      taskInfo: {
+        type: Object,
         required: true,
       },
     },
     data() {
       return {
+        userTaskPermissions,
         visible: false,
         name: '',
         dataList: {},
       };
     },
     computed: {
+      ...mapState('user', ['userInfo']),
       ...mapState('project', ['currentProjectId']),
+      ...mapGetters('project', ['currentProject', 'isCurrentProjectMember']),
+      isManager() {
+        return this.userInfo.id === this.currentProject.manager_id;
+      },
       dataListFilter() {
         const data = this.$baseLodash.cloneDeep(this.dataList.rows) || [];
         return data.filter(user => {
@@ -112,6 +127,9 @@
           });
           return !one;
         });
+      },
+      users() {
+        return this.taskInfo.participators;
       },
     },
     created() {
@@ -137,7 +155,7 @@
       },
       async selectHandler(user, isAdd) {
         // 不可删除创建者
-        if (!isAdd && user.id === this.creatorId) {
+        if ((!isAdd && user.id === this.taskInfo.creator_id) || !this.$checkPermission(userTaskPermissions.doChange)) {
           return;
         }
         await doChange({
@@ -145,7 +163,11 @@
           task_id: this.taskId,
         });
         if (isAdd) {
-          this.$emit('change', [...this.users, user]);
+          const userExisting = this.users.find(item => item.id === user.id);
+          // 如果不存在，则添加
+          if (!userExisting) {
+            this.$emit('change', [...this.users, user]);
+          }
         } else {
           this.$emit(
             'change',
@@ -154,7 +176,22 @@
         }
       },
       handleAddUser() {
-        this.$refs.AddMemberToProjectDialog.show(this.currentProjectId);
+        this.$refs.AddMemberToProjectDialog.show(this.currentProject);
+      },
+      userToolTipContent(user) {
+        let text = user.username;
+        // 如果此user是任务的执行者
+        if (this.taskInfo.executor_id === user.id) {
+          text += ' , 执行者';
+        }
+        // 如果此user是任务的创建者
+        if (this.taskInfo.creator_id === user.id) {
+          text += ' , 创建者';
+        }
+        return text;
+      },
+      userClick(user) {
+        this.$refs.UserInfoDialog.show(user.id);
       },
     },
   };
@@ -237,11 +274,12 @@
         margin-right: 8px;
         cursor: pointer;
       }
-
-      .el-icon-circle-plus {
-        font-size: 28px;
-        color: #1890ff;
-        cursor: pointer;
+      .btn {
+        padding: 0px;
+        .el-icon-circle-plus {
+          font-size: 28px;
+          color: #1890ff;
+        }
       }
     }
   }

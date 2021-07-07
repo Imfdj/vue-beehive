@@ -1,14 +1,26 @@
 <template>
-  <div class="roleManagement-container">
+  <div class="roleManagement-container wrap-content-main">
     <vab-query-form>
       <vab-query-form-left-panel :span="12">
-        <el-button icon="el-icon-plus" type="primary" @click="handleEdit">添加</el-button>
-        <el-button icon="el-icon-delete" type="danger" @click="handleDelete">批量删除</el-button>
+        <el-button
+          :disabled="!$checkPermission(menuPermissions.doCreate)"
+          icon="el-icon-plus"
+          type="primary"
+          @click="handleEdit"
+          >添加</el-button
+        >
+        <el-button
+          :disabled="!$checkPermission(menuPermissions.doDelete)"
+          icon="el-icon-delete"
+          type="danger"
+          @click="handleDelete"
+          >批量删除</el-button
+        >
       </vab-query-form-left-panel>
       <vab-query-form-right-panel :span="12">
         <el-form :inline="true" :model="queryForm" @submit.native.prevent>
           <el-form-item>
-            <el-input v-model.trim="queryForm.name" placeholder="请输入查询条件" clearable />
+            <el-input v-model.trim="queryForm.keyword" placeholder="请输入查询条件" clearable />
           </el-form-item>
           <el-form-item>
             <el-button icon="el-icon-search" type="primary" @click="queryData">查询</el-button>
@@ -43,16 +55,16 @@
       <el-table-column show-overflow-tooltip prop="always_show" label="总是显示" :sortable="'custom'">
         <template slot-scope="scope">
           <i
-            :class="scope.row.hidden === 1 ? 'el-icon-check' : 'el-icon-close'"
-            :style="`color: ${scope.row.hidden === 1 ? '#67C23A' : '#F56C6C'};font-size: 24px;`"
+            :class="scope.row.always_show === 1 ? 'el-icon-check' : 'el-icon-close'"
+            :style="`color: ${scope.row.always_show === 1 ? '#67C23A' : '#F56C6C'};font-size: 24px;`"
           ></i>
         </template>
       </el-table-column>
       <el-table-column show-overflow-tooltip prop="keep_alive" label="缓存此路由" :sortable="'custom'">
         <template slot-scope="scope">
           <i
-            :class="scope.row.hidden === 1 ? 'el-icon-check' : 'el-icon-close'"
-            :style="`color: ${scope.row.hidden === 1 ? '#67C23A' : '#F56C6C'};font-size: 24px;`"
+            :class="scope.row.keep_alive === 1 ? 'el-icon-check' : 'el-icon-close'"
+            :style="`color: ${scope.row.keep_alive === 1 ? '#67C23A' : '#F56C6C'};font-size: 24px;`"
           ></i>
         </template>
       </el-table-column>
@@ -70,20 +82,34 @@
         :sortable="'custom'"
       ></el-table-column>
       <el-table-column show-overflow-tooltip prop="redirect" label="路由重定向" :sortable="'custom'"></el-table-column>
+      <el-table-column show-overflow-tooltip prop="sort" label="排序" :sortable="'sort'"></el-table-column>
       <el-table-column show-overflow-tooltip fixed="right" label="操作" width="200">
         <template v-slot="scope">
-          <el-button type="text" @click="handleEdit(scope.row, true)">添加下级菜单</el-button>
-          <el-button type="text" @click="handleEdit(scope.row)">编辑</el-button>
-          <el-button type="text" @click="handleDelete(scope.row)">删除</el-button>
+          <el-button
+            :disabled="!$checkPermission(menuPermissions.doCreate)"
+            type="text"
+            @click="handleEdit(scope.row, true)"
+            >添加下级菜单</el-button
+          >
+          <el-button :disabled="!$checkPermission(menuPermissions.doEdit)" type="text" @click="handleEdit(scope.row)"
+            >编辑</el-button
+          >
+          <el-button
+            :disabled="!$checkPermission(menuPermissions.doDelete)"
+            type="text"
+            @click="handleDelete(scope.row)"
+            >删除</el-button
+          >
         </template>
       </el-table-column>
     </el-table>
+
     <edit ref="edit" @fetchData="fetchData"></edit>
   </div>
 </template>
 
 <script>
-  import { getList, doDelete } from '@/api/menuManagement';
+  import { getList, doDelete, permissions as menuPermissions } from '@/api/menuManagement';
   import Edit from './components/MenuManagementEdit';
 
   export default {
@@ -91,14 +117,15 @@
     components: { Edit },
     data() {
       return {
-        list: null,
+        menuPermissions,
+        list: [],
         listLoading: true,
         selectRows: '',
         elementLoadingText: '正在加载...',
         queryForm: {
           prop_order: '',
           order: '',
-          name: '',
+          keyword: '',
         },
       };
     },
@@ -175,7 +202,7 @@
         this.listLoading = true;
         const {
           data: { rows },
-        } = await getList({ ...this.queryForm, limit: 1000 });
+        } = await getList({ ...this.queryForm, limit: 1000, prop_order: 'sort', order: 'desc' });
         const childrenNav = [];
         // 后端数据, 根级树数组,  根级 PID
         this.listToTree(rows, childrenNav, 0);

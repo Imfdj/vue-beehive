@@ -15,7 +15,12 @@
           <el-input v-model="ruleForm.phone"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="submitForm('ruleForm')">保存</el-button>
+          <el-button
+            :disabled="!$checkPermission(userPermissions.doEdit)"
+            type="primary"
+            @click="submitForm('ruleForm')"
+            >保存
+          </el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -31,8 +36,7 @@
   import Cropper from '@/components/Cropper';
   import { mapState } from 'vuex';
   import { upload } from '@/api/upload';
-  import { update } from '@/api/user';
-  import store from '@/store';
+  import { doEdit, permissions as userPermissions } from '@/api/user';
 
   export default {
     name: 'BaseSetting',
@@ -41,6 +45,7 @@
     },
     data() {
       return {
+        userPermissions,
         ruleForm: {},
         rules: {
           name: [
@@ -69,7 +74,7 @@
       submitForm(formName) {
         this.$refs[formName].validate(async valid => {
           if (valid) {
-            await update(this.ruleForm);
+            await doEdit(this.ruleForm);
             this.$store.dispatch('user/getInfo');
           } else {
             console.log('error submit!!');
@@ -87,7 +92,7 @@
         const {
           data: { path },
         } = await upload(formData);
-        this.ruleForm.avatar = `/remote_public${path}`;
+        this.ruleForm.avatar = path;
       },
     },
   };

@@ -1,5 +1,5 @@
 <template>
-  <div class="project-template">
+  <div class="project-template wrap-content-main">
     <el-tabs v-model="activeName">
       <el-tab-pane v-for="(item, index) in titles" :key="index" :label="item" :name="index.toString()">
         <div v-loading="loading" class="list">
@@ -20,15 +20,40 @@
               ></div>
             </div>
             <div class="item-control">
-              <el-button icon="el-icon-s-grid" circle size="mini" @click="handleShowTasks(item_template)"></el-button>
-              <el-button icon="el-icon-edit" circle size="mini" @click="handleEdit(item_template)"></el-button>
-              <el-button icon="el-icon-delete" circle size="mini" @click="handleDelete(item_template)"></el-button>
+              <el-button
+                :disabled="!$checkPermission(projectTemplateTaskPermissions.getList)"
+                icon="el-icon-s-grid"
+                circle
+                size="mini"
+                @click="handleShowTasks(item_template)"
+              ></el-button>
+              <el-button
+                :disabled="!$checkPermission(projectTemplatePermissions.doEdit)"
+                icon="el-icon-edit"
+                circle
+                size="mini"
+                @click="handleEdit(item_template)"
+              ></el-button>
+              <el-button
+                :disabled="!$checkPermission(projectTemplatePermissions.doDelete)"
+                icon="el-icon-delete"
+                circle
+                size="mini"
+                @click="handleDelete(item_template)"
+              ></el-button>
             </div>
           </div>
         </div>
       </el-tab-pane>
     </el-tabs>
-    <el-button class="create-template" type="primary" icon="el-icon-plus" @click="handleEdit">创建项目模板 </el-button>
+    <el-button
+      :disabled="!$checkPermission(projectTemplatePermissions.doCreate)"
+      class="create-template"
+      type="primary"
+      icon="el-icon-plus"
+      @click="handleEdit"
+      >创建项目模板
+    </el-button>
     <ProjectTemplateEdit ref="edit" @fetchData="getList"></ProjectTemplateEdit>
     <el-dialog :title="`「${currentTemplate.name}」任务列表`" :visible.sync="dialogFormVisible">
       <projectTemplateTask
@@ -44,8 +69,8 @@
   import ProjectTemplateEdit from './components/ProjectTemplateEdit';
   import BImage from '@/components/B-image';
   import projectTemplateTask from '../projectTemplateTask';
-  import { getList } from '@/api/projectTemplateManagement';
-  import { doDelete } from '@/api/projectTemplateManagement';
+  import { getList, doDelete, permissions as projectTemplatePermissions } from '@/api/projectTemplateManagement';
+  import { permissions as projectTemplateTaskPermissions } from '@/api/projectTemplateTaskManagement';
 
   export default {
     name: 'ProjectTemplate',
@@ -56,6 +81,8 @@
     },
     data() {
       return {
+        projectTemplatePermissions,
+        projectTemplateTaskPermissions,
         dialogFormVisible: false,
         loading: false,
         activeName: '0',

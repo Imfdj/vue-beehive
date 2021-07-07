@@ -6,16 +6,23 @@
           <el-tab-pane>
             <span slot="label"><i class="el-icon-s-data"></i> 概览</span>
             <div class="wrap-pane">
-              <el-form ref="form" label-position="top" label-width="80px" :model="form" size="mini">
+              <el-form
+                ref="form"
+                label-position="top"
+                label-width="80px"
+                :model="form"
+                :disabled="!isManager"
+                size="mini"
+              >
                 <el-form-item label="项目封面">
                   <CoverImage :cover="form.cover" @uploaded="CoverUploaded"></CoverImage>
                 </el-form-item>
                 <div class="special">
                   <el-form-item label="项目名称">
-                    <el-input v-model="form.name" style="width: 220px;"></el-input>
+                    <el-input v-model="form.name" style="width: 220px"></el-input>
                   </el-form-item>
                   <el-form-item label="项目进度 (%)">
-                    <el-input v-model="form.progress" style="width: 220px;"></el-input>
+                    <el-input v-model="form.progress" style="width: 220px"></el-input>
                   </el-form-item>
                 </div>
                 <el-form-item label="项目简介">
@@ -27,7 +34,7 @@
                   ></el-input>
                 </el-form-item>
                 <el-form-item label="项目公开性">
-                  <el-select v-model="form.is_private" placeholder="请选择" style="width: 100%;">
+                  <el-select v-model="form.is_private" placeholder="请选择" style="width: 100%">
                     <el-option v-for="item in optionsPrivet" :key="item.value" :label="item.label" :value="item.value">
                     </el-option>
                   </el-select>
@@ -35,18 +42,23 @@
                 <el-form-item label="项目拥有者">
                   <div class="user-info">
                     <BImage
-                      v-if="form.user"
-                      :src="form.user.avatar"
+                      v-if="form.creator"
+                      :src="form.creator.avatar"
                       :width="40"
                       :height="40"
                       :borderRadius="20"
                     ></BImage>
-                    <span style="margin-left: 10px;">{{ form.user && form.user.username }}</span>
+                    <span style="margin-left: 10px">{{ form.creator && form.creator.username }}</span>
                   </div>
                 </el-form-item>
               </el-form>
               <div class="foot">
-                <el-button type="primary" @click="save">确 定</el-button>
+                <el-button
+                  :disabled="!isManager || !$checkPermission(projectPermissions.doEdit)"
+                  type="primary"
+                  @click="save"
+                  >确 定
+                </el-button>
               </div>
             </div>
           </el-tab-pane>
@@ -55,12 +67,16 @@
             <div class="wrap-pane preference">
               <div class="top">
                 <span>自动更新项目进度</span>
-                <el-switch v-model="switchValue" active-color="#409EFF" inactive-color="#909399" @change="switchChange">
+                <el-switch
+                  v-model="switchValue"
+                  active-color="#409EFF"
+                  inactive-color="#909399"
+                  :disabled="!isManager || !$checkPermission(projectPermissions.doEdit)"
+                  @change="switchChange"
+                >
                 </el-switch>
               </div>
-              <div class="bottom">
-                根据当前任务的完成情况自动计算项目进度。
-              </div>
+              <div class="bottom"> 根据当前任务的完成情况自动计算项目进度。</div>
             </div>
           </el-tab-pane>
           <el-tab-pane>
@@ -69,9 +85,26 @@
               <div class="title">项目操作</div>
               <div class="tip color-light">您可以执行以下操作</div>
               <div class="wrap-btn">
-                <el-button type="danger" plain @click="doPigeonhole">归档项目</el-button>
-                <el-button type="danger" plain @click="doQuit">退出</el-button>
-                <el-button type="danger" @click="doRecycle">移至回收站</el-button>
+                <el-button
+                  :disabled="!isManager || !$checkPermission(projectPermissions.doEdit)"
+                  type="danger"
+                  plain
+                  @click="doPigeonhole"
+                  >归档项目
+                </el-button>
+                <el-button
+                  :disabled="isManager || !isCurrentProjectMember || !$checkPermission(userProjectPermissions.doQuit)"
+                  type="danger"
+                  plain
+                  @click="doQuit"
+                  >退出
+                </el-button>
+                <el-button
+                  :disabled="!isManager || !$checkPermission(projectPermissions.doEdit)"
+                  type="danger"
+                  @click="doRecycle"
+                  >移至回收站
+                </el-button>
               </div>
             </div>
           </el-tab-pane>
@@ -82,9 +115,11 @@
 </template>
 
 <script>
-  import { doDelete, doEdit } from '@/api/projectManagement';
+  import { doEdit, permissions as projectPermissions } from '@/api/projectManagement';
+  import { doQuit, permissions as userProjectPermissions } from '@/api/userProjectManagement';
   import CoverImage from '@/components/Cover-image';
   import BImage from '@/components/B-image';
+  import { mapGetters, mapState } from 'vuex';
 
   export default {
     name: 'ProjectEdit',
@@ -92,8 +127,16 @@
       CoverImage,
       BImage,
     },
+    props: {
+      closeBehindSave: {
+        type: Boolean,
+        default: false,
+      },
+    },
     data() {
       return {
+        projectPermissions,
+        userProjectPermissions,
         activeName: '0',
         switchValue: false,
         dialogVisible: false,
@@ -119,6 +162,13 @@
         ],
       };
     },
+    computed: {
+      ...mapState('user', ['userInfo']),
+      ...mapGetters('project', ['isCurrentProjectMember']),
+      isManager() {
+        return this.userInfo.id === this.form.manager_id;
+      },
+    },
     methods: {
       showEdit(item) {
         this.form = Object.assign({}, item);
@@ -132,6 +182,9 @@
         const { msg } = await doEdit(this.form);
         this.$baseMessage(msg, 'success');
         this.$emit('fetchData');
+        if (this.closeBehindSave) {
+          this.close();
+        }
       },
       close() {
         this.$refs['form'].resetFields();
@@ -153,8 +206,15 @@
         });
       },
       doQuit() {
-        // TODO 退出
-        this.save();
+        this.$baseConfirm('你确定要退出此项目吗', null, async () => {
+          await doQuit({
+            user_id: this.userInfo.id,
+            project_id: this.form.id,
+          });
+          this.$baseNotify('', `已成功退出项目 ${this.form.name}`);
+          this.close();
+          this.$router.replace(this.$configSettings.project_list_path);
+        });
       },
       async doRecycle() {
         this.$baseConfirm('你确定要将此项目移至回收站吗', null, async () => {

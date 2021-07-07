@@ -4,9 +4,7 @@ const {
   assetsDir,
   outputDir,
   lintOnSave,
-  transpileDependencies,
   title,
-  abbreviation,
   devPort,
   providePlugin,
   build7z,
@@ -14,29 +12,18 @@ const {
 const { version, author } = require('./package.json');
 const Webpack = require('webpack');
 const WebpackBar = require('webpackbar');
-const FileManagerPlugin = require('filemanager-webpack-plugin');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const dayjs = require('dayjs');
+const FileManagerPlugin = require('filemanager-webpack-plugin');
 const date = new dayjs().format('YYYY_M_D');
 const time = new dayjs().format('YYYY-M-D HH:mm:ss');
 const CompressionWebpackPlugin = require('compression-webpack-plugin');
 const productionGzipExtensions = ['html', 'js', 'css', 'svg'];
-process.env.VUE_APP_TITLE = title || 'vue-beehive';
-process.env.VUE_APP_AUTHOR = author || 'chuzhixin';
+process.env.VUE_APP_TITLE = title || 'vue-admin-scaffold';
+process.env.VUE_APP_AUTHOR = author || 'Imfdj';
 process.env.VUE_APP_UPDATE_TIME = time;
 process.env.VUE_APP_VERSION = version;
-
 function resolve(dir) {
   return path.join(__dirname, dir);
-}
-
-function mockServer() {
-  if (process.env.NODE_ENV === 'development') {
-    const mockServer = require('./mock/mockServer.js');
-    return mockServer;
-  } else {
-    return '';
-  }
 }
 
 module.exports = {
@@ -44,7 +31,6 @@ module.exports = {
   assetsDir,
   outputDir,
   lintOnSave,
-  transpileDependencies,
   devServer: {
     hot: true,
     port: devPort,
@@ -55,32 +41,31 @@ module.exports = {
       errors: true,
     },
     proxy: {
-      '/api/mockServer/': {
-        target: '/mockServer/',
+      '/api': {
+        target: 'http://127.0.0.1:7002',
         changeOrigin: true,
         ws: true,
         pathRewrite: {
           // '^/api': ''
         },
       },
-      '/api/(?!mockServer)': {
-        target: 'http://127.0.0.1:7001',
+      '/public/upload': {
+        target: 'http://127.0.0.1:7002',
         changeOrigin: true,
         ws: true,
         pathRewrite: {
-          // '^/api': ''
+          // '^/remote_public': '',
         },
       },
-      '/remote_public': {
-        target: 'http://127.0.0.1:7001',
+      '/socket.io': {
+        target: 'http://127.0.0.1:7002',
         changeOrigin: true,
         ws: true,
         pathRewrite: {
-          '^/remote_public': '',
+          // '^/remote_public': '',
         },
       },
     },
-    after: mockServer(),
   },
   configureWebpack() {
     return {
@@ -102,7 +87,6 @@ module.exports = {
           : {},
       plugins: [
         new Webpack.ProvidePlugin(providePlugin),
-        // new BundleAnalyzerPlugin(),
         new WebpackBar({
           name: `\u0076\u0075\u0065\u002d\u0061\u0064\u006d\u0069\u006e\u002d\u0062\u0065\u0061\u0075\u0074\u0069\u0066\u0075\u006c`,
         }),
@@ -220,7 +204,6 @@ module.exports = {
         });
       }
     );
-
     if (build7z) {
       config.when(process.env.NODE_ENV === 'production', config => {
         config
@@ -232,7 +215,7 @@ module.exports = {
                 archive: [
                   {
                     source: `./${outputDir}`,
-                    destination: `./${outputDir}/${abbreviation}_${outputDir}_${date}.7z`,
+                    destination: `./${outputDir}/${title}_${outputDir}_${date}.7z`,
                   },
                 ],
               },

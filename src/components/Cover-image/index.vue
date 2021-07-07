@@ -49,6 +49,9 @@
         this.coverCopy = newValue;
       },
     },
+    created() {
+      this.coverCopy = this.cover;
+    },
     methods: {
       uploadCoverClick() {
         this.$refs.Cropper.show();
@@ -63,8 +66,7 @@
         const {
           data: { path },
         } = await upload(formData);
-        // this.form.cover = `/remote_public${path}`;
-        this.coverCopy = `/remote_public${path}`;
+        this.coverCopy = path;
         this.$emit('uploaded', this.coverCopy);
       },
     },

@@ -6,37 +6,52 @@
         {{ userData.rows && userData.rows.length }}
       </div>
       <div v-if="isDepartment" class="wrap-ctrl">
-        <btn-icon
+        <el-button
           v-for="(item, index) in departmentOperationBtns"
           :key="index"
-          :iconClass="`iconfont ${item.icon}`"
-          @click.native="departmentOperationBtnClick(index)"
-        >
-          {{ item.label }}
-        </btn-icon>
+          type="text"
+          :disabled="item.disabled"
+          @click="departmentOperationBtnClick(index)"
+          ><i :class="`iconfont ${item.icon}`"></i> {{ item.label }}
+        </el-button>
       </div>
     </div>
     <div v-loading="onLoading" class="wrap-list">
       <div v-for="(item, index) in userData.rows" :key="index" class="wrap-list-item">
         <img class="user-avatar" :src="item.avatar" alt="" />
         <div class="user-info">
-          <div class="user-name">{{ item.username }}</div>
+          <div class="user-name" @click="usernameClick(item)">{{ item.username }}</div>
           <div class="foot color-light">
             <div class="user-emial">{{ item.email }}</div>
-            <div class="user-deportment">综合部</div>
+            <div class="user-deportment">{{ item.department && item.department.name }}</div>
           </div>
         </div>
         <div v-if="isDepartment" class="wrap-ctrl color-light">
-          <el-popconfirm v-if="item.state === 1" title="确定禁用此用户吗？" @onConfirm="forbiddenUser(item)">
-            <BtnTooltip slot="reference" icon="iconfont icon-icon-test" tooltipContent="禁用"></BtnTooltip>
+          <el-popconfirm v-if="item.state === 1" title="确定禁用此用户吗？" @confirm="forbiddenUser(item)">
+            <BtnTooltip
+              :disabled="!$checkPermission(userPermissions.doEdit)"
+              slot="reference"
+              icon="iconfont icon-icon-test"
+              tooltipContent="禁用"
+            ></BtnTooltip>
           </el-popconfirm>
-          <el-popconfirm v-else title="确定启用此用户吗？" @onConfirm="enableUser(item)">
-            <BtnTooltip slot="reference" icon="iconfont icon-qiyong" tooltipContent="启用"></BtnTooltip>
+          <el-popconfirm v-else title="确定启用此用户吗？" @confirm="enableUser(item)">
+            <BtnTooltip
+              :disabled="!$checkPermission(userPermissions.doEdit)"
+              slot="reference"
+              icon="iconfont icon-qiyong"
+              tooltipContent="启用"
+            ></BtnTooltip>
           </el-popconfirm>
 
           <span class="line"></span>
-          <el-popconfirm title="确定移除此用户吗？" @onConfirm="removeUserFromDepartment(item)">
-            <BtnTooltip slot="reference" icon="iconfont icon-ren-jianshao" tooltipContent="移除"></BtnTooltip>
+          <el-popconfirm title="确定移除此用户吗？" @confirm="removeUserFromDepartment(item)">
+            <BtnTooltip
+              :disabled="!$checkPermission(userPermissions.updateUserDepartment)"
+              slot="reference"
+              icon="iconfont icon-ren-jianshao"
+              tooltipContent="移除"
+            ></BtnTooltip>
           </el-popconfirm>
         </div>
       </div>
@@ -52,26 +67,25 @@
       :departmentData="departmentData"
       @doCreateDepartmentSuccess="doCreateDepartmentSuccess"
     ></DepartmentOperation>
+    <UserInfoDialog ref="UserInfoDialog"></UserInfoDialog>
   </div>
 </template>
 
 <script>
-  import BtnIcon from '@/components/Btn-icon';
   import BtnTooltip from '@/components/Btn-tooltip';
   import AddMemberToDepartmentDialog from './AddMemberToDepartmentDialog';
   import DepartmentOperation from './DepartmentOperation';
-  import { getList } from '@/api/userManagement';
-  import { updateUserDepartment, doDelete } from '@/api/departmentManagement';
-  import { doEdit } from '@/api/userManagement';
-  const dayjs = require('dayjs');
+  import UserInfoDialog from '@/components/UserInfoDialog';
+  import { updateUserDepartment, getList, doEdit, permissions as userPermissions } from '@/api/user';
+  import { doDelete, permissions as departmentPermissions } from '@/api/departmentManagement';
 
   export default {
     name: 'UserContent',
     components: {
-      BtnIcon,
       BtnTooltip,
       AddMemberToDepartmentDialog,
       DepartmentOperation,
+      UserInfoDialog,
     },
     props: {
       isDepartment: {
@@ -100,6 +114,8 @@
     },
     data() {
       return {
+        userPermissions,
+        departmentPermissions,
         userData: {},
         isCreateDepartment: false,
         onLoading: false,
@@ -107,14 +123,17 @@
           {
             icon: 'icon-jiaren',
             label: '添加成员',
+            disabled: !this.$checkPermission(userPermissions.updateUserDepartment),
           },
           {
             icon: 'icon-bianji',
             label: '编辑部门',
+            disabled: !this.$checkPermission(departmentPermissions.doEdit),
           },
           {
             icon: 'icon-dustbin_icon',
             label: '删除部门',
+            disabled: !this.$checkPermission(departmentPermissions.doDelete),
           },
         ],
       };
@@ -133,13 +152,15 @@
     methods: {
       async getUserList() {
         this.onLoading = true;
-        const { data } = await getList({
+        const params = {
           keyword: this.memberKeyword,
           department_id: this.department_id,
           state: this.memberData.id === 3 ? 0 : null,
-          date_after_created:
-            this.memberData.id === 1 ? dayjs().subtract(30, 'day').format('YYYY-MM-DD 00:00:00') : null,
-        });
+        };
+        this.memberData.id === 1
+          ? (params.date_after_created = this.$baseDayjs().subtract(30, 'day').format('YYYY-MM-DD 00:00:00'))
+          : null;
+        const { data } = await getList(params);
         this.onLoading = false;
         this.userData = data;
       },
@@ -201,6 +222,9 @@
         this.$emit('doDeleteDepartmentSuccess');
         this.$message.success('删除成功');
       },
+      usernameClick(user) {
+        this.$refs.UserInfoDialog.show(user.id);
+      },
     },
   };
 </script>
@@ -217,10 +241,10 @@
         color: rgb(51, 51, 51);
       }
       .wrap-ctrl {
-        .btn-icon {
-          margin-left: 10px;
-        }
         ::v-deep .el-button--small {
+          font-size: 14px;
+        }
+        .iconfont {
           font-size: 14px;
         }
       }
@@ -239,6 +263,12 @@
         .user-info {
           flex: 1;
           line-height: 22px;
+          .user-name {
+            cursor: pointer;
+            &:hover {
+              color: $colorBlue;
+            }
+          }
           .foot {
             display: flex;
             .user-emial {

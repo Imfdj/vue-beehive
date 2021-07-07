@@ -18,10 +18,16 @@
               </div>
             </div>
             <div class="wrap-ctrl color-light">
-              <el-button v-if="departmentData.id !== item.department_id" size="mini" plain @click="addDepartment(item)">
+              <el-button
+                v-if="departmentData.id !== item.department_id"
+                size="mini"
+                plain
+                :disabled="!$checkPermission(userPermissions.updateUserDepartment)"
+                @click="addDepartment(item)"
+              >
                 <i class="iconfont icon-jiaren"></i> 添加
               </el-button>
-              <span v-else><i class="iconfont icon-ren" style="margin-right: 5px;"></i>已添加</span>
+              <span v-else><i class="iconfont icon-ren" style="margin-right: 5px"></i>已添加</span>
             </div>
           </div>
         </div>
@@ -41,8 +47,8 @@
 </template>
 
 <script>
-  import { getList } from '@/api/userManagement';
-  import { updateUserDepartment } from '@/api/departmentManagement';
+  import { getList, updateUserDepartment, permissions as userPermissions } from '@/api/user';
+  import { permissions as departmentPermissions } from '@/api/departmentManagement';
   import { waitTimeout } from '@/utils';
   import BImage from '@/components/B-image';
 
@@ -62,6 +68,8 @@
     },
     data() {
       return {
+        userPermissions,
+        departmentPermissions,
         dialogVisible: false,
         keyword: '',
         userData: [],

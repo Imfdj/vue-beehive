@@ -8,19 +8,42 @@
         </div>
         <div class="item-tasks color-light"> </div>
         <div class="item-control">
-          <el-button icon="el-icon-edit" circle size="mini" @click="handleEdit(item_template)"></el-button>
-          <el-button icon="el-icon-delete" circle size="mini" @click="handleDelete(item_template)"></el-button>
+          <el-button
+            :disabled="!$checkPermission(projectTemplateTaskPermissions.doEdit)"
+            icon="el-icon-edit"
+            circle
+            size="mini"
+            @click="handleEdit(item_template)"
+          ></el-button>
+          <el-button
+            :disabled="!$checkPermission(projectTemplateTaskPermissions.doDelete)"
+            icon="el-icon-delete"
+            circle
+            size="mini"
+            @click="handleDelete(item_template)"
+          ></el-button>
         </div>
       </div>
     </div>
-    <el-button class="create-template" type="primary" icon="el-icon-plus" @click="handleEdit">添加任务 </el-button>
+    <el-button
+      :disabled="!$checkPermission(projectTemplateTaskPermissions.doCreate)"
+      class="create-template"
+      type="primary"
+      icon="el-icon-plus"
+      @click="handleEdit"
+      >添加任务
+    </el-button>
     <ProjectTemplateEdit ref="edit" :templateId="templateId" @fetchData="getList"></ProjectTemplateEdit>
   </div>
 </template>
 
 <script>
   import ProjectTemplateEdit from './components/ProjectTemplateTaskEdit';
-  import { getList, doDelete } from '@/api/projectTemplateTaskManagement';
+  import {
+    getList,
+    doDelete,
+    permissions as projectTemplateTaskPermissions,
+  } from '@/api/projectTemplateTaskManagement';
 
   export default {
     name: 'ProjectTemplateTask',
@@ -35,6 +58,7 @@
     },
     data() {
       return {
+        projectTemplateTaskPermissions,
         loading: false,
         listData: [],
       };

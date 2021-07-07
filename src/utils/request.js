@@ -13,7 +13,7 @@ import {
   tokenName,
   debounce,
 } from '@/config/settings';
-import { Loading, Message } from 'element-ui';
+import { Loading, Message, Notification } from 'element-ui';
 import store from '@/store';
 import qs from 'qs';
 import router from '@/router';
@@ -34,9 +34,24 @@ service.interceptors.request.use(
       config.headers[tokenName] = store.getters['user/accessToken'];
       config.headers['x-csrf-token'] = store.getters['user/accessCsrf'];
     }
-    if (config.data) {
-      //这里会过滤所有为空、0、fasle的key，如果不需要请自行注释
-      // config.data = _.pickBy(config.data, _.identity);
+    // 如果config.data存在，且是Json
+    if (config.data && Object.prototype.toString.call(config.data).slice(8, -1).toLowerCase() === 'object') {
+      //这里会过滤所有为null的key，如果不需要请自行注释
+      config.data = _.pickBy(config.data, item => !_.isNull(item));
+    }
+    //只针对get方式进行序列化
+    if (config.method.toLowerCase() === 'get') {
+      //这里会过滤所有为null的key，如果不需要请自行注释
+      config.params = _.pickBy(config.params, item => !_.isNull(item));
+      // 对所有字符串参数做反斜杠处理，解决反斜杠参数搜索有误问题
+      for (const paramsKey in config.params) {
+        if (_.isString(config.params[paramsKey])) {
+          config.params[paramsKey] = config.params[paramsKey].replace(/\\/g, '\\\\');
+        }
+      }
+      config.paramsSerializer = function (params) {
+        return qs.stringify(params, { arrayFormat: 'repeat' });
+      };
     }
     if (process.env.NODE_ENV !== 'preview') {
       if (contentType === 'application/x-www-form-urlencoded;charset=UTF-8') {
@@ -70,6 +85,22 @@ const errorMsg = message => {
     message: message,
     type: 'error',
     duration: messageDuration,
+  });
+};
+
+const notification = (
+  title = null,
+  message = null,
+  type = 'error',
+  position = 'bottom-left',
+  duration = messageDuration
+) => {
+  Notification({
+    title,
+    message,
+    type,
+    position,
+    duration,
   });
 };
 
@@ -114,29 +145,32 @@ service.interceptors.response.use(
           errorMsg(msg || `后端接口${code}异常`);
           break;
       }
-      return Promise.reject(
-        'vue-admin-beautiful请求异常拦截:' + JSON.stringify({ url: config.url, code, msg }) || 'Error'
-      );
+      return Promise.reject('vue-beehive请求异常拦截:' + JSON.stringify({ url: config.url, code, msg }) || 'Error');
     } else {
       return data;
     }
   },
   async error => {
-    switch (error.response.status) {
-      case invalidRequestCode:
+    switch (error.response?.status) {
+      case invalidRequestCode: {
         const data = error.response.data;
         switch (data.code) {
           case 1451:
             errorMsg('操作失败,当前数据存在关联数据');
             break;
           default:
-            errorMsg(data.msg || `后端接口${error.request.status}异常`);
+            errorMsg(data.msg || `后端接口${error.request?.status}异常`);
             break;
         }
         break;
+      }
       case noAuthenticationCode:
-        await store.dispatch('user/resetAccessToken');
-        router.push(`/login?redirect=${router.app.$route.fullPath}`);
+        // await store.dispatch('user/resetAccessToken');
+        // router.push(`/login?redirect=${router.app.$route.fullPath}`);
+        if (error.response.data?.msg) {
+          notification('无权限', error.response.data.msg);
+        }
+        router.push(`/401`);
         break;
       case noPermissionCode:
         router.push({
@@ -149,7 +183,7 @@ service.interceptors.response.use(
         });
         break;
       default:
-        errorMsg(error || `后端接口${error.request.status}异常`);
+        errorMsg(error || `后端接口${error.request?.status}异常`);
         break;
     }
 

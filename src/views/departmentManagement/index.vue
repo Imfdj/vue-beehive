@@ -1,5 +1,5 @@
 <template>
-  <div class="departmentManagement-container">
+  <div class="departmentManagement-container wrap-content-main">
     <div class="wrap-nav">
       <div class="wrap-search">
         <el-input
@@ -7,7 +7,7 @@
           prefix-icon="el-icon-search"
           placeholder="输入'用户名/邮箱'回车搜索"
           size="medium"
-          style="width: 228px;"
+          style="width: 228px"
           @keyup.enter.native="searchForKeyword"
         ></el-input>
       </div>
@@ -24,14 +24,14 @@
       </div>
       <span class="title-box"
         >部门
-        <btn-icon
-          style="margin-left: 120px;"
-          iconClass="iconfont icon-jia"
-          @click.native="addDepartmentOperationBtnClick"
-        >
-          创建部门
-        </btn-icon></span
-      >
+        <el-button
+          type="text"
+          :disabled="!this.$checkPermission(departmentPermissions.doCreate)"
+          style="margin-left: 120px; font-size: 14px"
+          @click="addDepartmentOperationBtnClick"
+          ><i class="iconfont icon-jia"></i> 创建部门
+        </el-button>
+      </span>
       <div class="warp-menu">
         <div class="warp-member">
           <div
@@ -60,18 +60,17 @@
 </template>
 
 <script>
-  import { getList, doDelete } from '@/api/departmentManagement';
-  import BtnIcon from '@/components/Btn-icon';
+  import { getList, permissions as departmentPermissions } from '@/api/departmentManagement';
   import UserContent from './components/UserContent';
 
   export default {
     name: 'DepartmentManagement',
     components: {
       UserContent,
-      BtnIcon,
     },
     data() {
       return {
+        departmentPermissions,
         memberKeyword: '',
         departmentList: [],
         memberBtns: [
@@ -86,11 +85,8 @@
     },
     created() {
       this.fetchData();
-      this.addNewStyle('.app-main-container {width: 1100px !important;margin: 0 auto;}');
     },
-    beforeDestroy() {
-      this.addNewStyle('.app-main-container {width: 100% !important;}');
-    },
+
     methods: {
       async fetchData() {
         const {
@@ -98,16 +94,6 @@
           totalCount,
         } = await getList(this.queryForm);
         this.departmentList = rows.sort((a, b) => b.sort - a.sort);
-      },
-      addNewStyle(newStyle) {
-        let styleElement = document.getElementById('styles_js');
-        if (!styleElement) {
-          styleElement = document.createElement('style');
-          styleElement.type = 'text/css';
-          styleElement.id = 'styles_js';
-          document.getElementsByTagName('head')[0].appendChild(styleElement);
-        }
-        styleElement.appendChild(document.createTextNode(newStyle));
       },
       memberSelectClick(index) {
         this.memberSelectIndex = index;
@@ -135,6 +121,8 @@
 <style lang="scss" scoped>
   .departmentManagement-container {
     display: flex;
+    width: 1100px;
+    margin: 0 auto;
 
     .wrap-nav {
       width: 247px;

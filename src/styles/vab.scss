@@ -1,5 +1,4 @@
 /**
- * @copyright chuzhixin 1204505056@qq.com
  * @description 全局样式
  */
 
@@ -78,7 +77,7 @@ html {
     margin: 0;
     font-family: 'PingFang SC', Arial, 'Microsoft YaHei', sans-serif;
     font-size: $base-font-size-default;
-    background: #f6f8f9;
+    background: #f5f5f5;
 
     @include base-scrollbar;
 
@@ -136,7 +135,7 @@ html {
 
     /* 大图展示结束 */
 
-    .vue-admin-beautiful-wrapper {
+    .vue-beehive-wrapper {
       .app-main-container {
         @include base-scrollbar;
 
