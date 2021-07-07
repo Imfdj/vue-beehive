@@ -5,7 +5,7 @@
         <el-checkbox v-model="checkAll" :indeterminate="isIndeterminate" @change="handleCheckAllChange"
           >全选</el-checkbox
         >
-        <div style="margin: 15px 0;"></div>
+        <div style="margin: 15px 0"></div>
         <el-checkbox-group ref="checkbox_group" v-model="form.permissions" @change="groupChange">
           <el-checkbox v-for="(item, index) in roleListData" :key="index" :label="item.name"></el-checkbox>
         </el-checkbox-group>
@@ -122,6 +122,7 @@
           if (valid) {
             await this.BulkRoleCreate();
             await this.Delete();
+            this.$emit('edited');
             this.close();
           } else {
             return false;
