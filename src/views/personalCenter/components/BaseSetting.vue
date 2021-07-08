@@ -14,6 +14,12 @@
         <el-form-item label="手机号" prop="phone">
           <el-input v-model="ruleForm.phone"></el-input>
         </el-form-item>
+        <el-form-item label="公司" prop="company">
+          <el-input v-model="ruleForm.company"></el-input>
+        </el-form-item>
+        <el-form-item label="城市" prop="city">
+          <el-input v-model="ruleForm.city"></el-input>
+        </el-form-item>
         <el-form-item>
           <el-button
             :disabled="!$checkPermission(userPermissions.doEdit)"
@@ -60,21 +66,14 @@
       ...mapState('user', ['userInfo']),
     },
     created() {
-      console.log(this.userInfo);
-      this.ruleForm = {
-        id: this.userInfo.id,
-        nickname: this.userInfo.nickname,
-        email: this.userInfo.email,
-        phone: this.userInfo.phone,
-        avatar: this.userInfo.avatar,
-        username: this.userInfo.username,
-      };
+      this.ruleForm = Object.assign({}, this.userInfo);
     },
     methods: {
       submitForm(formName) {
         this.$refs[formName].validate(async valid => {
           if (valid) {
-            await doEdit(this.ruleForm);
+            const { msg } = await doEdit(this.ruleForm);
+            this.$baseMessage(msg, 'success');
             this.$store.dispatch('user/getInfo');
           } else {
             console.log('error submit!!');
