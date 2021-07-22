@@ -52,6 +52,7 @@
 <script>
   import { github_auth_authorize_url, github_auth_client_id, github_auth_redirect_uri, title } from '@/config/settings';
   import { isPassword } from '@/utils/validate';
+  import { permissions as userPermissions } from '@/api/user';
   import qs from 'qs';
 
   export default {
@@ -79,6 +80,7 @@
         }
       };
       return {
+        userPermissions,
         nodeEnv: process.env.NODE_ENV,
         title: this.$baseTitle,
         form: {
@@ -142,10 +144,16 @@
       },
       async login(params) {
         this.loading = true;
-        await this.$store.dispatch('user/login', params).catch(() => {
+        await this.$store.dispatch('user/login', params).catch(res => {
+          // github授权登录失败处理
+          const githubLogin = userPermissions.githubLogin.split(':');
+          if (`/api${res.config.url}` === githubLogin[1] && res.config.method === githubLogin[0]) {
+            this.$baseMessage('github授权登录失败，请重试！', 'error');
+          }
           this.loading = false;
         });
-        const routerPath = this.redirect === '/404' || this.redirect === '/401' ? '/' : this.redirect;
+        const routerPath =
+          this.redirect === '/404' || this.redirect === '/403' || this.redirect === '/401' ? '/' : this.redirect;
         await this.$router.push(routerPath).catch(() => {});
         this.loading = false;
       },
