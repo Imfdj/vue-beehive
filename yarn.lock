@@ -13072,6 +13072,13 @@ vue-demi@^0.7.4:
   resolved "https://r.cnpmjs.org/vue-demi/download/vue-demi-0.7.5.tgz#88dee7492fc99a0f911ff03fc02c658fa2a79af8"
   integrity sha1-iN7nSS/Jmg+RH/A/wCxlj6Knmvg=
 
+vue-drag-verify-img-chip@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.nlark.com/vue-drag-verify-img-chip/download/vue-drag-verify-img-chip-1.1.1.tgz#4198e623e15948220e97b297e8bb37a92f60f9e4"
+  integrity sha1-QZjmI+FZSCIOl7KX6Ls3qS9g+eQ=
+  dependencies:
+    vue "^2.5.11"
+
 vue-echarts@^6.0.0-rc.5:
   version "6.0.0-rc.5"
   resolved "https://r.cnpmjs.org/vue-echarts/download/vue-echarts-6.0.0-rc.5.tgz#4e06289927d03d289c368fa09b740d82e6ded528"
@@ -13166,6 +13173,11 @@ vue-template-es2015-compiler@^1.6.0, vue-template-es2015-compiler@^1.9.0:
   version "1.9.1"
   resolved "https://registry.npm.taobao.org/vue-template-es2015-compiler/download/vue-template-es2015-compiler-1.9.1.tgz#1ee3bc9a16ecbf5118be334bb15f9c46f82f5825"
   integrity sha1-HuO8mhbsv1EYvjNLsV+cRvgvWCU=
+
+vue@^2.5.11:
+  version "2.6.14"
+  resolved "https://registry.nlark.com/vue/download/vue-2.6.14.tgz?cache=0&sync_timestamp=1627426471885&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fvue%2Fdownload%2Fvue-2.6.14.tgz#e51aa5250250d569a3fbad3a8a5a687d6036e235"
+  integrity sha1-5RqlJQJQ1Wmj+606ilpofWA24jU=
 
 vue@^2.6.11:
   version "2.6.12"

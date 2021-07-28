@@ -46,6 +46,7 @@
     <div v-show="!loading" class="router-link-box">
       <span @click="changeStatus('retrievePassword')">找回密码</span>
     </div>
+    <DragCerifyImgChip ref="DragCerifyImgChip" class="img-chip" @passcallback="passcallback"></DragCerifyImgChip>
   </el-form>
 </template>
 
@@ -54,9 +55,13 @@
   import { isPassword } from '@/utils/validate';
   import { permissions as userPermissions } from '@/api/user';
   import qs from 'qs';
+  import DragCerifyImgChip from '@/components/DragCerifyImgChip';
 
   export default {
     name: 'LoginForm',
+    components: {
+      DragCerifyImgChip,
+    },
     directives: {
       focus: {
         inserted(el) {
@@ -160,7 +165,7 @@
       handleLogin() {
         this.$refs.form.validate(async valid => {
           if (valid) {
-            this.login(this.form);
+            this.$refs.DragCerifyImgChip.show();
           } else {
             return false;
           }
@@ -172,6 +177,12 @@
       changeStatus(status) {
         this.$emit('changeStatus', status);
       },
+      passcallback() {
+        this.login(this.form);
+        setTimeout(() => {
+          this.$refs.DragCerifyImgChip && this.$refs.DragCerifyImgChip.close();
+        }, 500);
+      },
     },
   };
 </script>
@@ -182,6 +193,7 @@
     max-width: 100%;
     margin: calc((100vh - 425px) / 2) 10% 10%;
     overflow: hidden;
+    padding-bottom: 30px;
 
     .forget-password {
       width: 100%;
@@ -298,6 +310,12 @@
           caret-color: $base-font-color;
         }
       }
+    }
+    .img-chip {
+      position: absolute;
+      top: 94px;
+      left: 50%;
+      transform: translateX(-50%);
     }
   }
 </style>

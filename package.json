@@ -49,6 +49,7 @@
     "qs": "^6.10.1",
     "vue": "^2.6.11",
     "vue-cropper": "^0.5.5",
+    "vue-drag-verify-img-chip": "^1.1.1",
     "vue-echarts": "^6.0.0-rc.5",
     "vue-router": "^3.2.0",
     "vue-socket.io": "^3.0.10",
