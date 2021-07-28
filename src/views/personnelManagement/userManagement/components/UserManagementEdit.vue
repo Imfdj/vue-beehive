@@ -8,10 +8,16 @@
         <el-input v-model.trim="form.nickname" autocomplete="off"></el-input>
       </el-form-item>
       <el-form-item label="邮箱" prop="email">
-        <el-input v-model.trim="form.email" disabled="true" autocomplete="off"></el-input>
+        <el-input v-model.trim="form.email" :disabled="true" autocomplete="off"></el-input>
       </el-form-item>
       <el-form-item label="手机" prop="phone">
         <el-input v-model.trim="form.phone" autocomplete="off"></el-input>
+      </el-form-item>
+      <el-form-item label="公司" prop="company">
+        <el-input v-model.trim="form.company" autocomplete="off"></el-input>
+      </el-form-item>
+      <el-form-item label="城市" prop="city">
+        <el-input v-model.trim="form.city" autocomplete="off"></el-input>
       </el-form-item>
       <el-form-item label="状态" prop="email">
         <el-radio v-model="form.state" :label="1">正常</el-radio>

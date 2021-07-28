@@ -33,7 +33,13 @@
         </MessageBox>
         <UserOperation>
           <div class="user">
-            <BImage class="user-avatar" :src="userInfo.avatar" :width="32" :height="32" :borderRadius="32"></BImage>
+            <BImage
+              class="user-avatar"
+              :src="userInfo.avatar || ''"
+              :width="32"
+              :height="32"
+              :borderRadius="32"
+            ></BImage>
             <div class="username">{{ userInfo.username }}</div>
           </div>
         </UserOperation>
