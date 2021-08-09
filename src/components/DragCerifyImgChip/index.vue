@@ -2,10 +2,10 @@
   <div v-loading="loading" v-show="visible" class="wrap-drag-verify-img-chip" @click.stop="doClick">
     <drag-verify-img-chip
       ref="dragVerify"
-      :imgsrc="imgsrc"
+      :imgsrc="imgsrcArr[imgsrcIndex]"
       :isPassing.sync="isPassing"
       :showRefresh="false"
-      :width="290"
+      :width="300"
       :diffWidth="5"
       text="请按住滑块拖动"
       progressBarBg="#FED88A"
@@ -19,7 +19,7 @@
       @passfail="passfail"
     >
     </drag-verify-img-chip>
-    <img v-show="false" :src="imgsrc" @load="onload" alt="" />
+    <img v-show="false" :src="imgsrcArr[imgsrcIndex]" @load="onload" alt="" />
     <div class="wrap-btn">
       <el-tooltip :enterable="false" class="item" effect="light" content="关闭验证" placement="bottom-start">
         <el-button type="text" size="small" icon="el-icon-circle-close" @click="close"></el-button>
@@ -45,19 +45,37 @@
       return {
         loading: false,
         visible: false,
-        imgsrc: '',
         isPassing: false,
+        imgsrcIndexBox: [],
+        imgsrcIndex: 0,
+        imgsrcArr: [
+          'static/img/dragChipImgs/1.jpg',
+          'static/img/dragChipImgs/2.jpg',
+          'static/img/dragChipImgs/3.jpg',
+          'static/img/dragChipImgs/4.jpg',
+          'static/img/dragChipImgs/5.jpg',
+          'static/img/dragChipImgs/6.jpg',
+          'static/img/dragChipImgs/7.jpg',
+          'static/img/dragChipImgs/8.jpg',
+          'static/img/dragChipImgs/9.jpg',
+        ],
       };
     },
     async created() {
-      this.imgsrc = await this.getRandomImgPath('https://picsum.photos/290/160');
+      this.setImgsrcIndexBox();
+      this.doRefresh();
     },
     methods: {
       show() {
         this.visible = true;
+        const ref = this.$refs.dragVerify;
+        if (ref) ref.reset();
       },
       close() {
         this.visible = false;
+      },
+      setImgsrcIndexBox() {
+        this.imgsrcIndexBox = this.imgsrcArr.map((item, index) => index);
       },
       refreshChip() {
         console.log('refreshChip');
@@ -69,8 +87,13 @@
         this.$emit('passfail');
       },
       async doRefresh() {
-        this.loading = true;
-        this.imgsrc = await this.getRandomImgPath('https://picsum.photos/290/160');
+        // this.loading = true;
+        const index = parseInt(Math.random() * 1000) % this.imgsrcIndexBox.length;
+        this.imgsrcIndex = this.imgsrcIndexBox[index];
+        this.imgsrcIndexBox.splice(index, 1);
+        if (this.imgsrcIndexBox.length === 0) {
+          this.setImgsrcIndexBox();
+        }
       },
       onload() {
         this.loading = false;
