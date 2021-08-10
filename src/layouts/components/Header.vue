@@ -1,5 +1,5 @@
 <template>
-  <div class="header-vue-admin-scaffold">
+  <div class="header-vue-beehive">
     <div class="wrap-logo" :class="[{ 'menu-collapse': isMenuCollapse }]" @click="logoClick">
       <img class="logo-img" src="../../assets/logo.png" alt="" />
       <span v-if="!isMenuCollapse" class="logo-title">
@@ -115,7 +115,7 @@
 </script>
 
 <style lang="scss" scoped>
-  .header-vue-admin-scaffold {
+  .header-vue-beehive {
     height: 65px;
     background-color: #fff;
     display: flex;

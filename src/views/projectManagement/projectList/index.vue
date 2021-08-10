@@ -84,7 +84,7 @@
     <ProjectCreate ref="create"></ProjectCreate>
     <ProjectEdit ref="edit" @fetchData="getList"></ProjectEdit>
     <AddMemberToProjectDialog ref="AddMemberToProjectDialog"></AddMemberToProjectDialog>
-    <div v-if="listData.length > pageSize" class="wrap-el-pagination">
+    <div v-if="count > pageSize" class="wrap-el-pagination">
       <el-pagination
         background
         :total="count"
@@ -152,9 +152,9 @@
         data = this.$baseLodash.sortBy(data.reverse(), o => {
           return o.is_private;
         });
-        data = data.filter((item, index) => {
-          return index >= (this.pageNo - 1) * this.pageSize && index <= this.pageNo * this.pageSize;
-        });
+        // data = data.filter((item, index) => {
+        //   return index >= (this.pageNo - 1) * this.pageSize && index <= this.pageNo * this.pageSize;
+        // });
         return data;
       },
     },
@@ -225,6 +225,8 @@
         this.loading = true;
         const params = {
           collection: this.collection,
+          limit: this.pageSize,
+          offset: (this.pageNo - 1) * this.pageSize,
         };
         this.is_recycle !== null ? (params.is_recycle = this.is_recycle) : null;
         this.is_archived !== null ? (params.is_archived = this.is_archived) : null;
@@ -234,7 +236,7 @@
         this.loading = false;
         this.listData = rows;
         this.count = count;
-        this.pageNo = 1;
+        // this.pageNo = 1;
       },
       handleAddUser(item) {
         this.$refs.AddMemberToProjectDialog.show(item);
@@ -282,6 +284,7 @@
       },
       handleCurrentChange(val) {
         this.pageNo = val;
+        this.getList();
       },
       getMemberIcon(project) {
         return `iconfont ${this.userInfo.id === project.manager_id ? 'icon-jiaren' : 'icon-ren'}`;

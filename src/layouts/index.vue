@@ -1,7 +1,7 @@
 <template>
-  <div class="wrap-vue-admin-scaffold">
+  <div class="wrap-vue-beehive">
     <Header :isMenuCollapse="isMenuCollapse"></Header>
-    <div class="main-view-vue-admin-scaffold">
+    <div class="main-view-vue-beehive">
       <Menu @changeCollapse="changeCollapse"></Menu>
       <div class="wrap-router-view">
         <router-view />
@@ -35,8 +35,8 @@
 </script>
 
 <style lang="scss" scoped>
-  .wrap-vue-admin-scaffold {
-    .main-view-vue-admin-scaffold {
+  .wrap-vue-beehive {
+    .main-view-vue-beehive {
       display: flex;
       .wrap-router-view {
         position: relative;
