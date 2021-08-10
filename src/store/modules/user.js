@@ -11,6 +11,8 @@ import { title, tokenName } from '@/config/settings';
 import { encryptedData } from '@/utils/encrypt';
 import store from '@/store';
 
+let refreshTokenPromise = null; // refreshToken获取时的promise，解决多个过期请求更新token时，只执行一次refresh请求
+
 const state = {
   accessToken: getAccessToken(),
   accessCsrf: getAccessCsrf(),
@@ -161,25 +163,32 @@ const actions = {
     Vue.prototype.$socket.disconnect();
   },
   async refreshToken({ commit, state }) {
-    try {
-      // 解析refreshToken，拿到userInfo
-      const userInfo = JSON.parse(window.atob(state.refreshToken.match(/\.(.*)\./)[1])).data.userInfo;
-      const {
-        code,
-        data: { accessToken, refreshToken },
-      } = await doRefreshToken({
-        refreshToken: state.refreshToken,
-        secret: await encryptedData(userInfo.id),
-      });
-      if (code === 0) {
-        commit(
-          'setAccessToken',
-          JSON.stringify({ jwt: `Bearer ${accessToken}`, csrf: state.accessCsrf, refreshToken })
-        );
-      }
-    } catch (e) {
-      return Promise.reject(e);
+    // 如果存在refreshTokenPromise就直接返回，否则创建请求，解决多个请求token过期，会重复请求refreshToken
+    if (refreshTokenPromise) {
+      return refreshTokenPromise;
     }
+    refreshTokenPromise = new Promise(resolve => {
+      (async function () {
+        // 解析refreshToken，拿到userInfo
+        const userInfo = JSON.parse(window.atob(state.refreshToken.match(/\.(.*)\./)[1])).data.userInfo;
+        const {
+          code,
+          data: { accessToken, refreshToken },
+        } = await doRefreshToken({
+          refreshToken: state.refreshToken,
+          secret: await encryptedData(userInfo.id),
+        });
+        if (code === 0) {
+          commit(
+            'setAccessToken',
+            JSON.stringify({ jwt: `Bearer ${accessToken}`, csrf: state.accessCsrf, refreshToken })
+          );
+        }
+        refreshTokenPromise = null;
+        resolve();
+      })();
+    });
+    return refreshTokenPromise;
   },
 };
 export default { state, getters, mutations, actions };

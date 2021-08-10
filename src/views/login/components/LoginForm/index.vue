@@ -53,7 +53,7 @@
 <script>
   import { github_auth_authorize_url, github_auth_client_id, github_auth_redirect_uri, title } from '@/config/settings';
   import { isPassword } from '@/utils/validate';
-  import { permissions as userPermissions } from '@/api/user';
+  import { getExistsUserUniqueFields, permissions as userPermissions } from '@/api/user';
   import qs from 'qs';
   import DragCerifyImgChip from '@/components/DragCerifyImgChip';
 
@@ -70,9 +70,12 @@
       },
     },
     data() {
-      const validateusername = (rule, value, callback) => {
-        if ('' == value) {
-          callback(new Error('用户名不能为空'));
+      const validateusername = async (rule, value, callback) => {
+        const { code } = await getExistsUserUniqueFields({
+          username: value,
+        });
+        if (code !== 0) {
+          callback(new Error('用户名不存在'));
         } else {
           callback();
         }
@@ -94,11 +97,9 @@
         },
         rules: {
           username: [
-            {
-              required: true,
-              trigger: 'blur',
-              validator: validateusername,
-            },
+            { required: true, trigger: 'blur', message: '请输入用户名' },
+            { min: 2, max: 20, trigger: 'blur', message: '长度在 2 到 20 个字符' },
+            { validator: validateusername, trigger: 'blur' },
           ],
           password: [
             {
@@ -153,7 +154,7 @@
           // github授权登录失败处理
           const githubLogin = userPermissions.githubLogin.split(':');
           if (`/api${res.config.url}` === githubLogin[1] && res.config.method === githubLogin[0]) {
-            this.$baseMessage('github授权登录失败，请重试！', 'error');
+            this.$baseNotify('', '网络不稳定，github授权登录失败，请重试！', 'error');
           }
           this.loading = false;
         });

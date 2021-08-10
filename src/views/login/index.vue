@@ -2,7 +2,7 @@
   <div class="login-container">
     <ShapeShifter ref="ShapeShifter"></ShapeShifter>
     <div class="content">
-      <el-row @click.native="clickHandler">
+      <el-row>
         <el-col :xs="24" :sm="24" :md="12" :lg="16" :xl="16">
           <div style="color: transparent">占位符</div>
         </el-col>
@@ -40,6 +40,7 @@
         simulateArr: [],
         simulateIndex: 0,
         status: 'login',
+        timerInter: null,
       };
     },
     computed: {
@@ -59,16 +60,30 @@
         this.$refs.ShapeShifter.simulate(this.simulateArr[this.simulateIndex]);
         this.simulateIndex = (this.simulateIndex + 1) % 3;
       }
+      this.initTimer();
     },
     methods: {
       clickHandler() {
         this.$refs.ShapeShifter.simulate(this.simulateArr[this.simulateIndex]);
         this.simulateIndex = (this.simulateIndex + 1) % 3;
-        console.log(this.simulateIndex);
       },
       changeStatus(status) {
         this.status = status;
       },
+      initTimer() {
+        this.clearTimer();
+        this.timerInter = setInterval(() => {
+          this.clickHandler();
+        }, 1000 * 10);
+      },
+      clearTimer() {
+        if (this.timerInter) {
+          clearInterval(this.timerInter);
+        }
+      },
+    },
+    destroyed() {
+      this.clearTimer();
     },
   };
 </script>

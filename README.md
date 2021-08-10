@@ -1,4 +1,4 @@
-# vue-admin-scaffold
+# vue-beehive
 
 ## Project setup
 

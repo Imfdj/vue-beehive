@@ -26,13 +26,32 @@
       </el-button>
     </el-form-item>
     <el-form-item prop="password">
-      <el-input v-model.trim="form.password" type="password" placeholder="设置密码" autocomplete="new-password">
+      <el-input
+        v-model.trim="form.password"
+        type="password"
+        placeholder="设置密码"
+        autocomplete="new-password"
+        show-password
+      >
+        <i slot="prefix" class="iconfont icon-suo"></i>
+      </el-input>
+    </el-form-item>
+    <el-form-item prop="passwordConfirm">
+      <el-input
+        v-model.trim="form.passwordConfirm"
+        type="password"
+        placeholder="确认密码"
+        autocomplete="new-password"
+        show-password
+      >
         <i slot="prefix" class="iconfont icon-suo"></i>
       </el-input>
     </el-form-item>
     <el-form-item>
-      <el-button class="btn-special" type="primary" @click.native.prevent="handleReister">注册</el-button>
-      <div class="router-link-box">
+      <el-button :loading="loading" class="btn-special" type="primary" @click.native.prevent="handleReister"
+        >注册</el-button
+      >
+      <div v-show="!loading" class="router-link-box">
         <span @click="changeStatus('login')">登录</span>
       </div>
     </el-form-item>
@@ -40,7 +59,7 @@
 </template>
 <script>
   import { isPassword, isEmail } from '@/utils/validate';
-  import { register } from '@/api/user';
+  import { register, getExistsUserUniqueFields } from '@/api/user';
   import { create as createVerificationCode } from '@/api/verification_code';
   import mixins from '@/mixins';
 
@@ -55,25 +74,42 @@
       },
     },
     data() {
-      const validateusername = (rule, value, callback) => {
-        if ('' == value) {
-          callback(new Error('用户名不能为空'));
+      const validateusername = async (rule, value, callback) => {
+        const { code } = await getExistsUserUniqueFields({
+          username: value,
+        });
+        if (code === 0) {
+          callback(new Error('用户名已存在'));
         } else {
           callback();
         }
       };
       const validatePassword = (rule, value, callback) => {
-        if (!isPassword(value)) {
-          callback(new Error('密码不能少于6位'));
+        if (/^(?=.*[a-zA-Z])(?=.*\d)[^]{6,15}$/.test(value)) {
+          callback();
+        } else {
+          callback(new Error('密码必须是字母和数字的组合'));
+        }
+      };
+      const validatePasswordConfirm = (rule, value, callback) => {
+        if (value !== this.form.password) {
+          callback(new Error('确认密码与设置密码不同，请重新输入'));
         } else {
           callback();
         }
       };
-      const validatePhone = (rule, value, callback) => {
+      const validateEmail = async (rule, value, callback) => {
         if (!isEmail(value)) {
           callback(new Error('请输入正确的邮箱'));
         } else {
-          callback();
+          const { code } = await getExistsUserUniqueFields({
+            email: value,
+          });
+          if (code === 0) {
+            callback(new Error('邮箱已存在'));
+          } else {
+            callback();
+          }
         }
       };
       return {
@@ -87,16 +123,21 @@
         registerRules: {
           username: [
             { required: true, trigger: 'blur', message: '请输入用户名' },
-            { max: 20, trigger: 'blur', message: '最多不能超过20个字' },
+            { min: 2, max: 20, trigger: 'blur', message: '长度在 2 到 20 个字符' },
             { validator: validateusername, trigger: 'blur' },
           ],
           email: [
             { required: true, trigger: 'blur', message: '请输入邮箱' },
-            { validator: validatePhone, trigger: 'blur' },
+            { validator: validateEmail, trigger: 'blur' },
           ],
           password: [
             { required: true, trigger: 'blur', message: '请输入密码' },
+            { min: 6, max: 15, trigger: 'blur', message: '长度在 6 到 15 个字符' },
             { validator: validatePassword, trigger: 'blur' },
+          ],
+          passwordConfirm: [
+            { required: true, trigger: 'blur', message: '请输入确认密码' },
+            { validator: validatePasswordConfirm, trigger: 'blur' },
           ],
           code: [{ required: true, trigger: 'blur', message: '请输入验证码' }],
         },
@@ -136,7 +177,7 @@
                 type: 1,
               });
               if (code === 0) {
-                this.$baseMessage(`验证码发送到${this.form.email}, 请查收！`, 'success');
+                this.$baseNotify('', `验证码发送到${this.form.email}, 请查收！`);
               }
             }
           });
@@ -145,11 +186,15 @@
       handleReister() {
         this.$refs['registerForm'].validate(async valid => {
           if (valid) {
+            this.loading = true;
             this.form.avatar = await this.getRandomPicsumPicturePath('https://picsum.photos/100');
-            const { msg } = await register({ ...this.form, verification_type: 1 });
-            this.$baseMessage(msg, 'success');
+            await register({ ...this.form, verification_type: 1 });
+            this.$baseNotify('', '账号已创建成功');
             // 注册成功后，直接登陆
-            await this.$store.dispatch('user/login', this.form);
+            await this.$store.dispatch('user/login', {
+              username: this.form.username,
+              password: this.form.password,
+            });
             await this.$router.push('/').catch(() => {});
           }
         });

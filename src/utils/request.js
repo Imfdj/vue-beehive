@@ -88,7 +88,7 @@ const errorMsg = message => {
   });
 };
 
-const notification = (
+const errNotification = (
   title = null,
   message = null,
   type = 'error',
@@ -138,11 +138,11 @@ service.interceptors.response.use(
     if (codeVerification) {
       switch (code) {
         case invalidCode:
-          errorMsg(msg || `后端接口${code}异常`);
+          errNotification('错误', msg || `后端接口${code}异常`);
           store.dispatch('user/resetAccessToken');
           break;
         default:
-          errorMsg(msg || `后端接口${code}异常`);
+          errNotification('错误', msg || `后端接口${code}异常`);
           break;
       }
       return Promise.reject('vue-beehive请求异常拦截:' + JSON.stringify({ url: config.url, code, msg }) || 'Error');
@@ -156,10 +156,10 @@ service.interceptors.response.use(
         const data = error.response.data;
         switch (data.code) {
           case 1451:
-            errorMsg('操作失败,当前数据存在关联数据');
+            errNotification('错误', '操作失败,当前数据存在关联数据');
             break;
           default:
-            errorMsg(data.msg || `后端接口${error.request?.status}异常`);
+            errNotification('错误', data.msg || `后端接口${error.request?.status}异常`);
             break;
         }
         break;
@@ -168,7 +168,7 @@ service.interceptors.response.use(
         // await store.dispatch('user/resetAccessToken');
         // router.push(`/login?redirect=${router.app.$route.fullPath}`);
         if (error.response.data?.msg) {
-          notification('无权限', error.response.data.msg);
+          errNotification('无权限', error.response.data.msg);
         }
         router.push(`/401`);
         break;
@@ -183,7 +183,7 @@ service.interceptors.response.use(
         });
         break;
       default:
-        errorMsg(error || `后端接口${error.request?.status}异常`);
+        errNotification('错误', error || `后端接口${error.request?.status}异常`);
         break;
     }
 

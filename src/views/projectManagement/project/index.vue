@@ -64,6 +64,8 @@
       <TaskList v-if="indexTab === 0" ref="TaskList"></TaskList>
       <File v-if="indexTab === 1" ref="File"></File>
       <Overview v-if="indexTab === 2" ref="Overview"></Overview>
+      <Version v-if="indexTab === 3" ref="Version"></Version>
+      <Events v-if="indexTab === 4" ref="Events"></Events>
     </div>
     <AddMemberToProjectDialog ref="AddMemberToProjectDialog"></AddMemberToProjectDialog>
   </div>
@@ -75,6 +77,8 @@
   import ProjectSetting from './components/task/components/ProjectSetting';
   import File from './components/File';
   import Overview from './components/Overview';
+  import Version from './components/Version';
+  import Events from './components/Events';
   import { mapState, mapMutations, mapGetters } from 'vuex';
   import BImage from '@/components/B-image';
   import AddMemberToProjectDialog from '@/views/projectManagement/projectList/components/AddMemberToProjectDialog';
@@ -90,6 +94,8 @@
       ProjectSetting,
       File,
       Overview,
+      Version,
+      Events,
     },
     data() {
       return {
@@ -103,7 +109,7 @@
       ...mapState('project', ['currentProjectId', 'projectList', 'indexTab']),
       ...mapGetters('project', ['currentProject']),
       listProjectDataFilter() {
-        return this.projectList.filter(item => item.name.includes(this.keywordProjectName));
+        return this.projectList.filter(item => item.name.includes(this.keywordProjectName) && item.is_recycle === 0);
       },
     },
     beforeRouteEnter(to, from, next) {

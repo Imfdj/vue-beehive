@@ -15,13 +15,32 @@
         </el-button>
       </el-form-item>
       <el-form-item prop="password">
-        <el-input v-model.trim="form.password" type="password" placeholder="新密码" autocomplete="new-password">
+        <el-input
+          v-model.trim="form.password"
+          type="password"
+          placeholder="新密码"
+          autocomplete="new-password"
+          show-password
+        >
+          <i slot="prefix" class="iconfont icon-suo"></i>
+        </el-input>
+      </el-form-item>
+      <el-form-item prop="passwordConfirm">
+        <el-input
+          v-model.trim="form.passwordConfirm"
+          type="password"
+          placeholder="确认密码"
+          autocomplete="new-password"
+          show-password
+        >
           <i slot="prefix" class="iconfont icon-suo"></i>
         </el-input>
       </el-form-item>
       <el-form-item>
-        <el-button class="btn-special" type="primary" @click.native.prevent="handleReister">提交</el-button>
-        <div class="router-link-box" style="margin-top: 20px">
+        <el-button :loading="loading" class="btn-special" type="primary" @click.native.prevent="handleReister"
+          >提交</el-button
+        >
+        <div v-show="!loading" class="router-link-box" style="margin-top: 20px">
           <span @click="changeStatus('login')">登录</span>
         </div>
       </el-form-item>
@@ -51,8 +70,15 @@
         }
       };
       const validatePassword = (rule, value, callback) => {
-        if (!isPassword(value)) {
-          callback(new Error('密码不能少于6位'));
+        if (/^(?=.*[a-zA-Z])(?=.*\d)[^]{6,15}$/.test(value)) {
+          callback();
+        } else {
+          callback(new Error('密码必须是字母和数字的组合'));
+        }
+      };
+      const validatePasswordConfirm = (rule, value, callback) => {
+        if (value !== this.form.password) {
+          callback(new Error('确认密码与新密码不同，请重新输入'));
         } else {
           callback();
         }
@@ -79,7 +105,12 @@
           ],
           password: [
             { required: true, trigger: 'blur', message: '请输入新密码' },
+            { min: 6, max: 15, trigger: 'blur', message: '长度在 6 到 15 个字符' },
             { validator: validatePassword, trigger: 'blur' },
+          ],
+          passwordConfirm: [
+            { required: true, trigger: 'blur', message: '请输入确认密码' },
+            { validator: validatePasswordConfirm, trigger: 'blur' },
           ],
           code: [{ required: true, trigger: 'blur', message: '请输入验证码' }],
         },
@@ -115,7 +146,7 @@
               type: 1,
             });
             if (code === 0) {
-              this.$baseMessage(`验证码发送到${this.form.email}, 请查收！`, 'success');
+              this.$baseNotify('', `验证码发送到${this.form.email}, 请查收！`);
             }
           }
         });
@@ -123,13 +154,15 @@
       handleReister() {
         this.$refs['registerForm'].validate(async valid => {
           if (valid) {
+            this.loading = true;
             const { code, msg } = await usersPassword({ ...this.form });
+            this.loading = false;
             switch (code) {
               case 0:
-                this.$baseMessage('新密码设置成功', 'success');
+                this.$baseNotify('', '新密码设置成功');
                 break;
               default:
-                this.$baseMessage(msg, 'error');
+                this.$baseNotify('', msg, 'error');
                 break;
             }
           }

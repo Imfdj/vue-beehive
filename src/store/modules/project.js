@@ -56,7 +56,7 @@ const actions = {
       data: { rows },
     } = await getProjectList({
       limit: 1000,
-      is_recycle: 0,
+      // is_recycle: 0,
     });
     commit('setProjectList', rows);
   },
