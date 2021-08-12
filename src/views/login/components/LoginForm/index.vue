@@ -192,6 +192,7 @@
   .login-form {
     position: relative;
     max-width: 100%;
+    min-height: 435px;
     margin: calc((100vh - 425px) / 2) 10% 10%;
     overflow: hidden;
     padding-bottom: 30px;
