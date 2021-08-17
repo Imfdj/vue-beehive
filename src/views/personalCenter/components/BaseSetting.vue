@@ -3,22 +3,22 @@
     <div class="wrap-form">
       <el-form ref="ruleForm" :model="ruleForm" :rules="rules" label-width="100px" class="demo-ruleForm">
         <el-form-item label="用户名" prop="username">
-          <el-input v-model="ruleForm.username" disabled="disabled"></el-input>
+          <el-input v-model.trim="ruleForm.username" disabled="disabled"></el-input>
         </el-form-item>
         <el-form-item label="昵称" prop="nickname">
-          <el-input v-model="ruleForm.nickname"></el-input>
+          <el-input v-model.trim="ruleForm.nickname"></el-input>
         </el-form-item>
         <el-form-item label="邮箱" prop="email">
-          <el-input v-model="ruleForm.email" disabled="disabled"></el-input>
+          <el-input v-model.trim="ruleForm.email" disabled="disabled"></el-input>
         </el-form-item>
         <el-form-item label="手机号" prop="phone">
-          <el-input v-model="ruleForm.phone"></el-input>
+          <el-input v-model.trim="ruleForm.phone"></el-input>
         </el-form-item>
         <el-form-item label="公司" prop="company">
-          <el-input v-model="ruleForm.company"></el-input>
+          <el-input v-model.trim="ruleForm.company"></el-input>
         </el-form-item>
         <el-form-item label="城市" prop="city">
-          <el-input v-model="ruleForm.city"></el-input>
+          <el-input v-model.trim="ruleForm.city"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button
@@ -43,6 +43,7 @@
   import { mapState } from 'vuex';
   import { upload } from '@/api/upload';
   import { doEdit, permissions as userPermissions } from '@/api/user';
+  import { validatePhone } from '@/utils/validate-rule-el-form';
 
   export default {
     name: 'BaseSetting',
@@ -57,6 +58,10 @@
           name: [
             { required: true, message: '请输入活动名称', trigger: 'blur' },
             { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' },
+          ],
+          phone: [
+            { required: false, trigger: 'blur' },
+            { validator: validatePhone, trigger: 'blur' },
           ],
         },
         previews: '',

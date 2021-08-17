@@ -12,6 +12,7 @@
         </div>
         <div class="name ellipsis">{{ item.name }}</div>
         <div class="intro ellipsis">{{ item.intro || '暂无介绍' }}</div>
+        <el-progress :percentage="item.progress" :show-text="false" :stroke-width="2"></el-progress>
         <div class="foot">
           <div class="username">{{ item.creator && item.creator.username }}</div>
           <div class="created_at">{{ item.created_at_humanize }}</div>
@@ -177,8 +178,6 @@
           align-items: center;
           line-height: 20px;
           padding-top: 10px;
-          border-top: 1px solid $colorE8;
-
           .username {
           }
 

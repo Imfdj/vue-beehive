@@ -158,6 +158,13 @@ service.interceptors.response.use(
           case 1451:
             errNotification('错误', '操作失败,当前数据存在关联数据');
             break;
+          case 1062:
+            data.data.detail.forEach(item => {
+              if (item.type === 'unique violation' && item.value) {
+                errNotification('错误', `${item.value} 已经存在`);
+              }
+            });
+            break;
           default:
             errNotification('错误', data.msg || `后端接口${error.request?.status}异常`);
             break;
