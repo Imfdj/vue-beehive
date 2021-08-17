@@ -11,6 +11,7 @@
                 label-position="top"
                 label-width="80px"
                 :model="form"
+                :rules="rules"
                 :disabled="!isManager"
                 size="mini"
               >
@@ -18,11 +19,15 @@
                   <CoverImage :cover="form.cover" @uploaded="CoverUploaded"></CoverImage>
                 </el-form-item>
                 <div class="special">
-                  <el-form-item label="项目名称">
+                  <el-form-item label="项目名称" prop="name">
                     <el-input v-model="form.name" style="width: 220px"></el-input>
                   </el-form-item>
-                  <el-form-item label="项目进度 (%)">
-                    <el-input v-model="form.progress" style="width: 220px"></el-input>
+                  <el-form-item label="项目进度 (%)" prop="progress">
+                    <el-input
+                      v-model="form.progress"
+                      :disabled="form.is_auto_progress === 1"
+                      style="width: 220px"
+                    ></el-input>
                   </el-form-item>
                 </div>
                 <el-form-item label="项目简介">
@@ -134,6 +139,13 @@
       },
     },
     data() {
+      const validatorProgress = (rule, value, callback) => {
+        if (value && !(value >= 0 && value <= 100)) {
+          callback(new Error('项目进度百分比最小为0，最大为100'));
+        } else {
+          callback();
+        }
+      };
       return {
         projectPermissions,
         userProjectPermissions,
@@ -149,6 +161,16 @@
           is_private: '',
           manager_id: '',
           is_auto_progress: false,
+        },
+        rules: {
+          name: [
+            { required: true, trigger: 'blur', message: '请输入项目名称' },
+            { min: 2, max: 50, trigger: 'blur', message: '长度在 2 到 50 个字符' },
+          ],
+          progress: [
+            { required: true, trigger: 'blur', message: '请输入项目进度' },
+            { validator: validatorProgress, trigger: 'blur' },
+          ],
         },
         optionsPrivet: [
           {
@@ -179,12 +201,18 @@
         });
       },
       async save() {
-        const { msg } = await doEdit(this.form);
-        this.$baseMessage(msg, 'success');
-        this.$emit('fetchData');
-        if (this.closeBehindSave) {
-          this.close();
-        }
+        this.$refs['form'].validate(async valid => {
+          if (valid) {
+            const { msg } = await doEdit(this.form);
+            this.$baseMessage(msg, 'success');
+            this.$emit('fetchData');
+            if (this.closeBehindSave) {
+              this.close();
+            }
+          } else {
+            return false;
+          }
+        });
       },
       close() {
         this.$refs['form'].resetFields();
