@@ -48,8 +48,10 @@
         } else if (time < 7) {
           this.tip = '清晨好，早起的鸟儿有虫吃，';
         } else if (time < 12) {
-          this.tip = '下午好，';
+          this.tip = '上午好，';
         } else if (time < 19) {
+          this.tip = '下午好，';
+        } else if (time < 22) {
           this.tip = '晚上好，';
         } else if (time <= 23) {
           this.tip = '还在加班吗？辛苦了，';
