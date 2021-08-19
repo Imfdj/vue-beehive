@@ -195,6 +195,10 @@
     .title {
       margin-bottom: 20px;
       line-height: 28px;
+      color: $colorLight;
+      .iconfont {
+        margin-right: 3px;
+      }
     }
     .btn-create-task-file {
       width: 100%;
