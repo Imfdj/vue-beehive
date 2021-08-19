@@ -2,18 +2,24 @@
   <el-dialog :title="title" :visible.sync="dialogFormVisible" width="500px" @close="close">
     <el-form ref="form" :model="form" :rules="rules" label-width="80px">
       <el-form-item label="用户名" prop="username">
-        <el-input v-model.trim="form.username" autocomplete="off"></el-input>
+        <el-input v-model.trim="form.username" disabled autocomplete="off"></el-input>
       </el-form-item>
       <el-form-item label="昵称" prop="nickname">
         <el-input v-model.trim="form.nickname" autocomplete="off"></el-input>
       </el-form-item>
       <el-form-item label="邮箱" prop="email">
-        <el-input v-model.trim="form.email" disabled="true" autocomplete="off"></el-input>
+        <el-input v-model.trim="form.email" disabled autocomplete="off"></el-input>
       </el-form-item>
       <el-form-item label="手机" prop="phone">
         <el-input v-model.trim="form.phone" autocomplete="off"></el-input>
       </el-form-item>
-      <el-form-item label="状态" prop="email">
+      <el-form-item label="公司" prop="company">
+        <el-input v-model.trim="form.company" autocomplete="off"></el-input>
+      </el-form-item>
+      <el-form-item label="城市" prop="city">
+        <el-input v-model.trim="form.city" autocomplete="off"></el-input>
+      </el-form-item>
+      <el-form-item label="状态" prop="state">
         <el-radio v-model="form.state" :label="1">正常</el-radio>
         <el-radio v-model="form.state" :label="0">停用</el-radio>
       </el-form-item>
@@ -27,6 +33,7 @@
 
 <script>
   import { doEdit } from '@/api/user';
+  import { validateEmail, validatePhone } from '@/utils/validate-rule-el-form';
 
   export default {
     name: 'UserManagementEdit',
@@ -43,7 +50,14 @@
             { min: 2, max: 60, trigger: 'blur', message: '长度在 2 到 60 个字符' },
           ],
           nickname: [{ min: 2, max: 60, trigger: 'blur', message: '长度在 2 到 60 个字符' }],
-          email: [{ required: true, trigger: 'blur', message: '请输入邮箱' }],
+          email: [
+            { required: true, trigger: 'blur', message: '请输入邮箱' },
+            { validator: validateEmail, trigger: 'blur' },
+          ],
+          phone: [
+            { required: false, trigger: 'blur' },
+            { validator: validatePhone, trigger: 'blur' },
+          ],
         },
         title: '',
         dialogFormVisible: false,

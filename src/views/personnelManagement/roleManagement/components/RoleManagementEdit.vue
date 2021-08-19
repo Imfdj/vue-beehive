@@ -1,7 +1,7 @@
 <template>
   <el-dialog :title="title" :visible.sync="dialogFormVisible" width="500px" @close="close">
     <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-      <el-form-item label="权限码" prop="name">
+      <el-form-item label="角色名" prop="name">
         <el-input v-model="form.name" autocomplete="off"></el-input>
       </el-form-item>
     </el-form>

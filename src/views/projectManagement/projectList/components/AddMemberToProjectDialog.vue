@@ -31,19 +31,30 @@
               v-if="!item.projectIds.includes(project.id)"
               size="mini"
               :disabled="item.invited || !$checkPermission(invitePermissions.doCreate)"
-              plain
+              type="primary"
               @click="add(item)"
             >
               <i class="iconfont icon-jiaren"></i> {{ item.invited ? '已邀请' : '邀请' }}
             </el-button>
-            <span v-else>
-              <i
-                class="iconfont"
-                :class="item.id === project.manager_id ? 'icon-role' : 'icon-ren'"
-                style="margin-right: 5px"
-              ></i
-              >{{ item.id === project.manager_id ? '拥有者' : '已加入' }}
-            </span>
+            <div v-else>
+              <el-button
+                v-if="item.id !== project.manager_id && project.manager_id === userInfo.id"
+                size="mini"
+                :disabled="!$checkPermission(userProjectPermissions.doQuit)"
+                type="danger"
+                icon="el-icon-circle-close"
+                @click="doQuit(item)"
+                >移出
+              </el-button>
+              <div v-else>
+                <i
+                  class="iconfont"
+                  style="margin-right: 5px"
+                  :class="item.id === project.manager_id ? 'icon-role' : 'icon-ren'"
+                ></i
+                >{{ item.id === project.manager_id ? '拥有者' : '已加入' }}
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -64,6 +75,7 @@
 <script>
   import { getList } from '@/api/user';
   import { doCreate as doCreateInvite, permissions as invitePermissions } from '@/api/inviteManagement';
+  import { doQuit, permissions as userProjectPermissions } from '@/api/userProjectManagement';
   import BImage from '@/components/B-image';
   import { waitTimeout } from '@/utils';
   import { mapState } from 'vuex';
@@ -76,6 +88,7 @@
     data() {
       return {
         invitePermissions,
+        userProjectPermissions,
         dialogVisible: false,
         loading: false,
         keyword: '',
@@ -159,6 +172,16 @@
         });
         // 设置此用户已邀请
         user.invited = true;
+      },
+      doQuit(user) {
+        this.$baseConfirm(`你确定要将 ${user.username} 移出此项目吗`, null, async () => {
+          await doQuit({
+            user_id: user.id,
+            project_id: this.project.id,
+          });
+          this.getUserList();
+          this.$baseNotify('', `已成功移出项目 ${this.form.name}`);
+        });
       },
     },
   };

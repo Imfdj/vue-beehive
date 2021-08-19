@@ -52,6 +52,10 @@ const methodUrl = {
     url: '/v1/users/department',
     method: 'put',
   },
+  getExistsUserUniqueFields: {
+    url: '/v1/users/exists_user_unique_fields',
+    method: 'get',
+  },
 };
 
 export const permissions = Object.assign({}, methodUrl, { ...getPermissionStr(methodUrl) });
@@ -142,5 +146,12 @@ export function updateUserDepartment(data) {
   return request({
     ...methodUrl.updateUserDepartment,
     data,
+  });
+}
+
+export function getExistsUserUniqueFields(params) {
+  return request({
+    ...methodUrl.getExistsUserUniqueFields,
+    params,
   });
 }

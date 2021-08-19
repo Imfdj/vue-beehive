@@ -1,5 +1,5 @@
 <template>
-  <div v-if="currentNav.children && currentNav.children.length && !noNav" class="menu-vue-admin-scaffold">
+  <div v-if="currentNav.children && currentNav.children.length && !noNav" class="menu-vue-beehive">
     <el-menu
       :default-active="activeMenu"
       class="el-menu-vertical-demo"
@@ -88,7 +88,7 @@
 </script>
 
 <style lang="scss" scoped>
-  .menu-vue-admin-scaffold {
+  .menu-vue-beehive {
     position: relative;
     height: calc(100vh - 65px);
     background-color: #001529;

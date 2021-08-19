@@ -18,7 +18,7 @@ const date = new dayjs().format('YYYY_M_D');
 const time = new dayjs().format('YYYY-M-D HH:mm:ss');
 const CompressionWebpackPlugin = require('compression-webpack-plugin');
 const productionGzipExtensions = ['html', 'js', 'css', 'svg'];
-process.env.VUE_APP_TITLE = title || 'vue-admin-scaffold';
+process.env.VUE_APP_TITLE = title || 'vue-beehive';
 process.env.VUE_APP_AUTHOR = author || 'Imfdj';
 process.env.VUE_APP_UPDATE_TIME = time;
 process.env.VUE_APP_VERSION = version;
@@ -42,7 +42,7 @@ module.exports = {
     },
     proxy: {
       '/api': {
-        target: 'http://127.0.0.1:7002',
+        target: 'http://127.0.0.1:7001',
         changeOrigin: true,
         ws: true,
         pathRewrite: {
@@ -50,7 +50,7 @@ module.exports = {
         },
       },
       '/public/upload': {
-        target: 'http://127.0.0.1:7002',
+        target: 'http://127.0.0.1:7001',
         changeOrigin: true,
         ws: true,
         pathRewrite: {
@@ -58,7 +58,7 @@ module.exports = {
         },
       },
       '/socket.io': {
-        target: 'http://127.0.0.1:7002',
+        target: 'http://127.0.0.1:7001',
         changeOrigin: true,
         ws: true,
         pathRewrite: {
@@ -85,12 +85,7 @@ module.exports = {
               vuex: 'Vuex',
             }
           : {},
-      plugins: [
-        new Webpack.ProvidePlugin(providePlugin),
-        new WebpackBar({
-          name: `\u0076\u0075\u0065\u002d\u0061\u0064\u006d\u0069\u006e\u002d\u0062\u0065\u0061\u0075\u0074\u0069\u0066\u0075\u006c`,
-        }),
-      ],
+      plugins: [new Webpack.ProvidePlugin(providePlugin)],
     };
   },
   chainWebpack(config) {

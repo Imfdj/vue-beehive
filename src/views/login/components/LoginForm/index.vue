@@ -46,16 +46,22 @@
     <div v-show="!loading" class="router-link-box">
       <span @click="changeStatus('retrievePassword')">找回密码</span>
     </div>
+    <DragCerifyImgChip ref="DragCerifyImgChip" class="img-chip" @passcallback="passcallback"></DragCerifyImgChip>
   </el-form>
 </template>
 
 <script>
   import { github_auth_authorize_url, github_auth_client_id, github_auth_redirect_uri, title } from '@/config/settings';
   import { isPassword } from '@/utils/validate';
+  import { getExistsUserUniqueFields, permissions as userPermissions } from '@/api/user';
   import qs from 'qs';
+  import DragCerifyImgChip from '@/components/DragCerifyImgChip';
 
   export default {
     name: 'LoginForm',
+    components: {
+      DragCerifyImgChip,
+    },
     directives: {
       focus: {
         inserted(el) {
@@ -64,9 +70,12 @@
       },
     },
     data() {
-      const validateusername = (rule, value, callback) => {
-        if ('' == value) {
-          callback(new Error('用户名不能为空'));
+      const validateusername = async (rule, value, callback) => {
+        const { code } = await getExistsUserUniqueFields({
+          username: value,
+        });
+        if (code !== 0) {
+          callback(new Error('用户名不存在'));
         } else {
           callback();
         }
@@ -79,6 +88,7 @@
         }
       };
       return {
+        userPermissions,
         nodeEnv: process.env.NODE_ENV,
         title: this.$baseTitle,
         form: {
@@ -87,11 +97,9 @@
         },
         rules: {
           username: [
-            {
-              required: true,
-              trigger: 'blur',
-              validator: validateusername,
-            },
+            { required: true, trigger: 'blur', message: '请输入用户名' },
+            { min: 2, max: 20, trigger: 'blur', message: '长度在 2 到 20 个字符' },
+            { validator: validateusername, trigger: 'blur' },
           ],
           password: [
             {
@@ -142,17 +150,23 @@
       },
       async login(params) {
         this.loading = true;
-        await this.$store.dispatch('user/login', params).catch(() => {
+        await this.$store.dispatch('user/login', params).catch(res => {
+          // github授权登录失败处理
+          const githubLogin = userPermissions.githubLogin.split(':');
+          if (`/api${res.config.url}` === githubLogin[1] && res.config.method === githubLogin[0]) {
+            this.$baseNotify('', '网络不稳定，github授权登录失败，请重试！', 'error');
+          }
           this.loading = false;
         });
-        const routerPath = this.redirect === '/404' || this.redirect === '/401' ? '/' : this.redirect;
+        const routerPath =
+          this.redirect === '/404' || this.redirect === '/403' || this.redirect === '/401' ? '/' : this.redirect;
         await this.$router.push(routerPath).catch(() => {});
         this.loading = false;
       },
       handleLogin() {
         this.$refs.form.validate(async valid => {
           if (valid) {
-            this.login(this.form);
+            this.$refs.DragCerifyImgChip.show();
           } else {
             return false;
           }
@@ -164,6 +178,12 @@
       changeStatus(status) {
         this.$emit('changeStatus', status);
       },
+      passcallback() {
+        this.login(this.form);
+        setTimeout(() => {
+          this.$refs.DragCerifyImgChip && this.$refs.DragCerifyImgChip.close();
+        }, 500);
+      },
     },
   };
 </script>
@@ -172,8 +192,10 @@
   .login-form {
     position: relative;
     max-width: 100%;
+    min-height: 435px;
     margin: calc((100vh - 425px) / 2) 10% 10%;
     overflow: hidden;
+    padding-bottom: 30px;
 
     .forget-password {
       width: 100%;
@@ -290,6 +312,12 @@
           caret-color: $base-font-color;
         }
       }
+    }
+    .img-chip {
+      position: absolute;
+      top: 94px;
+      left: 50%;
+      transform: translateX(-50%);
     }
   }
 </style>

@@ -9,7 +9,7 @@ const state = {
   routes: [],
   partialRoutes: [],
   accessRoutesTree: [],
-  navIndex: 0,
+  navIndex: -1,
   noNav: false,
 };
 const getters = {

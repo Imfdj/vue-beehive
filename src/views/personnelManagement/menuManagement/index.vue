@@ -39,8 +39,14 @@
       @sort-change="sortChang"
     >
       <el-table-column show-overflow-tooltip type="selection"></el-table-column>
-      <el-table-column show-overflow-tooltip prop="title" label="路由title" :sortable="'custom'"></el-table-column>
-      <el-table-column show-overflow-tooltip prop="name" label="路由名" :sortable="'custom'"></el-table-column>
+      <el-table-column
+        show-overflow-tooltip
+        prop="title"
+        label="路由title"
+        min-width="130px"
+        :sortable="'custom'"
+      ></el-table-column>
+      <el-table-column show-overflow-tooltiprefresh prop="name" label="路由名" :sortable="'custom'"></el-table-column>
       <el-table-column show-overflow-tooltip prop="parent_id" label="父ID" :sortable="'custom'"></el-table-column>
       <el-table-column show-overflow-tooltip prop="icon" label="图标url" :sortable="'custom'"></el-table-column>
       <el-table-column show-overflow-tooltip prop="path" label="路由路径" :sortable="'custom'"></el-table-column>
