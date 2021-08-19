@@ -46,13 +46,29 @@
     </div>
     <div class="wrap-comment">
       <div class="input">
+        <el-popover v-model="showUserListPopover" placement="top-start" popper-class="mention-user-list" width="200">
+          <div class="user-list">
+            <div
+              v-for="user in taskInfo.participators"
+              :key="user.id"
+              class="user-item"
+              @click="mentionUserSelect(user)"
+            >
+              <BImage class="user-avatar" :src="user.avatar || ''" :width="24" :height="24" :borderRadius="24"></BImage>
+              <div class="username">{{ user.username }}</div>
+            </div>
+          </div>
+          <div slot="reference"></div>
+        </el-popover>
         <el-input
           v-model="content"
+          ref="contentInputRef"
           type="textarea"
           :autosize="{ minRows: 1, maxRows: 1 }"
           :disabled="!$checkPermission(taskLogPermissions.doCreate)"
           placeholder="@ 提及他人，按Ctrl + Enter快速发布"
           @keyup.ctrl.enter.native="doCreate"
+          @input="contentChange"
         ></el-input>
       </div>
       <div class="ctrl">
@@ -96,6 +112,10 @@
         type: Array,
         required: true,
       },
+      dialogTableVisible: {
+        type: Boolean,
+        required: true,
+      },
     },
     data() {
       return {
@@ -104,6 +124,7 @@
         showCount: 5,
         showAll: false,
         isOnCreate: false,
+        showUserListPopover: false,
         is_comment: '',
         content: '',
         types: [
@@ -142,6 +163,14 @@
         return this.types.find(type => {
           return type.command === this.is_comment;
         }).label;
+      },
+    },
+    watch: {
+      dialogTableVisible(newValue, oldValue) {
+        if (!newValue) {
+          this.showUserListPopover = newValue;
+          this.content = '';
+        }
       },
     },
     sockets: {
@@ -238,6 +267,17 @@
       dropdownCommand(command) {
         this.is_comment = command;
         this.getList();
+      },
+      contentChange(value) {
+        console.log(value);
+        console.log(/@$/.test(value));
+        this.showUserListPopover = /@$/.test(value);
+      },
+      mentionUserSelect(user) {
+        this.showUserListPopover = false;
+        console.log(user);
+        this.content += user.username + ' ';
+        this.$refs.contentInputRef.focus();
       },
     },
   };
@@ -349,6 +389,25 @@
 
         .btn-emoji {
           font-size: 20px;
+        }
+      }
+    }
+  }
+</style>
+<style lang="scss">
+  .mention-user-list {
+    padding: 8px 0px !important;
+    .user-list {
+      .user-item {
+        display: flex;
+        align-items: center;
+        padding: 5px;
+        .user-avatar {
+          margin-right: 5px;
+        }
+        &:hover {
+          background-color: #f5f5f5;
+          cursor: pointer;
         }
       }
     }

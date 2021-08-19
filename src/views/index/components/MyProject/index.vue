@@ -145,7 +145,7 @@
           top: 0;
           right: 0;
           width: 70px;
-          background-color: rgba(19, 210, 173, 0.6);
+          background-color: rgba(87, 78, 254, 0.8);
           color: #fff;
           padding-top: 10px;
           transform: translateX(50%) rotateZ(45deg);

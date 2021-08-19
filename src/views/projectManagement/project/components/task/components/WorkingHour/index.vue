@@ -1,9 +1,8 @@
 <template>
   <div class="working-hour">
     <div class="label">
-      <i class="el-icon-time"></i> 工时<span v-if="task.plan_work_hours"
-        >· 预估工时 {{ task.plan_work_hours }} 小时</span
-      >
+      <span class="title"><i class="el-icon-time"></i> 工时</span>
+      <span v-if="task.plan_work_hours">· 预估工时 {{ task.plan_work_hours }} 小时</span>
       <el-button
         type="text"
         size="medium"
@@ -68,7 +67,7 @@
       <el-form v-if="task" ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label-width="0px" prop="plan_work_hours">
           <el-input-number
-            v-model="form.plan_work_hours"
+            v-model.number="form.plan_work_hours"
             controls-position="right"
             :min="0"
             :max="10000"
@@ -223,6 +222,12 @@
       width: 100%;
       min-height: 36px;
       padding: 5px 0;
+      .title {
+        color: $colorLight;
+        .el-icon-time {
+          margin-right: 3px;
+        }
+      }
 
       .el-icon-edit-outline {
         margin-left: 5px;
