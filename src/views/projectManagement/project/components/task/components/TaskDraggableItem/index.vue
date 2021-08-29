@@ -77,6 +77,14 @@
       ...mapGetters('project', ['isCurrentProjectMember']),
     },
     created() {},
+    watch: {
+      element: {
+        handler: function (val, oldVal) {
+          this.$forceUpdate();
+        },
+        deep: true,
+      },
+    },
     methods: {
       async changeDoneState(task) {
         task.is_done = task.is_done === 1 ? 0 : 1;

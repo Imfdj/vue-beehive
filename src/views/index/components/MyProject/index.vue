@@ -78,7 +78,10 @@
         this.loading = true;
         const {
           data: { rows, count },
-        } = await getList({});
+        } = await getList({
+          is_recycle: 0,
+          is_archived: 0,
+        });
         this.total = count;
         this.$emit('getProjectCount', count);
         this.projectList = rows.map(item => {
