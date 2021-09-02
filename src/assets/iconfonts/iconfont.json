@@ -6,6 +6,34 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "21075588",
+      "name": "copyright",
+      "font_class": "copyright2",
+      "unicode": "e823",
+      "unicode_decimal": 59427
+    },
+    {
+      "icon_id": "1901647",
+      "name": "品牌",
+      "font_class": "pinpai",
+      "unicode": "e606",
+      "unicode_decimal": 58886
+    },
+    {
+      "icon_id": "3900372",
+      "name": "文件",
+      "font_class": "shangwutubiao-",
+      "unicode": "e63f",
+      "unicode_decimal": 58943
+    },
+    {
+      "icon_id": "15922119",
+      "name": "统计",
+      "font_class": "tongji",
+      "unicode": "e65b",
+      "unicode_decimal": 58971
+    },
+    {
       "icon_id": "2198788",
       "name": "视频",
       "font_class": "shipin",

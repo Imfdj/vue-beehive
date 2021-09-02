@@ -19,6 +19,7 @@
         </div>
       </div>
       <div class="wrap-ctrl">
+        <GithubPath style="margin-right: 10px"></GithubPath>
         <div class="wrap-online-user">
           <el-badge :hidden="!onlineUserIds.length" :value="onlineUserIds.length" type="primary" class="item">
             <i class="iconfont icon-duoren1"></i>
@@ -50,6 +51,7 @@
 
 <script>
   import BImage from '@/components/B-image';
+  import GithubPath from '@/components/GithubPath';
   import { mapGetters, mapMutations, mapState } from 'vuex';
   import UserOperation from './UserOperation';
   import MessageBox from './MessageBox';
@@ -60,6 +62,7 @@
     name: 'Header',
     components: {
       BImage,
+      GithubPath,
       UserOperation,
       MessageBox,
     },
@@ -148,6 +151,7 @@
       .nav-list {
         display: flex;
         align-items: center;
+        user-select: none;
         flex: 1;
         @mixin active($color: #1890ff) {
           color: $color;

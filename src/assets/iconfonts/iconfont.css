@@ -1,7 +1,7 @@
 @font-face {
   font-family: 'iconfont'; /* Project id 2253775 */
-  src: url('iconfont.woff2?t=1624630204188') format('woff2'), url('iconfont.woff?t=1624630204188') format('woff'),
-    url('iconfont.ttf?t=1624630204188') format('truetype');
+  src: url('iconfont.woff2?t=1630575381070') format('woff2'), url('iconfont.woff?t=1630575381070') format('woff'),
+    url('iconfont.ttf?t=1630575381070') format('truetype');
 }
 
 .iconfont {
@@ -10,6 +10,22 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-copyright2:before {
+  content: '\e823';
+}
+
+.icon-pinpai:before {
+  content: '\e606';
+}
+
+.icon-shangwutubiao-:before {
+  content: '\e63f';
+}
+
+.icon-tongji:before {
+  content: '\e65b';
 }
 
 .icon-shipin:before {
