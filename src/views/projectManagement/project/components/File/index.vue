@@ -33,16 +33,7 @@
         <el-row v-for="item in dataList" v-show="item.is_recycle === 0" :key="item.id">
           <el-col :span="15">
             <div class="title">
-              <BImage
-                v-if="item.file_type.includes('image')"
-                class="user-avatar"
-                :src="item.path || ''"
-                :width="32"
-                :height="32"
-                :borderRadius="8"
-              ></BImage>
-              <i v-if="item.file_type.includes('audio')" class="iconfont icon-yinle"></i>
-              <i v-if="item.file_type.includes('video')" class="iconfont icon-shipin"></i>
+              <FileTypeIcon :file="item"></FileTypeIcon>
               <a v-if="!item.onEdit" :href="item.path" target="_blank">{{ item.title + item.extension }}</a>
               <el-input
                 v-else
@@ -94,8 +85,8 @@
 
 <script>
   import mixin from '@/mixins';
-  import BImage from '@/components/B-image';
   import Dropdown from '@/components/Dropdown';
+  import FileTypeIcon from '@/components/FileTypeIcon';
   import { getList, doEdit, doCreate, permissions as projectFilePermissions } from '@/api/projectFileManagement';
   import { mapState } from 'vuex';
   import { dateHumanizeFormat } from '@/utils';
@@ -105,9 +96,9 @@
   export default {
     name: 'File',
     components: {
-      BImage,
       Upload,
       Dropdown,
+      FileTypeIcon,
     },
     mixins: [mixin],
     data() {
@@ -281,19 +272,6 @@
         .title {
           display: flex;
           align-items: center;
-          .iconfont {
-            font-size: 32px;
-            margin-right: 10px;
-          }
-          .icon-yinle {
-            color: #ffa115;
-          }
-          .icon-shipin {
-            color: #3598dc;
-          }
-          .user-avatar {
-            margin-right: 10px;
-          }
           & a {
             color: $color333;
           }

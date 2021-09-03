@@ -14,10 +14,10 @@
       <div class="title-list">关联文件列表</div>
       <div class="file-list">
         <div v-for="item in fileListFilter" :key="item.id" class="item">
-          <BImage class="user-avatar" :src="item.path || ''" :width="24" :height="24" :borderRadius="24"></BImage>
+          <FileTypeIcon class="user-avatar" :file="item" :size="24" :borderRadius="24"></FileTypeIcon>
           <div class="title-file ellipsis">
             <span class="name">
-              <a :href="item.path" target="_blank">{{ item.title }}</a>
+              <a :href="item.path" target="_blank">{{ item.filename }}</a>
             </span>
           </div>
           <span v-if="item.project" class="project-name ellipsis">{{ item.project.name }}</span>
@@ -43,8 +43,8 @@
 </template>
 
 <script>
-  import BImage from '@/components/B-image';
   import Upload from '@/components/Upload';
+  import FileTypeIcon from '@/components/FileTypeIcon';
   import mixin from '@/mixins';
   import { getList, doCreate, doDelete, permissions as projectFilePermissions } from '@/api/projectFileManagement';
   import { mapGetters, mapState } from 'vuex';
@@ -53,8 +53,8 @@
   export default {
     name: 'TaskFile',
     components: {
-      BImage,
       Upload,
+      FileTypeIcon,
     },
     mixins: [mixin],
     props: {
