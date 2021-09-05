@@ -142,6 +142,7 @@
       padding-right: 10px;
 
       .name {
+        text-align: justify;
       }
 
       .info {

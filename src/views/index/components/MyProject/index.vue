@@ -125,7 +125,7 @@
     .list-project {
       display: flex;
       flex-wrap: wrap;
-      min-height: 750px;
+      min-height: 500px;
 
       .item-project {
         position: relative;

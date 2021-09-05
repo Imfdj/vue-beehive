@@ -196,14 +196,14 @@
     }
 
     .wrap-task-list {
-      height: 510px;
+      height: 500px;
       padding: 0 20px;
 
       .task-item {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        height: 50px;
+        height: 48px;
         border-bottom: 1px solid $colorE8;
 
         .task-name {

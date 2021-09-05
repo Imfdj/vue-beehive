@@ -1,8 +1,8 @@
 <template>
-  <div class="project-list wrap-content-main">
+  <div v-loading="loading" class="project-list wrap-content-main">
     <el-tabs v-model="activeName">
       <el-tab-pane v-for="(item, index) in titles" :key="index" :label="item" :name="(index + 1).toString()">
-        <div v-loading="loading" class="list color-light">
+        <div class="list color-light">
           <div v-for="project in listDataFilter" :key="project.id" class="item-list">
             <BImage :src="project.cover"></BImage>
             <div class="item-info">

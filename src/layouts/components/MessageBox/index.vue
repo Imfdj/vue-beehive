@@ -4,7 +4,7 @@
     title=""
     width="360"
     :offset="-190"
-    trigger="click"
+    trigger="hover"
     popper-class="message-box-popover"
     :open-delay="200"
     @show="onShow"
