@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :title="title" :visible.sync="dialogFormVisible" width="500px" @close="close">
+  <el-dialog :title="title" :visible.sync="dialogFormVisible" width="500px" top="15px" @close="close">
     <div class="buttons">
       <el-button @click="setAllChecked">全选</el-button>
       <el-button @click="resetChecked">清空</el-button>
@@ -19,19 +19,33 @@
     </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button @click="close">取 消</el-button>
-      <el-button type="primary" :loading="!isSetCheckedKeys" @click="save">确 定</el-button>
+      <el-button
+        type="primary"
+        :loading="!isSetCheckedKeys"
+        :disabled="
+          !$checkPermission(roleMenuPermissions.doBulkMenuCreate) || !$checkPermission(roleMenuPermissions.doDelete)
+        "
+        @click="save"
+        >确 定
+      </el-button>
     </div>
   </el-dialog>
 </template>
 
 <script>
   import { getList as getMenuList } from '@/api/menuManagement';
-  import { getList as getRoleMenuList, doBulkMenuCreate, doDelete } from '@/api/roleMenuManagement';
+  import {
+    getList as getRoleMenuList,
+    doBulkMenuCreate,
+    doDelete,
+    permissions as roleMenuPermissions,
+  } from '@/api/roleMenuManagement';
 
   export default {
     name: 'RoleMenuManagementEdit',
     data() {
       return {
+        roleMenuPermissions,
         isSetCheckedKeys: false,
         menuListOrigin: [],
         menuListData: [],

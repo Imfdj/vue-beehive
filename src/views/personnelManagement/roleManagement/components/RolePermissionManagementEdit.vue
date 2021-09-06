@@ -22,19 +22,34 @@
     </div>
     <div slot="footer" class="dialog-footer">
       <el-button @click="close">取 消</el-button>
-      <el-button type="primary" :loading="!isSetCheckedKeys" @click="save">确 定</el-button>
+      <el-button
+        type="primary"
+        :loading="!isSetCheckedKeys"
+        :disabled="
+          !$checkPermission(rolePermissionPermissions.doBulkPermissionCreate) ||
+          !$checkPermission(rolePermissionPermissions.doDelete)
+        "
+        @click="save"
+        >确 定
+      </el-button>
     </div>
   </el-dialog>
 </template>
 
 <script>
   import { getList as getPermissionList } from '@/api/permissionManagement';
-  import { getList as getRoleMenuList, doBulkPermissionCreate, doDelete } from '@/api/rolePermissionManagement';
+  import {
+    getList as getRoleMenuList,
+    doBulkPermissionCreate,
+    doDelete,
+    permissions as rolePermissionPermissions,
+  } from '@/api/rolePermissionManagement';
 
   export default {
     name: 'RolePermissionManagementEdit',
     data() {
       return {
+        rolePermissionPermissions,
         isSetCheckedKeys: false,
         menuListOrigin: [],
         menuListData: [],
