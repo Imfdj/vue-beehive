@@ -88,7 +88,12 @@ module.exports = {
   //github授权登录authorize请求地址
   github_auth_authorize_url: 'https://github.com/login/oauth/authorize',
   //github授权登录client_id
-  github_auth_client_id: NODE_ENV === 'production' ? 'd347423472204bea6caf' : '7191c2792ca23d773c32',
+  github_auth_client_id:
+    NODE_ENV === 'production'
+      ? BUILD_PREVIEW === 'true'
+        ? '4827d5eb3fec86a9d541'
+        : 'd347423472204bea6caf'
+      : '7191c2792ca23d773c32',
   //github授权登录重定向地址
   github_auth_redirect_uri:
     NODE_ENV === 'production'
