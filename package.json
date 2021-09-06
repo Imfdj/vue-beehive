@@ -10,7 +10,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "build:qiniu:preview": "cross-env BUILD_TARGET=qiniu BUILD_PREVIEW=true vue-cli-service build",
+    "build:qiniu:preview": "cross-env BUILD_TARGET=qiniu VUE_APP_PREVIEW=true vue-cli-service build",
     "build:qiniu": "cross-env BUILD_TARGET=qiniu vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
     "test:e2e": "vue-cli-service test:e2e",
