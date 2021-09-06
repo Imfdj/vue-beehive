@@ -18,7 +18,7 @@
     </div>
     <div class="info-footer">
       <GithubPath></GithubPath>
-      <div class="info-beian"> <i class="iconfont icon-copyright2"></i> 2021 Beehive | 粤ICP备19028126号-1 </div>
+      <div class="info-beian"><i class="iconfont icon-copyright2"></i> 2021 Beehive | 粤ICP备19028126号-1</div>
     </div>
   </div>
 </template>
@@ -68,16 +68,7 @@
       }
       this.initTimer();
       // 当页面不可见时，清空定时器
-      document.addEventListener('visibilitychange', () => {
-        // 页面变为不可见时触发
-        if (document.visibilityState == 'hidden') {
-          this.clearTimer();
-        }
-        // 页面变为可见时触发
-        if (document.visibilityState == 'visible') {
-          this.initTimer();
-        }
-      });
+      document.addEventListener('visibilitychange', this.doVisibilitychange);
     },
     methods: {
       clickHandler() {
@@ -91,16 +82,28 @@
         this.clearTimer();
         this.timerInter = setInterval(() => {
           this.clickHandler();
-        }, 1000 * 10);
+        }, 1000 * 9);
       },
       clearTimer() {
         if (this.timerInter) {
           clearInterval(this.timerInter);
+          this.timerInter = null;
+        }
+      },
+      doVisibilitychange() {
+        // 页面变为不可见时触发
+        if (document.visibilityState == 'hidden') {
+          this.clearTimer();
+        }
+        // 页面变为可见时触发
+        if (document.visibilityState == 'visible') {
+          this.initTimer();
         }
       },
     },
     destroyed() {
       this.clearTimer();
+      document.removeEventListener('visibilitychange', this.doVisibilitychange);
     },
   };
 </script>

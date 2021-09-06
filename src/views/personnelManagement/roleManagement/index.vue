@@ -50,25 +50,20 @@
       <el-table-column show-overflow-tooltip fixed="right" label="操作" width="270">
         <template v-slot="scope">
           <el-button
-            :disabled="
-              !$checkPermission(rolePermissionPermissions.doBulkPermissionCreate) ||
-              !$checkPermission(rolePermissionPermissions.doDelete)
-            "
+            :disabled="!$checkPermission(rolePermissionPermissions.getList)"
             type="text"
             @click="handlePermissionEdit(scope.row)"
-            >资源管理</el-button
-          >
+            >资源管理
+          </el-button>
           <el-button
-            :disabled="
-              !$checkPermission(roleMenuPermissions.doBulkMenuCreate) || !$checkPermission(roleMenuPermissions.doDelete)
-            "
+            :disabled="!$checkPermission(roleMenuPermissions.getList)"
             type="text"
             @click="handleMenuEdit(scope.row)"
-            >菜单管理</el-button
-          >
+            >菜单管理
+          </el-button>
           <el-button :disabled="!$checkPermission(rolePermissions.doEdit)" type="text" @click="handleEdit(scope.row)"
-            >编辑</el-button
-          >
+            >编辑
+          </el-button>
           <el-button
             :disabled="!$checkPermission(rolePermissions.doDelete)"
             type="text"
