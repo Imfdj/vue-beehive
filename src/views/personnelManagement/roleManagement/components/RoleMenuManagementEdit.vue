@@ -1,27 +1,29 @@
 <template>
   <el-dialog :title="title" :visible.sync="dialogFormVisible" width="500px" top="15px" @close="close">
-    <div class="buttons">
-      <el-button @click="setAllChecked">全选</el-button>
-      <el-button @click="resetChecked">清空</el-button>
+    <div v-loading="loading">
+      <div class="buttons">
+        <el-button @click="setAllChecked">全选</el-button>
+        <el-button @click="resetChecked">清空</el-button>
+      </div>
+      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+        <el-form-item label="" prop="permissions">
+          <el-tree
+            ref="tree"
+            :data="menuListData"
+            show-checkbox
+            default-expand-all
+            check-on-click-node
+            node-key="id"
+            :props="defaultProps"
+          ></el-tree>
+        </el-form-item>
+      </el-form>
     </div>
-    <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-      <el-form-item label="" prop="permissions">
-        <el-tree
-          ref="tree"
-          :data="menuListData"
-          show-checkbox
-          default-expand-all
-          check-on-click-node
-          node-key="id"
-          :props="defaultProps"
-        ></el-tree>
-      </el-form-item>
-    </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button @click="close">取 消</el-button>
       <el-button
         type="primary"
-        :loading="!isSetCheckedKeys"
+        :loading="loading"
         :disabled="
           !$checkPermission(roleMenuPermissions.doBulkMenuCreate) || !$checkPermission(roleMenuPermissions.doDelete)
         "
@@ -46,7 +48,7 @@
     data() {
       return {
         roleMenuPermissions,
-        isSetCheckedKeys: false,
+        loading: false,
         menuListOrigin: [],
         menuListData: [],
         menuIdsOrigin: [], // 存储原所有的id
@@ -136,19 +138,19 @@
         });
         this.menuChildrenIdsOrigin = this.$baseLodash.difference(this.menuIdsOrigin, parentIds);
         this.$refs.tree.setCheckedKeys(this.menuChildrenIdsOrigin);
-        this.isSetCheckedKeys = true;
       },
       async showEdit(row) {
         this.rowEdit = row;
         this.dialogFormVisible = true;
+        this.loading = true;
         await this.doGetRoleList();
         await this.doGetRoleMenuList(row);
+        this.loading = false;
       },
       close() {
         this.$refs['form'].resetFields();
         this.form = this.$options.data().form;
         this.resetChecked();
-        this.isSetCheckedKeys = false;
         this.dialogFormVisible = false;
       },
       /**

@@ -90,14 +90,14 @@ module.exports = {
   //github授权登录client_id
   github_auth_client_id:
     NODE_ENV === 'production'
-      ? VUE_APP_PREVIEW.trim() == 'true'
+      ? VUE_APP_PREVIEW && VUE_APP_PREVIEW.trim() == 'true'
         ? '4827d5eb3fec86a9d541'
         : 'd347423472204bea6caf'
       : '7191c2792ca23d773c32',
   //github授权登录重定向地址
   github_auth_redirect_uri:
     NODE_ENV === 'production'
-      ? `https://${VUE_APP_PREVIEW.trim() == 'true' ? 'beehives' : 'beehive'}.imfdj.top/login`
+      ? `https://${VUE_APP_PREVIEW && VUE_APP_PREVIEW.trim() == 'true' ? 'beehives' : 'beehive'}.imfdj.top/login`
       : 'http://localhost/login',
   // 项目列表路径
   project_list_path: '/projectManagement/ProjectLists',

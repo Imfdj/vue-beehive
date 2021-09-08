@@ -1,30 +1,32 @@
 <template>
   <el-dialog :title="title" :visible.sync="dialogFormVisible" width="900px" top="5vh" @close="close">
-    <div class="buttons">
-      <el-button @click="setAllChecked">全选</el-button>
-      <el-button @click="resetChecked">清空</el-button>
-    </div>
-    <div class="wrap-tree">
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="" prop="permissions">
-          <el-tree
-            ref="tree"
-            :data="menuListData"
-            show-checkbox
-            node-key="id"
-            default-expand-all
-            check-on-click-node
-            highlight-current
-            :props="defaultProps"
-          ></el-tree>
-        </el-form-item>
-      </el-form>
+    <div v-loading="loading">
+      <div class="buttons">
+        <el-button @click="setAllChecked">全选</el-button>
+        <el-button @click="resetChecked">清空</el-button>
+      </div>
+      <div class="wrap-tree">
+        <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+          <el-form-item label="" prop="permissions">
+            <el-tree
+              ref="tree"
+              :data="menuListData"
+              show-checkbox
+              node-key="id"
+              default-expand-all
+              check-on-click-node
+              highlight-current
+              :props="defaultProps"
+            ></el-tree>
+          </el-form-item>
+        </el-form>
+      </div>
     </div>
     <div slot="footer" class="dialog-footer">
       <el-button @click="close">取 消</el-button>
       <el-button
         type="primary"
-        :loading="!isSetCheckedKeys"
+        :loading="loading"
         :disabled="
           !$checkPermission(rolePermissionPermissions.doBulkPermissionCreate) ||
           !$checkPermission(rolePermissionPermissions.doDelete)
@@ -50,7 +52,7 @@
     data() {
       return {
         rolePermissionPermissions,
-        isSetCheckedKeys: false,
+        loading: false,
         menuListOrigin: [],
         menuListData: [],
         menuIdsOrigin: [], // 存储原所有的id
@@ -61,7 +63,7 @@
           permissions: [],
         },
         rules: {},
-        title: '菜单管理',
+        title: '资源管理',
         dialogFormVisible: false,
         rowEdit: {},
         defaultProps: {
@@ -160,19 +162,19 @@
         });
         this.menuChildrenIdsOrigin = this.$baseLodash.difference(this.menuIdsOrigin, parentIds);
         this.$refs.tree.setCheckedKeys(this.menuChildrenIdsOrigin);
-        this.isSetCheckedKeys = true;
       },
       async showEdit(row) {
         this.rowEdit = row;
         this.dialogFormVisible = true;
+        this.loading = true;
         await this.doGetRoleList();
         await this.doGetRoleMenuList(row);
+        this.loading = false;
       },
       close() {
         this.$refs['form'].resetFields();
         this.form = this.$options.data().form;
         this.resetChecked();
-        this.isSetCheckedKeys = false;
         this.dialogFormVisible = false;
       },
       /**

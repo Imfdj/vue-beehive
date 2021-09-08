@@ -22,7 +22,7 @@
           ><i class="iconfont item-member-icon" :class="item.icon"></i><span class="title">{{ item.title }}</span>
         </div>
       </div>
-      <span class="title-box"
+      <span v-if="this.$checkPermission(departmentPermissions.getList)" class="title-box"
         >部门
         <el-button
           type="text"
@@ -89,6 +89,7 @@
 
     methods: {
       async fetchData() {
+        if (!this.$checkPermission(departmentPermissions.getList)) return;
         const {
           data: { rows },
           totalCount,

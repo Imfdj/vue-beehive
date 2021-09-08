@@ -25,6 +25,7 @@
               placeholder="资源名/标识码/标识码名/路径/动作"
               clearable
               style="width: 250px"
+              @keyup.enter.native="queryData"
             />
           </el-form-item>
           <el-form-item>

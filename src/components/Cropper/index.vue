@@ -139,8 +139,8 @@
         justify-content: center;
 
         .review {
-          width: 180px;
-          height: 180px;
+          width: 200px;
+          height: 200px;
           overflow: hidden;
           border-radius: 50%;
           box-shadow: 0 0 4px #ccc;
