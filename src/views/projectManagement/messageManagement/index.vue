@@ -5,7 +5,13 @@
       <vab-query-form-right-panel :span="12">
         <el-form :inline="true" :model="queryForm" @submit.native.prevent>
           <el-form-item>
-            <el-input v-model="queryForm.keyword" placeholder="内容" clearable style="width: 250px" />
+            <el-input
+              v-model="queryForm.keyword"
+              placeholder="内容"
+              clearable
+              style="width: 250px"
+              @keyup.enter.native="queryData"
+            />
           </el-form-item>
           <el-form-item>
             <el-button icon="el-icon-search" type="primary" @click="queryData">查询</el-button>

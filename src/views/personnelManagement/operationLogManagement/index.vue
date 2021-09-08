@@ -15,9 +15,10 @@
           <el-form-item>
             <el-input
               v-model="queryForm.keyword"
-              placeholder="资源名/标识码/标识码名/路径/动作"
+              placeholder="操作人/状态码/请求IP/请求方法/请求路径"
               clearable
-              style="width: 250px"
+              style="width: 290px"
+              @keyup.enter.native="queryData"
             />
           </el-form-item>
           <el-form-item>

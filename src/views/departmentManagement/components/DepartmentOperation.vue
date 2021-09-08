@@ -13,8 +13,8 @@
             <el-button
               type="primary"
               :disabled="
-                !this.$checkPermission(departmentPermissions.doCreate) ||
-                !this.$checkPermission(departmentPermissions.doEdit)
+                (!this.$checkPermission(departmentPermissions.doCreate) && isCreateDepartment) ||
+                (!this.$checkPermission(departmentPermissions.doEdit) && !isCreateDepartment)
               "
               @click="submitForm('form')"
               >{{ buttonName }}
