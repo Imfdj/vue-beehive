@@ -78,7 +78,10 @@
         this.loading = true;
         const {
           data: { rows, count },
-        } = await getList({});
+        } = await getList({
+          is_recycle: 0,
+          is_archived: 0,
+        });
         this.total = count;
         this.$emit('getProjectCount', count);
         this.projectList = rows.map(item => {
@@ -122,7 +125,7 @@
     .list-project {
       display: flex;
       flex-wrap: wrap;
-      min-height: 750px;
+      min-height: 500px;
 
       .item-project {
         position: relative;
@@ -145,7 +148,7 @@
           top: 0;
           right: 0;
           width: 70px;
-          background-color: rgba(19, 210, 173, 0.6);
+          background-color: rgba(87, 78, 254, 0.8);
           color: #fff;
           padding-top: 10px;
           transform: translateX(50%) rotateZ(45deg);

@@ -1,8 +1,8 @@
 <template>
-  <div class="project-list wrap-content-main">
+  <div v-loading="loading" class="project-list wrap-content-main">
     <el-tabs v-model="activeName">
-      <el-tab-pane v-for="(item, index) in titles" :key="index" :label="item" :name="(index + 1).toString()">
-        <div v-loading="loading" class="list color-light">
+      <el-tab-pane v-for="(item, index) in titles" :key="index" :label="item.title" :name="(index + 1).toString()">
+        <div class="list color-light">
           <div v-for="project in listDataFilter" :key="project.id" class="item-list">
             <BImage :src="project.cover"></BImage>
             <div class="item-info">
@@ -79,8 +79,8 @@
       type="primary"
       icon="el-icon-plus"
       @click="handleCreate"
-      >创建新项目</el-button
-    >
+      >创建新项目
+    </el-button>
     <ProjectCreate ref="create"></ProjectCreate>
     <ProjectEdit ref="edit" @fetchData="getList"></ProjectEdit>
     <AddMemberToProjectDialog ref="AddMemberToProjectDialog"></AddMemberToProjectDialog>
@@ -136,6 +136,7 @@
         loading: false,
         activeName: '',
         titles: [],
+        routerPrefix: '', // tabs跳转时，使用到的路由前缀
         listData: [],
         is_recycle: 0,
         is_archived: null,
@@ -161,6 +162,10 @@
     watch: {
       activeName(newValue, oldValue) {
         this.collection = 0;
+        const goPath = `${this.routerPrefix}${this.titles[parseInt(newValue) - 1].path}`;
+        if (this.$route.path !== goPath) {
+          this.$router.push(goPath);
+        }
         switch (newValue) {
           case '1':
             this.is_recycle = 0;
@@ -218,7 +223,8 @@
       const routes = store.getters['routes/routes'];
       const projectRouter = routes && routes.find(item => item.id === 27);
       const projectListRouter = projectRouter && projectRouter.children.find(item => item.id === 32);
-      this.titles = projectListRouter && projectListRouter.children.map(item => item.title);
+      this.titles = projectListRouter && projectListRouter.children.map(item => item);
+      this.routerPrefix = `${projectRouter.path}/${projectListRouter.path}/`;
     },
     methods: {
       async getList() {

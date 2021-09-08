@@ -166,7 +166,11 @@ service.interceptors.response.use(
             });
             break;
           default:
-            errNotification('错误', data.msg || `后端接口${error.request?.status}异常`);
+            if (data.error) {
+              errNotification('错误', data.error);
+            } else {
+              errNotification('错误', data.msg || `后端接口${error.request?.status}异常`);
+            }
             break;
         }
         break;

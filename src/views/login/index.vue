@@ -16,12 +16,17 @@
         </el-col>
       </el-row>
     </div>
+    <div class="info-footer">
+      <GithubPath></GithubPath>
+      <div class="info-beian"><i class="iconfont icon-copyright2"></i> 2021 Beehive | 粤ICP备19028126号-1</div>
+    </div>
   </div>
 </template>
 
 <script>
   import { title } from '@/config/settings';
   import ShapeShifter from '@/components/ShapeShifter';
+  import GithubPath from '@/components/GithubPath';
   import LoginForm from './components/LoginForm';
   import RegisterForm from './components/RegisterForm';
   import RetrievePasswordForm from './components/RetrievePasswordForm';
@@ -31,6 +36,7 @@
     name: 'Login',
     components: {
       ShapeShifter,
+      GithubPath,
       LoginForm,
       RegisterForm,
       RetrievePasswordForm,
@@ -61,6 +67,8 @@
         this.simulateIndex = (this.simulateIndex + 1) % 3;
       }
       this.initTimer();
+      // 当页面不可见时，清空定时器
+      document.addEventListener('visibilitychange', this.doVisibilitychange);
     },
     methods: {
       clickHandler() {
@@ -74,16 +82,28 @@
         this.clearTimer();
         this.timerInter = setInterval(() => {
           this.clickHandler();
-        }, 1000 * 10);
+        }, 1000 * 9);
       },
       clearTimer() {
         if (this.timerInter) {
           clearInterval(this.timerInter);
+          this.timerInter = null;
+        }
+      },
+      doVisibilitychange() {
+        // 页面变为不可见时触发
+        if (document.visibilityState == 'hidden') {
+          this.clearTimer();
+        }
+        // 页面变为可见时触发
+        if (document.visibilityState == 'visible') {
+          this.initTimer();
         }
       },
     },
     destroyed() {
       this.clearTimer();
+      document.removeEventListener('visibilitychange', this.doVisibilitychange);
     },
   };
 </script>
@@ -99,6 +119,25 @@
       top: 0;
       left: 0;
       width: 100vw;
+    }
+    .info-footer {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-around;
+      line-height: 14px;
+      height: 60px;
+      .iconfont {
+        margin-right: 3px;
+      }
+      .info-beian {
+        display: flex;
+        align-items: center;
+      }
     }
   }
 </style>

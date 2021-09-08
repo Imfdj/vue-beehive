@@ -20,7 +20,12 @@
       <vab-query-form-right-panel :span="12">
         <el-form :inline="true" :model="queryForm" @submit.native.prevent>
           <el-form-item>
-            <el-input v-model.trim="queryForm.keyword" placeholder="请输入查询条件" clearable />
+            <el-input
+              v-model.trim="queryForm.keyword"
+              placeholder="请输入查询条件"
+              clearable
+              @keyup.enter.native="queryData"
+            />
           </el-form-item>
           <el-form-item>
             <el-button icon="el-icon-search" type="primary" @click="queryData">查询</el-button>
@@ -66,7 +71,7 @@
           ></i>
         </template>
       </el-table-column>
-      <el-table-column show-overflow-tooltip prop="keep_alive" label="缓存此路由" :sortable="'custom'">
+      <el-table-column show-overflow-tooltip prop="keep_alive" label="缓存" :sortable="'custom'">
         <template slot-scope="scope">
           <i
             :class="scope.row.keep_alive === 1 ? 'el-icon-check' : 'el-icon-close'"
@@ -77,17 +82,18 @@
       <el-table-column
         show-overflow-tooltip
         prop="target"
-        label="打开新路由的方式"
-        width="160px"
+        label="target"
+        width="130px"
         :sortable="'custom'"
       ></el-table-column>
+      <el-table-column show-overflow-tooltip prop="component" label="对应组件" :sortable="'custom'"></el-table-column>
       <el-table-column
         show-overflow-tooltip
-        prop="component"
-        label="路由对应组件"
+        prop="redirect"
+        label="路由重定向"
+        width="130px"
         :sortable="'custom'"
       ></el-table-column>
-      <el-table-column show-overflow-tooltip prop="redirect" label="路由重定向" :sortable="'custom'"></el-table-column>
       <el-table-column show-overflow-tooltip prop="sort" label="排序" :sortable="'sort'"></el-table-column>
       <el-table-column show-overflow-tooltip fixed="right" label="操作" width="200">
         <template v-slot="scope">

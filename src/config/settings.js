@@ -1,4 +1,5 @@
-const isProdQiniu = process.env.BUILD_TARGET && process.env.BUILD_TARGET.trim() == 'qiniu';
+const { BUILD_TARGET, NODE_ENV, VUE_APP_PREVIEW } = process.env;
+const isProdQiniu = BUILD_TARGET && BUILD_TARGET.trim() == 'qiniu';
 const dayjs = require('dayjs');
 const path = require('path');
 const fs = require('fs');
@@ -16,7 +17,7 @@ module.exports = {
   // 开发环境每次保存时是否输出为eslint编译警告
   lintOnSave: true,
   // 默认的接口地址
-  baseURL: process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'preview' ? '/api' : '/api',
+  baseURL: NODE_ENV === 'development' || NODE_ENV === 'preview' ? '/api' : '/api',
   //标题 （包括初次加载雪花屏的标题 页面的标题 浏览器的标题）
   title: 'beehive',
   //简写
@@ -24,8 +25,6 @@ module.exports = {
   devPort: '80',
   //版本号
   version: process.env.VUE_APP_VERSION,
-  //烦请保留package.json作者信息 保留版权可免费商用 如需去除并自定义为自己企业的版权请联系群主QQ 1204505056 需支付299元 恶意修改发生纠纷及出现任何问题 由修改人自行承担
-  copyright: process.env.VUE_APP_AUTHOR,
   //是否显示顶部进度条
   progressBar: true,
   // 路由模式，可选值为 history 或 hash
@@ -75,7 +74,7 @@ module.exports = {
   //是否显示在页面高亮错误
   errorLog: ['development', 'test', 'production'],
   //是否开启登录RSA加密
-  loginRSA: process.env.NODE_ENV === 'production' && true,
+  loginRSA: NODE_ENV === 'production' && true,
   //vertical布局时是否只保持一个子菜单的展开
   uniqueOpened: true,
   //vertical布局时默认展开的菜单path，使用逗号隔开建议只展开一个
@@ -89,10 +88,17 @@ module.exports = {
   //github授权登录authorize请求地址
   github_auth_authorize_url: 'https://github.com/login/oauth/authorize',
   //github授权登录client_id
-  github_auth_client_id: process.env.NODE_ENV === 'production' ? 'd347423472204bea6caf' : '7191c2792ca23d773c32',
+  github_auth_client_id:
+    NODE_ENV === 'production'
+      ? VUE_APP_PREVIEW && VUE_APP_PREVIEW.trim() == 'true'
+        ? '4827d5eb3fec86a9d541'
+        : 'd347423472204bea6caf'
+      : '7191c2792ca23d773c32',
   //github授权登录重定向地址
   github_auth_redirect_uri:
-    process.env.NODE_ENV === 'production' ? 'https://beehive.imfdj.top/login' : 'http://localhost/login',
+    NODE_ENV === 'production'
+      ? `https://${VUE_APP_PREVIEW && VUE_APP_PREVIEW.trim() == 'true' ? 'beehives' : 'beehive'}.imfdj.top/login`
+      : 'http://localhost/login',
   // 项目列表路径
   project_list_path: '/projectManagement/ProjectLists',
   // 项目路径

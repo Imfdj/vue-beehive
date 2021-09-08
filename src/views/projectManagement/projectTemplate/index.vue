@@ -19,7 +19,7 @@
                 <i v-if="index_task !== item_template.project_template_tasks.length - 1" class="el-icon-right"></i
               ></div>
             </div>
-            <div class="item-control">
+            <div v-if="index === 0" class="item-control">
               <el-button
                 :disabled="!$checkPermission(projectTemplateTaskPermissions.getList)"
                 icon="el-icon-s-grid"

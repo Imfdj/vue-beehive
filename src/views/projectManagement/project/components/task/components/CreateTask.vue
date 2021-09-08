@@ -6,9 +6,9 @@
         {{ taskTypeSelect.name }}
         <i class="el-icon-arrow-down el-icon--right"></i>
       </span>
-      <el-dropdown-menu slot="dropdown" style="width: 200px;">
+      <el-dropdown-menu slot="dropdown" style="width: 200px">
         <el-dropdown-item v-for="item in taskTypes" :key="item.id" :command="item">
-          <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div style="display: flex; justify-content: space-between; align-items: center">
             <span><i :class="item.icon" :style="`color: ${item.color};`"></i> {{ item.name }}</span>
             <i v-if="taskTypeSelect.id === item.id" class="el-icon-check"></i>
           </div>
@@ -16,7 +16,7 @@
       </el-dropdown-menu>
     </el-dropdown>
     <div class="wrap-item">
-      <el-input v-model="name" type="textarea" :rows="3" placeholder="输入标题"></el-input>
+      <el-input v-model="name" type="textarea" :autosize="{ minRows: 3 }" placeholder="输入标题"></el-input>
     </div>
     <div class="wrap-item executor">
       <ExecutorSelect
@@ -28,8 +28,8 @@
     </div>
     <div v-if="false" class="wrap-item btn-more"><i class="el-icon-more"></i> 更多</div>
     <div class="wrap-item btn-ctrl">
-      <el-button style="width: 49%;" @click="cancelClick">取消</el-button>
-      <el-button type="primary" style="width: 49%;" @click="commitClick">创建</el-button>
+      <el-button style="width: 49%" @click="cancelClick">取消</el-button>
+      <el-button type="primary" style="width: 49%" @click="commitClick">创建</el-button>
     </div>
   </div>
 </template>

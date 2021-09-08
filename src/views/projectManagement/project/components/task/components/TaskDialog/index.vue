@@ -208,6 +208,7 @@
             ref="TaskLog"
             :participators="taskInfo.participators || []"
             :taskInfo="taskInfo"
+            :dialogTableVisible="dialogTableVisible"
             :taskId="taskId"
           ></TaskLog>
         </div>
@@ -567,7 +568,6 @@
       padding: 10px 10px 0 0;
       overflow-x: hidden;
       overflow-y: auto;
-      color: $colorLight;
 
       .wrap-name {
         ::v-deep .el-textarea__inner {
@@ -598,6 +598,7 @@
 
         .label {
           width: 132px;
+          color: $colorLight;
 
           & i {
             font-size: 16px;

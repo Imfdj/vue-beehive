@@ -8,7 +8,7 @@ import * as Integrations from '@sentry/integrations';
 
 if (process.env.NODE_ENV === 'production') {
   Sentry.init({
-    dsn: 'http://72cc1baaf2594ecea33113e606e893d7@sentry.imfdj.top/3',
+    dsn: 'https://725db29937f546b887c32c3334062f9a@sentry.imfdj.top/3',
     integrations: [new Integrations.Vue({ Vue, attachProps: true })],
   });
 }
