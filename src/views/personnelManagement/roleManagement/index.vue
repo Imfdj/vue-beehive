@@ -44,7 +44,7 @@
       <el-table-column show-overflow-tooltip type="selection"></el-table-column>
       <el-table-column show-overflow-tooltip prop="id" label="id" :sortable="'custom'"></el-table-column>
       <el-table-column show-overflow-tooltip prop="name" label="角色名" :sortable="'custom'"></el-table-column>
-      <el-table-column show-overflow-tooltip prop="is_default" label="是否为默认角色" :sortable="'custom'">
+      <el-table-column show-overflow-tooltip prop="is_default" label="是否为默认角色">
         <template slot-scope="scope">
           <i
             :class="scope.row.is_default === 1 ? 'el-icon-check' : ''"
