@@ -6,21 +6,22 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
     <link rel="icon" href="<%= BASE_URL %>favicon.ico" />
     <title><%= VUE_APP_TITLE %></title>
+    <meta name="keywords" content="beehive,Beehive,项目管理,项目管理系统,vue,node,egg.js,teambition"/>
     <link rel="stylesheet" href="<%= BASE_URL %>static/css/loading.css" />
     <% for(var css of htmlWebpackPlugin.options.cdn.css) { %>
     <link rel="stylesheet" href="<%=css%>" />
     <% } %> <% for(var js of htmlWebpackPlugin.options.cdn.js) { %>
     <script src="<%=js%>"></script>
     <% } %>
-    <!--    <script>-->
-    <!--      var _hmt = _hmt || [];-->
-    <!--      (function () {-->
-    <!--        var hm = document.createElement("script");-->
-    <!--        hm.src = "https://hm.baidu.com/hm.js?7174bade1219f9cc272e7978f9523fc8";-->
-    <!--        var s = document.getElementsByTagName("script")[0];-->
-    <!--        s.parentNode.insertBefore(hm, s);-->
-    <!--      })();-->
-    <!--    </script>-->
+    <script>
+      var _hmt = _hmt || [];
+      (function() {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?28649c7b9d5e2f3f47ec2d333a678bf8";
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+      })();
+    </script>
   </head>
   <body>
     <noscript> noscript </noscript>

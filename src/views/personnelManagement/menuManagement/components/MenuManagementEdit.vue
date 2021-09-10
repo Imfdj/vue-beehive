@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :title="title" :visible.sync="dialogFormVisible" width="600px" @close="close">
+  <el-dialog :title="title" :visible.sync="dialogFormVisible" width="600px" top="5vh" @close="close">
     <el-form ref="form" :model="form" :rules="rules" label-width="140px">
       <el-form-item label="路由名" prop="name">
         <el-input v-model="form.name" autocomplete="off"></el-input>
@@ -7,8 +7,11 @@
       <el-form-item label="路由title" prop="title">
         <el-input v-model="form.title" autocomplete="off"></el-input>
       </el-form-item>
-      <el-form-item label="父ID" prop="parent_id">
+      <el-form-item v-if="false" label="父ID" prop="parent_id">
         <el-input v-model="form.parent_id" disabled="disabled" autocomplete="off"></el-input>
+      </el-form-item>
+      <el-form-item v-if="parent_title" label="父路由">
+        <el-input v-model="parent_title" disabled="disabled" autocomplete="off"></el-input>
       </el-form-item>
       <el-form-item label="图标url" prop="icon">
         <el-input v-model="form.icon" autocomplete="off"></el-input>
@@ -78,6 +81,7 @@
         },
         title: '',
         dialogFormVisible: false,
+        parent_title: '', // 父级title
       };
     },
     created() {},
@@ -87,12 +91,15 @@
           this.title = '添加';
           if (createChildren) {
             this.form.parent_id = row.id;
+            this.parent_title = row.title;
           } else {
             this.form.parent_id = 0;
+            this.parent_title = '';
           }
         } else {
           this.title = '编辑';
           this.form = Object.assign({}, row);
+          this.parent_title = '';
         }
         this.dialogFormVisible = true;
       },

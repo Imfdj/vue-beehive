@@ -7,7 +7,7 @@
           icon="el-icon-plus"
           type="primary"
           @click="handleEdit"
-          >添加</el-button
+          >添加一级路由</el-button
         >
         <el-button
           :disabled="!$checkPermission(menuPermissions.doDelete)"
@@ -17,7 +17,7 @@
           >批量删除</el-button
         >
       </vab-query-form-left-panel>
-      <vab-query-form-right-panel :span="12">
+      <vab-query-form-right-panel v-if="false" :span="12">
         <el-form :inline="true" :model="queryForm" @submit.native.prevent>
           <el-form-item>
             <el-input
@@ -44,18 +44,12 @@
       @sort-change="sortChang"
     >
       <el-table-column show-overflow-tooltip type="selection"></el-table-column>
-      <el-table-column
-        show-overflow-tooltip
-        prop="title"
-        label="路由title"
-        min-width="130px"
-        :sortable="'custom'"
-      ></el-table-column>
-      <el-table-column show-overflow-tooltiprefresh prop="name" label="路由名" :sortable="'custom'"></el-table-column>
-      <el-table-column show-overflow-tooltip prop="parent_id" label="父ID" :sortable="'custom'"></el-table-column>
-      <el-table-column show-overflow-tooltip prop="icon" label="图标url" :sortable="'custom'"></el-table-column>
-      <el-table-column show-overflow-tooltip prop="path" label="路由路径" :sortable="'custom'"></el-table-column>
-      <el-table-column show-overflow-tooltip prop="hidden" label="是否隐藏" :sortable="'custom'">
+      <el-table-column show-overflow-tooltip prop="title" label="路由title" min-width="160px"></el-table-column>
+      <el-table-column show-overflow-tooltiprefresh prop="name" label="路由名"></el-table-column>
+      <el-table-column show-overflow-tooltip prop="parent_id" label="父ID"></el-table-column>
+      <el-table-column show-overflow-tooltip prop="icon" label="图标url"></el-table-column>
+      <el-table-column show-overflow-tooltip prop="path" label="路由路径"></el-table-column>
+      <el-table-column show-overflow-tooltip prop="hidden" label="是否隐藏">
         <template slot-scope="scope">
           <i
             :class="scope.row.hidden === 1 ? 'el-icon-check' : 'el-icon-close'"
@@ -63,7 +57,7 @@
           ></i>
         </template>
       </el-table-column>
-      <el-table-column show-overflow-tooltip prop="always_show" label="总是显示" :sortable="'custom'">
+      <el-table-column show-overflow-tooltip prop="always_show" label="总是显示">
         <template slot-scope="scope">
           <i
             :class="scope.row.always_show === 1 ? 'el-icon-check' : 'el-icon-close'"
@@ -71,7 +65,7 @@
           ></i>
         </template>
       </el-table-column>
-      <el-table-column show-overflow-tooltip prop="keep_alive" label="缓存" :sortable="'custom'">
+      <el-table-column show-overflow-tooltip prop="keep_alive" label="缓存">
         <template slot-scope="scope">
           <i
             :class="scope.row.keep_alive === 1 ? 'el-icon-check' : 'el-icon-close'"
@@ -79,22 +73,10 @@
           ></i>
         </template>
       </el-table-column>
-      <el-table-column
-        show-overflow-tooltip
-        prop="target"
-        label="target"
-        width="130px"
-        :sortable="'custom'"
-      ></el-table-column>
-      <el-table-column show-overflow-tooltip prop="component" label="对应组件" :sortable="'custom'"></el-table-column>
-      <el-table-column
-        show-overflow-tooltip
-        prop="redirect"
-        label="路由重定向"
-        width="130px"
-        :sortable="'custom'"
-      ></el-table-column>
-      <el-table-column show-overflow-tooltip prop="sort" label="排序" :sortable="'sort'"></el-table-column>
+      <el-table-column show-overflow-tooltip prop="target" label="target" width="80px"></el-table-column>
+      <el-table-column show-overflow-tooltip prop="component" label="对应组件"></el-table-column>
+      <el-table-column show-overflow-tooltip prop="redirect" label="路由重定向" width="130px"></el-table-column>
+      <el-table-column show-overflow-tooltip prop="sort" label="排序"></el-table-column>
       <el-table-column show-overflow-tooltip fixed="right" label="操作" width="200">
         <template v-slot="scope">
           <el-button

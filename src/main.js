@@ -11,6 +11,8 @@ if (process.env.NODE_ENV === 'production') {
     dsn: 'https://725db29937f546b887c32c3334062f9a@sentry.imfdj.top/3',
     integrations: [new Integrations.Vue({ Vue, attachProps: true })],
   });
+  // 生产环境不打印console.log
+  console.log = () => {};
 }
 
 Vue.config.productionTip = false;
