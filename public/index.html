@@ -14,13 +14,20 @@
     <script src="<%=js%>"></script>
     <% } %>
     <script>
-      var _hmt = _hmt || [];
-      (function() {
-        var hm = document.createElement("script");
-        hm.src = "https://hm.baidu.com/hm.js?28649c7b9d5e2f3f47ec2d333a678bf8";
-        var s = document.getElementsByTagName("script")[0];
-        s.parentNode.insertBefore(hm, s);
-      })();
+      var isPreview = window.location.hostname === 'beehives.imfdj.top'
+      if (window.location.hostname === 'beehive.imfdj.top' || isPreview) {
+        var _hmt = _hmt || [];
+        (function(isPreview) {
+          var hm = document.createElement("script");
+          if(isPreview) {
+            hm.src = 'https://hm.baidu.com/hm.js?20f9d4921b9ccfcc714dcf9f1ebd22ec';
+          }else {
+            hm.src = 'https://hm.baidu.com/hm.js?28649c7b9d5e2f3f47ec2d333a678bf8';
+          }
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })(isPreview);
+      }
     </script>
   </head>
   <body>
