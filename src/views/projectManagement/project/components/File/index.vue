@@ -4,7 +4,7 @@
       <div class="title">我的文件</div>
       <el-button
         icon="el-icon-upload"
-        :disabled="!this.$checkPermission(projectFilePermissions.doCreate)"
+        :disabled="!isCurrentProjectMember || !this.$checkPermission(projectFilePermissions.doCreate)"
         @click="uploadHandler"
         >上传
       </el-button>
@@ -59,7 +59,7 @@
             <div class="operator">
               <el-button icon="el-icon-download" type="text" @click="downloadHandler(item)"></el-button>
               <el-button
-                :disabled="!$checkPermission(projectFilePermissions.doEdit)"
+                :disabled="!isCurrentProjectMember || !$checkPermission(projectFilePermissions.doEdit)"
                 icon="el-icon-edit"
                 type="text"
                 @click="editHandler(item)"
@@ -88,7 +88,7 @@
   import Dropdown from '@/components/Dropdown';
   import FileTypeIcon from '@/components/FileTypeIcon';
   import { getList, doEdit, doCreate, permissions as projectFilePermissions } from '@/api/projectFileManagement';
-  import { mapState } from 'vuex';
+  import { mapGetters, mapState } from 'vuex';
   import { dateHumanizeFormat } from '@/utils';
   import Upload from '@/components/Upload';
   import { isExternal } from '@/utils/validate';
@@ -115,7 +115,7 @@
             id: 1,
             name: '移到回收站',
             icon: 'el-icon-delete',
-            disabled: !this.$checkPermission(projectFilePermissions.doEdit),
+            disabled: false,
           },
         ],
       };
@@ -123,9 +123,19 @@
     computed: {
       ...mapState('project', ['projectMembers', 'currentProjectId']),
       ...mapState('user', ['userInfo']),
+      ...mapGetters('project', ['isCurrentProjectMember']),
+    },
+    watch: {
+      // 权限控制
+      isCurrentProjectMember(newValue, oldValue) {
+        this.selectList[1].disabled = !newValue || !this.$checkPermission(projectFilePermissions.doEdit);
+      },
     },
     created() {
       this.getList();
+      // 权限控制
+      this.selectList[1].disabled =
+        !this.isCurrentProjectMember || !this.$checkPermission(projectFilePermissions.doEdit);
     },
     sockets: {
       sync: function (data) {

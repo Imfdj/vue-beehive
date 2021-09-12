@@ -27,7 +27,7 @@
     </div>
     <div class="wrap-pagination">
       <el-pagination
-        v-if="projectListShow.length"
+        v-if="total > pageSize"
         background
         layout="prev, pager, next"
         :page-size="pageSize"
