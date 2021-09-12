@@ -101,7 +101,9 @@ $colorDanger: #f56c6c;
 }
 
 .disabled-custom {
-  cursor: not-allowed !important;
+  pointer-events: none;
+  cursor: default;
+  opacity: 0.6;
 }
 
 .wrap-el-table-100width {

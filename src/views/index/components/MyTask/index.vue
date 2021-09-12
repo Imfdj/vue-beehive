@@ -44,7 +44,7 @@
     </div>
     <div class="wrap-pagination">
       <el-pagination
-        v-if="taskData.count"
+        v-if="taskData.count > pageSize"
         background
         layout="prev, pager, next"
         :page-size="pageSize"
