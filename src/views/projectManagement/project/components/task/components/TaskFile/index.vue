@@ -38,6 +38,7 @@
         </div>
       </div>
     </div>
+    {{ isCurrentProjectMember }}
     <Upload ref="Upload" @success="uploadSuccess"></Upload>
   </div>
 </template>
@@ -74,7 +75,7 @@
             id: 3,
             name: '取消关联',
             icon: 'iconfont icon-quxiaolianjie',
-            disabled: !this.$checkPermission(projectFilePermissions.doDelete),
+            disabled: false,
           },
         ],
       };
@@ -96,6 +97,15 @@
       'task.id'(newValue, oldValue) {
         this.getList();
       },
+      // 权限控制
+      isCurrentProjectMember(newValue, oldValue) {
+        this.fileOperations[2].disabled = !newValue || !this.$checkPermission(projectFilePermissions.doDelete);
+      },
+    },
+    created() {
+      // 权限控制
+      this.fileOperations[2].disabled =
+        !this.isCurrentProjectMember || !this.$checkPermission(projectFilePermissions.doDelete);
     },
     sockets: {
       sync: function (data) {

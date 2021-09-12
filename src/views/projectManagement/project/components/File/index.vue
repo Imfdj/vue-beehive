@@ -115,7 +115,7 @@
             id: 1,
             name: '移到回收站',
             icon: 'el-icon-delete',
-            disabled: !this.$checkPermission(projectFilePermissions.doEdit),
+            disabled: false,
           },
         ],
       };
@@ -125,8 +125,17 @@
       ...mapState('user', ['userInfo']),
       ...mapGetters('project', ['isCurrentProjectMember']),
     },
+    watch: {
+      // 权限控制
+      isCurrentProjectMember(newValue, oldValue) {
+        this.selectList[1].disabled = !newValue || !this.$checkPermission(projectFilePermissions.doEdit);
+      },
+    },
     created() {
       this.getList();
+      // 权限控制
+      this.selectList[1].disabled =
+        !this.isCurrentProjectMember || !this.$checkPermission(projectFilePermissions.doEdit);
     },
     sockets: {
       sync: function (data) {
