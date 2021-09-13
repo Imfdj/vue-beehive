@@ -140,6 +140,10 @@
         this.form.username = 'admin';
         this.form.password = '123123';
       }
+      if (process.env.VUE_APP_PREVIEW && process.env.VUE_APP_PREVIEW.trim() == 'true') {
+        this.form.username = 'test-super';
+        this.form.password = 'test-super123';
+      }
     },
     methods: {
       handlePassword() {
